@@ -4,8 +4,24 @@
     {
       "name": "visual",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["--prefix", "visual", "run", "dev"],
+      "runtimeArgs": [
+        "--prefix",
+        "visual",
+        "run",
+        "dev"
+      ],
       "port": 5173
+    },
+    {
+      "name": "kroniekboek",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "visual-book",
+        "run",
+        "dev"
+      ],
+      "port": 5174
     }
   ]
 }

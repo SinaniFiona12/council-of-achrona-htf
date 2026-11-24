@@ -8,3 +8,5 @@ kennisbronnen/*/
 # Visualisatie
 visual/node_modules/
 visual/dist/
+visual-book/node_modules/
+visual-book/dist/

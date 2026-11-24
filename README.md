@@ -80,6 +80,22 @@ Open http://localhost:5173. Start daarna in een tweede terminal `uv run council`
 - **Eigen avatars**: vervang `visual/assets/avatars/<rol>.svg` door je eigen SVG met dezelfde bestandsnaam.
 - **Netwerk**: de lettertypes (UnifrakturMaguntia, Alegreya SC, Alegreya) komen van Google Fonts; zonder internet valt de pagina terug op een gewone serif.
 
+### Het Kroniekboek starten (3D-visualisatie)
+
+Een 3D pop-upboek op een houten tafel bij kaarslicht (Three.js + GSAP) in `visual-book/`. Net als de andere viewers leest het alleen `trace.json` en `verdict.json`; het schrijft niets en roept geen LLM aan.
+
+```
+cd visual-book
+npm install
+npm run dev
+```
+
+Open http://localhost:5174. Start `uv run council` in een tweede terminal om live mee te kijken; een afgeronde run speelt automatisch af. Testdata: http://localhost:5174/?trace=voorbeeld. FPS-teller: `?debug=1`.
+
+- **Wat je ziet**: elke routering spant een gouden draad van de Koning (links) naar het Raadslid dat opklapt (rechts), de reden schrijft zich met de ganzenveer en de open vragen staan in de kantlijn (beantwoorde worden doorgestreept). Elk Raadslid-bericht dooft één van de 10 kaarsen (het Beurtenbudget) en toont de KERN-regel. Elk record-ID wordt een gouden snipper die de paarse scheur dichtlast. Op het einde lichten de naden op, klapt het boek dicht, valt er een zegel en verschijnt het vonnis. Delen zonder bewering blijven gescheurd.
+- **Bediening** (rechtsonder): afspelen/pauzeren (spatie), Live, snelheid 0.5×/1×/2×, geluid (standaard uit), Lite (minder effecten) en Vonnis. Met ← → blader je per Raadslid-beurt. Klik op de bevel-, ballon- of vragenkaart, op een figuur of op een hoofdstuk van het vonnis om de ruwe trace-beurt te zien.
+- **Eigen figuren**: vervang `visual-book/assets/avatars/<rol>.svg` (en `koning.svg`). Alle tempo's, kleuren, licht en tekstlengtes staan in `visual-book/src/config.js`.
+
 ## Hoe de kit werkt
 
 ```

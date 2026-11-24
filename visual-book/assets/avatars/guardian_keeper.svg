@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 140" width="400" height="560">
+  <!-- Tijdelijke papierfiguur: vervang door je eigen SVG met dezelfde bestandsnaam. -->
+  
+  <circle cx="50" cy="40" r="17" fill="#A3B4C8" stroke="#2a1b0c" stroke-width="3"/>
+  <path d="M22 132 L30 66 Q50 54 70 66 L78 132 Z" fill="#A3B4C8" stroke="#2a1b0c" stroke-width="3" stroke-linejoin="bevel"/>
+  <path d="M30 96 L70 96 M50 70 L50 96" stroke="#E6F4FF" stroke-width="2" opacity="0.6"/>
+  <text x="50" y="124" text-anchor="middle" font-family="Georgia, serif" font-size="26" font-weight="bold" fill="#E6F4FF">G</text>
+</svg>
