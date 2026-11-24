@@ -41,7 +41,7 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:5176 en druk op **P**: de hele zitting speelt in ongeveer 110 seconden af en eindigt met twee schermen, *Wat is er gebeurd?* en *Hoe lossen we het op?*. Meer uitleg staat bij "De Raadzaal starten" hieronder.
+Open http://localhost:5176 en druk op **P**: de hele zitting speelt in ongeveer 110 seconden af en eindigt met drie schermen: *Wat is er gebeurd?*, *Hoe lossen we het op?* en *Waarom een Council?*. Meer uitleg staat bij "De Raadzaal starten" hieronder.
 
 ### Zelf een zitting draaien
 
@@ -173,8 +173,10 @@ npm run dev
 Open http://localhost:5176. Start `uv run council` in een tweede terminal om live mee te kijken; een afgeronde run speelt vanaf het begin af. Testdata: http://localhost:5176/?trace=voorbeeld.
 
 - **Wat je ziet**: de Koning zit op zijn troon, de Raadsleden rond de tafel, elk onder de banier van zijn Rol. Bovenaan staat welke van de drie stappen bezig is. De camera gaat naar wie spreekt en iedereen kijkt naar de spreker. Een routering is een lichtstraal over de tafel van de Koning naar het gekozen Raadslid. Leest een Raadslid zijn bron, dan gaat er een oplichtend boek voor hem open. Elk record-ID wordt een blad bewijs op tafel; noemt een tweede Rol hetzelfde ID, dan schuift het blad naar het midden. De tien kaarsen zijn het Beurtenbudget: elk Raadslid-bericht dooft er één. Het sigil in de tafel is paars en onrustig zolang de Desync onverklaard is en wordt goud bij het vonnis.
-- **Na het debat**: de geschillen komen één voor één (goud = beslecht, oranje en trillend = open). Dan volgt het vonnis in twee schermen: *Wat is er gebeurd?* (ingreep, mechanisme en verloop, met bewijs, zekerheid en de Rollen die het bewijs leverden) en *Hoe lossen we het op?* (herstelplan, risico's en de voorspelling).
-- **Bediening**: **P** = presentatiemodus (de hele run in ongeveer 110 seconden), **R** = herstart, **spatie** = pauze, **← →** = vorige of volgende beurt. Rechtsonder staan ook Live, de snelheid en Lite (zonder schaduwen en gloed). Klik op het dialoogvenster, een personage, een blad bewijs of een deel van het vonnis voor de ruwe trace.
+- **Waarom kiest de Koning wie hij kiest?** Bij elk Raadslid staat zijn publieke Belang. Noemt een Raadslid een andere Rol, dan krijgt die een uitroepteken boven het hoofd en staat er *verwijst naar …* in het venster; kiest de Koning daarna die Rol, dan staat dat erbij. Een keuze komt in twee beelden: eerst de Koning, dan de Koning en het gekozen Raadslid samen.
+- **Live**: loopt de run nog, dan krijgt het personage dat aan de beurt is een denkwolkje (*denkt na…*) en gaat de camera naar hem toe.
+- **Na het debat**: de geschillen komen één voor één (goud = beslecht, oranje en trillend = open). Dan volgt het vonnis in drie schermen: *Wat is er gebeurd?* (ingreep, mechanisme en verloop, met bewijs, zekerheid en de Rollen die het bewijs leverden) *Hoe lossen we het op?* (herstelplan, risico's en de voorspelling) en *Waarom een Council?* (cijfers uit de trace en de spelregels nagelopen, met een vinkje of een kruisje). Bij het vonnis breekt achter de vensters de ochtend door.
+- **Bediening**: **P** = presentatiemodus (de hele run in ongeveer 110 seconden), **R** = herstart, **spatie** = pauze, **← →** = vorige of volgende beurt. **F** = volledig scherm. Rechtsonder staan ook Live, de snelheid en Lite (zonder schaduwen en gloed). Klik op het dialoogvenster, een personage, een blad bewijs of een deel van het vonnis voor de ruwe trace.
 - **Instellen**: tempo, kleuren en tekstlengtes staan in `visual-raad/src/config.js`. Daar staan ook `pixel` (hoe grof de pixels zijn) en `kleurNiveaus` (hoeveel tinten per kleur). De knop Lite toont het gladde 3D-beeld zonder pixelstijl.
 
 ### Het Sterrenbeeld starten (eerdere visualisatie, reserve)

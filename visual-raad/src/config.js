@@ -6,6 +6,11 @@ export const CONFIG = {
     historian: '#D4A373', oracle: '#E879F9', beast_master: '#84CC16',
   },
   extraKleuren: ['#F472B6', '#FBBF24', '#34D399', '#60A5FA', '#FB7185'],
+  // publiek Belang per Rol, uit rolkaarten.md
+  belang: {
+    archmage: 'gezag en zuiverheid van de magie', engineer: 'vooruitgang van het datanet', guardian_keeper: 'veiligheid van de burcht',
+    historian: 'integriteit van het archief', oracle: 'gezag van de profetieën', beast_master: 'bescherming van dieren en woud',
+  },
   rolNamen: {
     archmage: 'Archmage', engineer: 'Engineer', guardian_keeper: 'Guardian Keeper',
     historian: 'Historian', oracle: 'Oracle', beast_master: 'Beast Master',

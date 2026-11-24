@@ -73,15 +73,16 @@ function maakFiguur(rol, kleurHex) {
   voeg(g, new THREE.CylinderGeometry(0.07, 0.08, 0.16, 12), huid, 0, 1.4, 0)
   // hoofd
   const hoofd = new THREE.Group(); hoofd.position.set(0, 1.6, 0); hoofd.scale.setScalar(1.28); g.add(hoofd)
+  const ogen = []
   voeg(hoofd, new THREE.SphereGeometry(0.185, 28, 20), huid, 0, 0, 0).scale.set(0.95, 1.12, 1)
   for (const s of [-1, 1]) {
     voeg(hoofd, new THREE.SphereGeometry(0.04, 10, 8), huid, s * 0.175, -0.01, 0, false)
     if (P.ogenDicht) voeg(hoofd, new THREE.BoxGeometry(0.055, 0.009, 0.01), donker, s * 0.068, 0.02, 0.172, false)
-    else voeg(hoofd, new THREE.SphereGeometry(0.03, 10, 8), donker, s * 0.068, 0.02, 0.162, false)
+    else ogen.push(voeg(hoofd, new THREE.SphereGeometry(0.03, 10, 8), donker, s * 0.068, 0.02, 0.162, false))
     voeg(hoofd, new THREE.BoxGeometry(0.07, 0.014, 0.02), haar, s * 0.068, 0.075, 0.168, false).rotation.z = s * -0.12
   }
   voeg(hoofd, new THREE.SphereGeometry(0.028, 10, 8), huid, 0, -0.03, 0.182, false).scale.set(0.8, 1.2, 1)
-  voeg(hoofd, new THREE.BoxGeometry(0.065, 0.009, 0.01), donker, 0, -0.1, 0.165, false)
+  const mond = voeg(hoofd, new THREE.BoxGeometry(0.065, 0.012, 0.012), donker, 0, -0.1, 0.168, false)
   const kap = (mat, r = 0.197, tot = 0.55, kantel = -0.28) => {
     const o = voeg(hoofd, new THREE.SphereGeometry(r, 26, 16, 0, Math.PI * 2, 0, Math.PI * tot), mat, 0, 0.012, -0.004)
     o.scale.set(0.97, 1.13, 1.02); o.rotation.x = kantel; return o
@@ -144,7 +145,15 @@ function maakFiguur(rol, kleurHex) {
   const k = new THREE.Color(kleurHex)
   const bron = new THREE.Group(); bron.position.set(0, tafelY + 0.05, 0.86); bron.scale.setScalar(0.001); g.add(bron)
   for (const s of [-1, 1]) { const blad = new THREE.Mesh(new THREE.PlaneGeometry(0.22, 0.3), new THREE.MeshBasicMaterial({ color: k.clone().multiplyScalar(2.2), side: THREE.DoubleSide })); blad.rotation.set(-Math.PI / 2, s * 0.35, 0); blad.position.x = s * 0.105; bron.add(blad) }
-  return { rol, groep: g, hoofd, bron, zweef, fase: Math.random() * 6, kijk: null, spreekt: false, leest: false }
+  // denkwolkje (live: dit personage is aan de beurt) en uitroepteken (zijn Rol werd net genoemd)
+  const wit = new THREE.MeshBasicMaterial({ color: '#f4f0ff' })
+  const wolk = new THREE.Group(); wolk.position.set(0.34, 2.3, 0); wolk.visible = false; g.add(wolk)
+  for (const [x, y, r] of [[0, 0, 0.05], [0.1, 0.14, 0.08], [0.28, 0.38, 0.19]]) { const b = new THREE.Mesh(new THREE.SphereGeometry(r, 10, 8), wit); b.position.set(x, y, 0); wolk.add(b) }
+  const uitroep = new THREE.Group(); uitroep.position.set(0, 2.8, 0); uitroep.visible = false; g.add(uitroep)
+  const geel = licht(3, 2.1, 0.5)
+  const streep = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.32, 0.1), geel); streep.position.y = 0.24; uitroep.add(streep)
+  uitroep.add(new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.1, 0.1), geel))
+  return { rol, groep: g, hoofd, bron, zweef, ogen, mond, wolk, uitroep, fase: Math.random() * 6, kijk: null, spreekt: false, leest: false, denkt: false }
 }
 
 export function maakZaal(container) {
@@ -181,6 +190,26 @@ export function maakZaal(container) {
   const vloer = new THREE.Mesh(new THREE.CircleGeometry(12, 48), toon({ map: tegelTex })); vloer.rotation.x = -Math.PI / 2; vloer.receiveShadow = true; scene.add(vloer)
   const kleed = new THREE.Mesh(new THREE.RingGeometry(0.9, 4.7, 64), std('#7a2f5c')); kleed.rotation.x = -Math.PI / 2; kleed.position.y = 0.006; kleed.receiveShadow = true; scene.add(kleed)
   const muur = new THREE.Mesh(new THREE.CylinderGeometry(9, 9, 8, 48, 1, true), toon({ map: steenTex, side: THREE.BackSide })); muur.position.y = 4; muur.receiveShadow = true; scene.add(muur)
+  const boog = (c, b, h) => { c.beginPath(); c.moveTo(6, h); c.lineTo(6, 70); c.quadraticCurveTo(b / 2, -20, b - 6, 70); c.lineTo(b - 6, h); c.closePath(); c.clip() }
+  const ochtendTex = canvasTextuur(128, 320, (c, b, h) => {
+    c.fillStyle = '#2a2040'; c.fillRect(0, 0, b, h); boog(c, b, h)
+    const gr = c.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#6fa8ff'); gr.addColorStop(0.55, '#ff9fb0'); gr.addColorStop(1, '#ffd27a'); c.fillStyle = gr; c.fillRect(0, 0, b, h)
+    c.fillStyle = '#fff3c4'; c.beginPath(); c.arc(b / 2, h - 60, 34, 0, Math.PI * 2); c.fill()
+    c.strokeStyle = '#2a2040'; c.lineWidth = 4; for (const x of [b / 3, 2 * b / 3]) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x, h); c.stroke() }
+    for (const y of [110, 210]) { c.beginPath(); c.moveTo(0, y); c.lineTo(b, y); c.stroke() }
+  })
+  const ochtendMat = new THREE.MeshBasicMaterial({ map: ochtendTex, transparent: true, opacity: 0 })
+  const boekTex = canvasTextuur(48, 32, (c, b) => {
+    c.fillStyle = '#2a1a10'; c.fillRect(0, 0, b, 32)
+    const kl = ['#a53a48', '#3a6fa5', '#4a8f55', '#c79a3c', '#7a4fa5', '#a56a3a', '#d8cfb8']
+    for (let rij = 0; rij < 3; rij++) {
+      let x = 1
+      while (x < b - 3) { const w = 2 + ((Math.random() * 3) | 0), hh = 6 + ((Math.random() * 3) | 0); c.fillStyle = kl[(Math.random() * kl.length) | 0]; c.fillRect(x, rij * 10 + 10 - hh, w, hh); x += w + (Math.random() < 0.12 ? 2 : 0) }
+      c.fillStyle = '#5a381d'; c.fillRect(0, rij * 10 + 10, b, 1)
+    }
+  }); boekTex.wrapS = boekTex.wrapT = THREE.ClampToEdgeWrapping
+  const kastHout = std('#5a381d'), kastVoor = toon({ map: boekTex })
+  const toortsen = [], toortsLichten = []
   const vensterTex = canvasTextuur(128, 320, (c, b, h) => {
     c.fillStyle = '#2a2040'; c.fillRect(0, 0, b, h) // de muur rond de boog (dekkend: zo krijgt het venster een strakke inktrand)
     c.beginPath(); c.moveTo(6, h); c.lineTo(6, 70); c.quadraticCurveTo(b / 2, -20, b - 6, 70); c.lineTo(b - 6, h); c.closePath(); c.clip()
@@ -192,10 +221,40 @@ export function maakZaal(container) {
   for (let i = 0; i < 9; i++) {
     const a = (i + 0.5) / 9 * Math.PI * 2
     const v = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 3.7), new THREE.MeshBasicMaterial({ map: vensterTex }))
-    v.position.set(Math.sin(a) * 8.9, 3.7, -Math.cos(a) * 8.9); v.lookAt(0, 3.7, 0); scene.add(v)
+    v.position.set(Math.sin(a) * 8.9, 3.05, -Math.cos(a) * 8.9); v.lookAt(0, 3.05, 0); scene.add(v)
+    const ochtend = new THREE.Mesh(v.geometry, ochtendMat); ochtend.position.set(Math.sin(a) * 8.86, 3.05, -Math.cos(a) * 8.86); ochtend.lookAt(0, 3.05, 0); scene.add(ochtend)
+    const kast = new THREE.Mesh(new THREE.BoxGeometry(1.75, 1.12, 0.36), [kastHout, kastHout, kastHout, kastHout, kastVoor, kastHout])
+    kast.position.set(Math.sin(a) * 8.55, 0.56, -Math.cos(a) * 8.55); kast.lookAt(0, 0.56, 0); kast.castShadow = true; kast.receiveShadow = true; scene.add(kast)
     const zuil = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.3, 8, 12), std('#6a5b88')); const b = i / 9 * Math.PI * 2
     zuil.position.set(Math.sin(b) * 8.5, 4, -Math.cos(b) * 8.5); zuil.receiveShadow = true; scene.add(zuil)
+    // een toorts aan elke zuil
+    const tx = Math.sin(b) * 8.12, tz = -Math.cos(b) * 8.12
+    const houder = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.03, 0.45, 6), std('#3a2a1c')); houder.position.set(tx, 2.05, tz); scene.add(houder)
+    const toorts = new THREE.Mesh(new THREE.ConeGeometry(0.1, 0.3, 6), licht(2.8, 1.5, 0.45)); toorts.position.set(tx, 2.42, tz); scene.add(toorts); toortsen.push(toorts)
+    if (i % 3 === 0) { const l = new THREE.PointLight('#ff9a4a', 10, 8, 1.6); l.position.set(Math.sin(b) * 7.5, 2.6, -Math.cos(b) * 7.5); scene.add(l); toortsLichten.push(l) }
   }
+
+  // ---- aankleding: kristallen kroonluchter (kleurt mee met het sigil), tonnen en kisten langs de muur
+  const kristalMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(1.5, 0.5, 2.6) })
+  const luchter = new THREE.Group(); luchter.position.y = 3.55; scene.add(luchter)
+  luchter.add(new THREE.Mesh(new THREE.TorusGeometry(1.5, 0.05, 6, 24), std('#c79a3c')).rotateX(Math.PI / 2))
+  for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2, k = new THREE.Mesh(new THREE.OctahedronGeometry(0.13), kristalMat); k.position.set(Math.sin(a) * 1.5, -0.24, Math.cos(a) * 1.5); k.scale.y = 1.8; luchter.add(k) }
+  for (let i = 0; i < 4; i++) { const a = i / 4 * Math.PI * 2 + 0.4, ketting = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 4.4, 4), std('#6a5a3a')); ketting.position.set(Math.sin(a) * 1.5, 2.2, Math.cos(a) * 1.5); luchter.add(ketting) }
+  for (const [hoek, soort] of [[0.5, 'ton'], [0.6, 'ton'], [1.75, 'kist'], [2.5, 'ton'], [3.85, 'kist'], [3.97, 'ton'], [5.0, 'kist'], [5.75, 'ton']]) {
+    const x = Math.sin(hoek) * 7.2, z = -Math.cos(hoek) * 7.2, ton = soort === 'ton'
+    const o = new THREE.Mesh(ton ? new THREE.CylinderGeometry(0.4, 0.4, 0.95, 10) : new THREE.BoxGeometry(0.9, 0.65, 0.65), std(ton ? '#8a5a30' : '#6f4c2c'))
+    o.position.set(x, ton ? 0.475 : 0.325, z); o.rotation.y = hoek * 3; o.castShadow = true; o.receiveShadow = true; scene.add(o)
+    if (ton) for (const y of [0.2, 0.75]) { const band = new THREE.Mesh(new THREE.TorusGeometry(0.41, 0.025, 6, 12), std('#55555f')); band.rotation.x = Math.PI / 2; band.position.set(x, y, z); scene.add(band) }
+  }
+  // het rozetvenster achter de troon: het sigil van Achrona in glas
+  const rozetTex = canvasTextuur(96, 96, (c, b) => {
+    c.fillStyle = '#1c1340'; c.beginPath(); c.arc(48, 48, 47, 0, Math.PI * 2); c.fill()
+    c.strokeStyle = '#ffffff'; c.lineWidth = 3
+    for (const r of [44, 30, 10]) { c.beginPath(); c.arc(48, 48, r, 0, Math.PI * 2); c.stroke() }
+    for (let i = 0; i < 6; i++) { const a = i * Math.PI / 3; c.beginPath(); c.moveTo(48 + Math.cos(a) * 10, 48 + Math.sin(a) * 10); c.lineTo(48 + Math.cos(a) * 44, 48 + Math.sin(a) * 44); c.stroke(); c.beginPath(); c.arc(48 + Math.cos(a + Math.PI / 6) * 37, 48 + Math.sin(a + Math.PI / 6) * 37, 4, 0, Math.PI * 2); c.stroke() }
+  }); rozetTex.wrapS = rozetTex.wrapT = THREE.ClampToEdgeWrapping
+  const rozetMat = new THREE.MeshBasicMaterial({ map: rozetTex })
+  const NACHT0 = NACHT.clone(), OCHTENDLUCHT = new THREE.Color('#5a3550'), HEMEL_NACHT = new THREE.Color('#9a90e0'), HEMEL_OCHTEND = new THREE.Color('#ffd9b8')
 
   // ---- de tafel met het sigil van Achrona
   const hout = std('#5a381d')
@@ -305,7 +364,8 @@ export function maakZaal(container) {
         for (const lijn of GLYPH[rol] || GLYPH._) { c.beginPath(); lijn.forEach(([x, y], j) => c[j ? 'lineTo' : 'moveTo'](b / 2 + x * 48, 170 - y * 48)); c.stroke() }
       })
       const banier = new THREE.Mesh(banierGeo, toon({ map: tex, side: THREE.DoubleSide }))
-      banier.position.set(dir.x * 8.55, 4.3, dir.z * 8.55); banier.lookAt(0, 4.3, 0); scene.add(banier); banieren.push(banier)
+      banier.position.set(dir.x * 8.55, 2.1, dir.z * 8.55); banier.lookAt(0, 2.1, 0); scene.add(banier); banieren.push(banier)
+      if (rol === 'koning') { banier.visible = false; const rozet = new THREE.Mesh(new THREE.CircleGeometry(1.35, 28), rozetMat); rozet.position.set(dir.x * 8.7, 3.0, dir.z * 8.7); rozet.lookAt(0, 3.0, 0); scene.add(rozet); banieren.push(rozet) }
     })
     const k = plekken.get('koning'); koningslicht.position.set(k.pos.x * 1.25, 3.2, k.pos.z * 1.25)
     return portretten()
@@ -358,6 +418,11 @@ export function maakZaal(container) {
     const doel = i < brandend ? 1 : 0
     if (animeer) gsap.to(k, { aan: doel, duration: 0.8, overwrite: true }); else { gsap.killTweensOf(k); k.aan = doel }
   })
+
+  /** Live: het personage dat aan de beurt is, krijgt een denkwolkje. */
+  api.zetDenker = (rol) => { for (const f of figuren.values()) { f.denkt = f.rol === rol; f.wolk.visible = f.denkt } }
+  /** Rollen die de spreker net noemde, krijgen een uitroepteken boven het hoofd. */
+  api.zetGenoemd = (rollen) => { for (const f of figuren.values()) f.uitroep.visible = rollen.includes(f.rol) }
 
   function papierPlek(id, rol, gedeeld) {
     const p = plekken.get(rol) || plekken.get('koning')
@@ -422,13 +487,13 @@ export function maakZaal(container) {
 
   // ---- camera
   const SHOTS = {
-    breed: () => ({ x: 0, y: 5.4, z: 9, tx: 0, ty: 0.55, tz: 0 }),
+    breed: () => ({ x: 0, y: 4.7, z: 9.4, tx: 0, ty: 1.0, tz: 0 }),
     finale: () => ({ x: 0, y: 7.6, z: 9.2, tx: 0, ty: -1.7, tz: 0 }),
     persoon: (rol) => {
       const p = plekken.get(rol); if (!p) return SHOTS.breed()
       const zij = V(-p.dir.z, 0, p.dir.x), kant = hash(rol) > 0.5 ? 1 : -1
       const c = p.dir.clone().multiplyScalar(-1.9).addScaledVector(zij, 1.7 * kant)
-      return { x: c.x, y: 2.5, z: c.z, tx: p.pos.x * 0.9, ty: 0.85, tz: p.pos.z * 0.9 }
+      return { x: c.x, y: 2.3, z: c.z, tx: p.pos.x * 0.9, ty: 1.1, tz: p.pos.z * 0.9 }
     },
     duo: (rollen) => {
       const wie = rollen.filter((r) => plekken.has(r)); if (!wie.length) return SHOTS.breed()
@@ -486,14 +551,31 @@ export function maakZaal(container) {
     // personages: ademen, kijken naar de spreker, knikken bij het spreken, buigen over hun bron bij het lezen
     for (const f of figuren.values()) {
       const lokaal = f.kijk ? f.groep.worldToLocal(f.kijk.clone()) : null
-      const gier = lokaal ? Math.max(-1.1, Math.min(1.1, Math.atan2(lokaal.x, lokaal.z))) : Math.sin(t * 0.4 + f.fase) * 0.1
+      const maxGier = f.spreekt ? 0.4 : 1.1 // de spreker blijft naar de zaal (en de camera) gekeerd
+      const gier = lokaal ? Math.max(-maxGier, Math.min(maxGier, Math.atan2(lokaal.x, lokaal.z))) : Math.sin(t * 0.4 + f.fase) * 0.1
       f.hoofd.rotation.y += (gier - f.hoofd.rotation.y) * 0.07
-      const knik = f.leest ? 0.42 : f.spreekt ? Math.sin(t * 8 + f.fase) * 0.04 : 0
+      const knik = f.leest ? 0.42 : f.denkt ? -0.16 : f.spreekt ? Math.sin(t * 8 + f.fase) * 0.04 : 0
       f.hoofd.rotation.x += (knik - f.hoofd.rotation.x) * 0.1
       f.groep.scale.y = 1 + Math.sin(t * 1.3 + f.fase) * 0.006
       if (f.zweef) f.zweef.position.y += Math.sin(t * 1.6 + f.fase) * 0.0006
       if (f.leest) f.bron.rotation.y = Math.sin(t * 2) * 0.05
+      // praten: de mond gaat open en dicht; iedereen knippert af en toe
+      const praat = f.spreekt ? 0.5 + 0.5 * Math.sin(t * 13 + f.fase) : 0
+      f.mond.scale.y += ((1 + praat * 4.5) - f.mond.scale.y) * 0.4
+      const knipper = (t * 0.37 + f.fase) % 1 < 0.035 ? 0.12 : 1
+      for (const o of f.ogen) o.scale.y = knipper
+      if (f.wolk.visible) { f.wolk.position.y = 2.3 + Math.sin(t * 2.2) * 0.04; f.wolk.children.forEach((b, i) => b.scale.setScalar(0.85 + 0.15 * Math.sin(t * 3 - i))) }
+      if (f.uitroep.visible) { f.uitroep.position.y = 2.8 + Math.abs(Math.sin(t * 5)) * 0.14; f.uitroep.rotation.y = t * 2.5 }
     }
+    // toortsen flakkeren; de kroonluchter en het rozetvenster kleuren mee met het sigil
+    toortsen.forEach((v, i) => { v.scale.y = 0.85 + 0.3 * Math.abs(Math.sin(t * 9 + i * 2.1)) })
+    toortsLichten.forEach((l, i) => { l.intensity = 9 + 2 * Math.sin(t * 8 + i * 1.7) })
+    kristalMat.color.copy(sigilMat.color); rozetMat.color.copy(sigilMat.color).multiplyScalar(0.9); luchter.rotation.y = t * 0.05
+    // dageraad: zodra de oorzaak gevonden is, komt achter de vensters de ochtend door
+    const ochtend = Math.max(0, Math.min(1, (herstel - 0.86) / 0.14))
+    ochtendMat.opacity = ochtend
+    hemel.color.copy(HEMEL_NACHT).lerp(HEMEL_OCHTEND, ochtend); hemel.intensity = 1.5 + 0.8 * ochtend
+    NACHT.copy(NACHT0).lerp(OCHTENDLUCHT, ochtend * 0.8); scene.fog.color.copy(NACHT)
     tekenGeschil(t)
     api.opFrame?.(t)
     if (lite) renderer.render(scene, camera); else composer.render()
