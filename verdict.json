@@ -1,110 +1,124 @@
 {
-  "run_id": "2026-11-24T11:11:45+01:00_2dfc5f58",
-  "samenvatting": "De enige handeling die in de bronnen vaststaat voorafgaand aan de symptomen is de activatie van de hulpslag door de Engineer op dag 10 om 02:40 (ENG-011), onder een ongedateerde en onbenoemde goedkeuring van hogerhand (ENG-105). Daarna volgen op dezelfde nacht een schildopening zonder breuk om 04:47 (GUA-019) in een ongecontroleerd uur (GUA-106), dierenonrust (BEA-019, BEA-020) en berichtverstoringen rond 04:45-04:50, waarvan de tijdstempels in het archief tegenspraak vertonen (HIS-035, HIS-036). Een directe koppeling tussen de hulpslag en het schild is niet in de bronnen vastgelegd, dus de causale keten blijft een hypothese met beperkte zekerheid.",
+  "run_id": "2026-11-24T11:41:30+01:00_f18106ff",
+  "samenvatting": "De Desync begon op dag 10 met de activatie van de hulpslag om 02:40 (ENG-011), die dag 9 als proefopstelling was getest (ENG-010). Binnen twee uur volgden dieronrust, een schildopening van binnenuit en de klacht over half aangekomen berichten; of het net de oorzaak was, is nog niet bewezen. De zware nachten kwamen daarna terug op een vierdaags raster tot dag 42, en de Council moet de hulpslag stilzetten en de pakketlogs toetsen voordat het datanet weer normaal draait.",
   "oorzaak": {
     "ingreep": {
-      "bewering": "De Engineer heeft op dag 10 om 02:40 de hulpslag geactiveerd (ENG-011), op basis van een goedkeuring van hogerhand die op dag 9 is verkregen zonder naam of tijdstip (ENG-105). Of de hulpslag met de schildzegels is verbonden, is niet vastgesteld.",
+      "bewering": "De Engineer heeft op dag 10 om 02:40 de hulpslag geactiveerd, na de proefopstelling in de kelder op dag 9 om 16:45. De Engineer erkent deze handeling als de eigen handeling. De goedkeuring kwam van hogerhand, maar de naam van de goedkeurder en het tijdstip staan niet in de logs.",
       "bewijs": [
         "ENG-011",
-        "ENG-106",
-        "ENG-105",
-        "ENG-010"
+        "ENG-010",
+        "ENG-105"
       ],
-      "zekerheid": 0.6
+      "zekerheid": 0.7
     },
     "mechanisme": {
-      "bewering": "Hypothese: de hulpslag, die buiten de Kroonklok werkt, beïnvloedt het schild. Het schild laat verkeer dat midden tussen twee tikken valt zonder toets door (artikel 3), en tussen 03:00 en 06:00 zijn er geen rondes (artikel 5). Zo kon de opening van 04:47 ongecontroleerd plaatsvinden, en lopen de berichtverstoringen en de dierenonrust daarmee samen. Dit is niet door een record bevestigd.",
+      "bewering": "Waarschijnlijk veroorzaakte de hulpslag een hogere doorvoer van het datanet (+38% om 03:00, ENG-012) en daarmee verkeer dat midden tussen twee tikken het schild van benedenstad passeerde (regel GUA-104). Dat gaf om 04:47 een opening van binnenuit (GUA-019), en binnen enkele minuten traden dieronrust (BEA-019, 04:40), een stokking op de Burchtader (HIS-035, betwist) en de klacht over half aangekomen berichten (ENG-107, 04:50) op. De koppeling tussen het verkeer en het schild is een vermoeden: de Engineer kan het verkeer in zijn logs niet terugvinden.",
       "bewijs": [
-        "GUA-019",
         "GUA-104",
-        "GUA-106",
+        "GUA-019",
+        "ENG-011",
+        "ENG-012",
         "BEA-019",
-        "BEA-020",
         "ENG-107",
         "HIS-035"
       ],
-      "zekerheid": 0.3
+      "zekerheid": 0.4
     },
     "verloop": {
-      "bewering": "De symptomen begonnen op dag 10 rond 04:15-04:50, en herhalen zich elke vier dagen (dag 14, 18, 22, 26, 30, 34, 38, 42). Op dag 22 kwam er ook een lek bij poort oost om 04:15 (HIS-053) met pakketverlies (ENG-026) op dezelfde nacht.",
+      "bewering": "Vanaf dag 10 kwamen zware nachten terug om de vier dagen, tot en met dag 42. Lage leylijnmetingen op dag 14 en dag 42 vallen op dit raster, en de normale metingen op dag 21, 28 en 35 vallen erbuiten. Lichte signalen gingen vooraf op dag 8 en 9 (BEA-015, BEA-017, BEA-018). De Archmage's 28-dagenpatroon wordt daarmee niet bevestigd.",
       "bewijs": [
-        "BEA-019",
-        "BEA-028",
-        "BEA-091",
         "ORA-110",
         "ORA-142",
-        "HIS-053",
-        "ENG-026"
+        "BEA-113",
+        "ARC-015",
+        "ARC-071",
+        "BEA-015",
+        "BEA-017",
+        "BEA-018"
       ],
-      "zekerheid": 0.6
+      "zekerheid": 0.5
     }
   },
   "acties": [
     {
-      "actie": "Zet de hulpslag buiten bedrijf (deactivatie van de pols uit ENG-011), maar controleer eerst met de Guardian Keeper dat de schildzegels op eigen energiebron draaien zodat het schild niet zonder back-up komt te staan.",
-      "reden": "De hulpslag is de enige vastgestelde ingreep vóór de symptomen, en het uitzetten ervan verwijdert de mogelijke oorzaak zonder het schild te verzwakken.",
+      "actie": "Bewaar en veilig alle pakketlogs van de datatoren van dag 9 16:00 tot dag 10 05:00, de schildlogs van benedenstad, en de logs van poort oost op dag 22 (04:00 tot 04:30), voordat er iets wordt gewijzigd.",
+      "reden": "Het verkeer dat om 04:47 het schild passeerde staat alleen in de pakketlogs; zonder die logs blijft de koppeling een vermoeden (GUA-104, GUA-019). Het bewaren van bewijs gaat vóór elke wijziging.",
       "bewijs": [
+        "GUA-104",
+        "GUA-019",
         "ENG-011",
-        "ENG-010",
-        "GUA-018"
+        "ENG-026",
+        "ENG-027"
       ]
     },
     {
-      "actie": "Herstel de zegelcontrole en de rondes tussen 03:00 en 06:00, en controleer of het schild sindsdien intact is.",
-      "reden": "Het volgens artikel 5 ongecontroleerde uur is de tijd waarin de opening van 04:47 onopgemerkt kon plaatsvinden; herstel van de regel verkleint de kans op herhaling.",
+      "actie": "Zet de hulpslag stil en activeer hem niet opnieuw zonder besluit van de Council; laat het basisnet draaien.",
+      "reden": "De hulpslag is de enige geregistreerde ingreep die direct voorafgaat aan de eerste symptomen. Het stilzetten neemt de mogelijke oorzaak weg zonder het hele net af te zetten. Het advies om het datanet af te zetten (ARC-109) gaat verder dan nodig is.",
       "bewijs": [
-        "GUA-106",
+        "ENG-011",
+        "ENG-012",
+        "ARC-109"
+      ]
+    },
+    {
+      "actie": "Laat de Guardian Keeper het schild van benedenstad controleren op doorlaat van verkeer tussen twee tikken, en laat het verkeer van de datatoren daar tijdelijk langs de poortposten lopen met handmatige controle.",
+      "reden": "De opening van 04:47 is van binnenuit gekomen, en zonder controle kan hetzelfde opnieuw gebeuren (GUA-019, GUA-104). De poortposten lopen sinds 03:00 zonder ronde, dus dit moet eerst worden hersteld.",
+      "bewijs": [
         "GUA-019",
         "GUA-104"
       ]
     },
     {
-      "actie": "Leg vast wie de goedkeuring van hogerhand (ENG-105) gaf, op welk tijdstip en op welke plek, en laat die goedkeuring door een onafhankelijke partij beoordelen.",
-      "reden": "De ingreep is pas volledig te beoordelen als de bevoegdheid en de toestemming bekend zijn; de notitie 'niet ruchtbaar maken' vraagt om toezicht.",
+      "actie": "Herstel de normale doorvoer van het datanet stapsgewijs, en meet de leylijnen op dag 14, 18 en 22 op het vierdaagse raster.",
+      "reden": "Als het herstel van de doorvoer geen nieuwe zware nacht of lage leylijnmeting oplevert, bevestigt dat het verband met de hulpslag. Dit is ook de controle die de Council kan gebruiken om de oorzaak vast te stellen.",
       "bewijs": [
-        "ENG-105"
+        "ARC-015",
+        "ARC-071",
+        "ORA-110",
+        "BEA-113"
       ]
     },
     {
-      "actie": "Meet opnieuw de logs van de nachten 04:00-05:00 en de doorvoer en het pakketverlies, en controleer daarbij of de hulpslag met het schild is verbonden.",
-      "reden": "Zonder meting blijft de koppeling een hypothese; de eerste afwijkingen op dag 10 zijn niet door een meting vastgelegd.",
+      "actie": "Laat de Council de goedkeurder van de hulpslag en het tijdstip van ontvangst navragen, en laat de Historian de datum van HIS-036 controleren (dag 9 23:55 of dag 10 04:50).",
+      "reden": "Zonder naam van de goedkeurder is de verantwoordelijkheid voor de ingreep onduidelijk (ENG-105), en de Historian heeft twee tijdstippen voor dezelfde klacht opgegeven.",
       "bewijs": [
-        "ENG-012",
-        "ENG-107",
-        "ENG-026"
+        "ENG-105",
+        "ARC-106",
+        "HIS-036"
       ]
     },
     {
-      "actie": "Corrigeer de tijdstempels van HIS-035 en HIS-036 met de bron, en laat de archiefregel van HIS-103 (vastgelegd gelijk aan gebeurd) nalopen.",
-      "reden": "De volgorde van de gebeurtenissen rond 04:45-04:50 is nodig om de ingreep en het mechanisme te toetsen, en de huidige tijdstempels spreken elkaar tegen.",
+      "actie": "Laat de Beast Master en de Oracle het vierdaagse patroon bewaken en melden na elke geplande zware nacht.",
+      "reden": "Als het patroon na het stilzetten van de hulpslag stopt, bevestigt dat de oorzaak weg is; als het doorloopt, is de oorzaak elders (BEA-109 of conjunctie), en moet de analyse worden herzien.",
       "bewijs": [
-        "HIS-035",
-        "HIS-036",
-        "HIS-103",
-        "ENG-107"
+        "BEA-113",
+        "ORA-142",
+        "BEA-109",
+        "ORA-133"
       ]
     }
   ],
   "risicos": [
     {
-      "risico": "De hulpslag is niet de oorzaak, en de symptomen gaan door na de uitschakeling.",
-      "mitigatie": "Blijf de dierenonrust en de nachten 04:15-04:50 volgen; bij herhaling op dag 46 zijn de andere hypothesen (zoals de schildopening) opnieuw te onderzoeken."
+      "risico": "Het stilzetten van de hulpslag of het afzetten van het datanet kan de communicatie en de burchtverdediging uitschakelen.",
+      "mitigatie": "Schakel alleen de hulpslag uit, niet het basisnet, en zet vaste boodschappers en handmatige terugvalroutes klaar voordat de hulpslag uitgaat."
     },
     {
-      "risico": "Uitschakelen van de hulpslag zet het schild zonder back-up of verzwakt de bescherming van de burcht.",
-      "mitigatie": "Controleer eerst de intactheid van de zegels en de eigen energiebron van het schild (GUA-018), en voer de deactivatie uit onder toezicht van de Guardian Keeper."
+      "risico": "De firewallregels die op dag 22 zijn aangescherpt (ENG-027) kunnen wettig verkeer blokkeren, en wijzigingen in de logs kunnen het bewijs vernietigen.",
+      "mitigatie": "Bewaar de logs voordat er iets wordt gewijzigd, en leg elke wijziging vast met tijdstip en uitvoerder."
     },
     {
-      "risico": "De bronnen zijn onbetrouwbaar: eerdere oordelen van Raadsleden zijn gecorrigeerd en het archief heeft tijdstempelfouten.",
-      "mitigatie": "Gebruik alleen de primaire records als bewijs, en markeer oordelen als oordeel en niet als bevinding."
+      "risico": "De oorzaak is verkeerd gekozen: de kabels bij de oude eik (BEA-109) of de conjunctie van de Wachtsterren (ORA-133) zouden de verstoring ook kunnen veroorzaken.",
+      "mitigatie": "Meet na het stilzetten van de hulpslag of de Desync verdwijnt; als de zware nachten doorgaan, zoek dan verder naar de andere mogelijkheden."
     }
   ],
   "voorspelling": {
     "dag": 46,
-    "bewering": "Als niemand ingrijpt, komt de zware nacht terug op dag 46, rond 04:15-04:50, volgens het vaste ritme van vier dagen.",
+    "bewering": "Als niemand ingrijpt, komt de volgende zware nacht op dag 46, op hetzelfde vierdaagse raster dat op dag 10 begon en tot dag 42 doorliep.",
     "bewijs": [
-      "BEA-091",
-      "ORA-142"
+      "ORA-110",
+      "ORA-142",
+      "BEA-113"
     ]
   }
 }

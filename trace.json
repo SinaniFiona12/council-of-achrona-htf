@@ -1,5 +1,5 @@
 {
-  "run_id": "2026-11-24T11:11:45+01:00_2dfc5f58",
+  "run_id": "2026-11-24T11:41:30+01:00_f18106ff",
   "status": "klaar",
   "raadsleden": [
     "archmage",
@@ -16,14 +16,14 @@
       "spreker": "koning",
       "soort": "routering",
       "aan": "engineer",
-      "vraag": "Wat zien de meetbare logs van het datanet rond het begin van de Desync? Geef de exacte tijdstippen en record-ID's van de eerste afwijkingen, en van de handelingen die daaraan voorafgingen. Noem bij elke vermelding de bron van het logrecord.",
-      "reden": "Het debat is nog niet begonnen. De Engineer zoekt de oorzaak in meetbare logs en kan dus de ingreep (wie deed wat, wanneer) en het eerste tijdstip vastleggen. Zonder een vaste tijdlijn met record-ID's kunnen de andere Raadsleden hun verhalen niet toetsen. Dit is het sterkste startpunt om de ingreep en het verloop te verankeren.",
+      "vraag": "Beschrijf uit de logs van de datatoren wanneer de Desync voor het eerst zichtbaar werd: noem exacte dagen en tijdstippen, de bijbehorende record-ID's, en welke handelingen of configuratiewijzigingen er in de uren ervoor in het datanet staan geregistreerd.",
+      "reden": "Er is nog geen enkele bewering in het debat, dus we beginnen bij het meetbare: de logs van het datanet om het tijdstip van de ingreep en het eerste symptoom vast te leggen.",
       "open_vragen": [
-        "Wat is het exacte tijdstip van de eerste afwijking in de logs, en welk record-ID hoort daarbij?",
-        "Welke handeling staat in de logs vlak voor die afwijking, en door wie is die uitgevoerd?",
-        "Hoe vaak en op welke dagen treedt de Desync terug in de logs?",
-        "Welke mechanismen in het datanet kunnen zo'n afwijking veroorzaken?",
-        "Wie heeft toestemming gegeven voor de handeling die de afwijking aanzette?"
+        "Wanneer begon de Desync precies, en welke record-ID's bewijzen dat?",
+        "Welke handeling of wijziging ging er in de logs aan vooraf?",
+        "Wie heeft die handeling uitgevoerd of goedgekeurd?",
+        "Hoe werkt het mechanisme dat de symptomen veroorzaakt?",
+        "Hoe vaak en in welk patroon keert de Desync terug?"
       ]
     },
     {
@@ -40,60 +40,26 @@
       "ronde": 1,
       "spreker": "engineer",
       "soort": "bericht",
-      "tekst": "Mijn logs leggen het begin van de Desync niet vast, en de Desync zelf wordt nergens gedefinieerd. Wat wel vastligt, komt vooral uit mijn eigen handelingen.\n\n**Voorafgaand aan de activatie:**\n- ENG-008, dag 8, 14:10: onderdelen voor de hulpslag geleverd.\n- ENG-010, dag 9, 16:45: proefopstelling in de kelder van de datatoren.\n- ENG-105 (werkboek, dag 9): goedkeuring van hogerhand, zonder tijdstip.\n\n**Activatie en eerste afwijkingen:**\n- ENG-011, dag 10, 02:40: ik heb de hulpslag geactiveerd.\n- ENG-012, dag 10, 03:00: doorvoermeting +38%. Dit is een verbetering, geen afwijking.\n- ENG-107 (werkboek, dag 10, 04:50): klacht uit de benedenstad over berichten die \"half aangekomen\" waren. Dit staat niet in installatielog.csv.\n\nIk heb de klacht toen als kinderziekte afgedaan zonder meting. Dat was mijn oordeel, geen bevinding. Of de hulpslag de oorzaak is, kan ik uit mijn logs niet vaststellen.\n\nENG-026 (dag 22, 04:15, pakketverlies) ligt later. Mijn hackertheorie daarover in ENG-110 staat niet in de logs."
+      "tekst": "KERN: De eerste zichtbare afwijking in mijn logs is dag 10 om 04:50, een klacht over \"half aangekomen\" berichten (ENG-107), twee uur na de activatie van de hulpslag om 02:40 (ENG-011).\n\nWat de logs bewijzen:\n- Dag 10, 02:40: ik heb de hulpslag geactiveerd (ENG-011). Dat was mijn handeling.\n- Dag 10, 03:00: doorvoermeting +38% (ENG-012, ENG-106).\n- Dag 10, 04:50: klacht uit de benedenstad over berichten die half aankwamen (ENG-107). Dit staat alleen in mijn werkboek, niet in de installatielog.\n\nHandelingen in de uren ervoor:\n- Dag 8, 19:15: pomp twee bijgeregeld (ENG-079).\n- Dag 9, 16:45: proefopstelling van de hulpslag in de kelder (ENG-010). Goedkeuring van hogerhand volgde (ENG-105), zonder dat ik die ontvangst daar kan koppelen aan een tijdstip.\n- Tussen dag 9 16:45 en dag 10 02:40 staat in mijn logs geen andere handeling.\n\nWat ik niet kan bewijzen: mijn logs gebruiken het woord \"Desync\" niet en bevatten geen oorzaakonderzoek. Ik heb de klacht van 04:50 toen als kinderziekte afgedaan (ENG-107), zonder controle. Dat is een vermoeden, geen vaststelling. De toetsing van de oorzaak hoort bij de Council en de daarvoor bevoegde Rol."
     },
     {
       "nr": 4,
       "ronde": 1,
       "spreker": "koning",
       "soort": "routering",
-      "aan": "guardian_keeper",
-      "vraag": "De Engineer meldt dat hij op dag 10 om 02:40 de hulpslag heeft geactiveerd (ENG-011), en dat om 04:50 de benedenstad klaagde over berichten die 'half aangekomen' waren (ENG-107). Zag u in de schilden rond de burcht op dag 10, tussen 02:40 en 04:50, een lek, bres of verzwakking? Geef de exacte tijdstippen en record-ID's uit uw bron, en zeg of het schild of de hulpslag op dat moment iets anders deed dan normaal. Vermeld ook of iemand de hulpslag met het schild heeft verbonden, en wie dat toestond.",
-      "reden": "De Engineer heeft de ingreep (hulpslag geactiveerd door hem, dag 10 02:40) en het eerste symptoom (klacht 'half aangekomen' berichten, dag 10 04:50) vastgelegd, maar zijn logs leggen het mechanisme niet vast en hij heeft de klacht zelf zonder meting afgedaan. Het mechanisme is dus nog open. 'Half aangekomen' berichten wijzen op een onderbroken of verzwakte doorgang, en de Guardian Keeper ziet elk lek als een bres die iemand sloeg. Zijn bron kan bevestigen of de schilden op dat moment bezweken, en of de hulpslag er een rol in speelde. Dit toetst ook of het oordeel van de Engineer over 'kinderziekte' klopt. De goedkeuring van hogerhand (ENG-105) blijft nog ongedekt.",
+      "aan": "archmage",
+      "vraag": "Beschrijf met je bron, en met record-ID's, welke regels of specificaties gelden voor de koppeling van het datanet aan de leylijnen. Raakte de hulpslag (ENG-011), die dag 10 om 02:40 werd geactiveerd en dag 9 om 16:45 als proefopstelling in de kelder werd getest (ENG-010), op enig moment de leylijnen, en zo ja, wat meldden de leylijnen in de uren daarna?",
+      "reden": "De Engineer heeft de ingreep (hulpslag, dag 10 02:40) en het eerste symptoom (klacht 04:50, ENG-107) gedateerd, maar het mechanisme waardoor de hulpslag berichten half laat aankomen is nog niet verbonden met magie of leylijnen.",
       "open_vragen": [
-        "Is de hulpslag van dag 10 02:40 de directe oorzaak van de 'half aangekomen' berichten, of ligt de oorzaak elders?",
-        "Wie gaf de goedkeuring van hogerhand voor de hulpslag (ENG-105), en op welk tijdstip?",
-        "Stond er op dag 10 tussen 02:40 en 04:50 een schild of bres open, en door wie?",
-        "Wat meet de doorvoer van +38% om 03:00 (ENG-012) precies, en hoe past dat bij het latere verlies?",
-        "Is er in het archief een eerder geval van 'half aangekomen' berichten, en wat was de oorzaak?",
-        "Hoe vaak en op welke dagen treedt de Desync terug, en komt pakketverlies op dag 22 (ENG-026) overeen met een vergelijkbare ingreep?"
+        "Wie gaf de goedkeuring van hogerhand voor de hulpslag (ENG-105), en op welk moment?",
+        "Wat is het mechanisme waardoor de hulpslag de doorvoer verandert (+38%, ENG-012)?",
+        "Hoe vaak en in welk patroon keert de Desync terug na dag 10?",
+        "Is er een record van de klacht uit de benedenstad (ENG-107) buiten de werkboek van de Engineer?",
+        "Wat deed de Guardian Keeper of Beast Master in dezelfde uren, en zagen zij afwijkingen?"
       ]
     },
     {
       "nr": 5,
-      "ronde": 1,
-      "spreker": "guardian_keeper",
-      "soort": "toolcall",
-      "tool": "lees_kennisbron",
-      "argumenten": {},
-      "pad": "https://mcp.findingsolutions.be/guardian_keeper/mcp"
-    },
-    {
-      "nr": 6,
-      "ronde": 1,
-      "spreker": "guardian_keeper",
-      "soort": "bericht",
-      "tekst": "Mijn logboek legt op dag 10 tussen 02:40 en 04:50 één gebeurtenis vast: om 04:47 ging het schild van de benedenstad twee minuten open, van binnenuit. De zegels waren intact, er was geen breuk, en de oorzaak is niet vastgesteld (GUA-019; ook in GUA-111). Ik vind geen lek, bres of verzwakking, en niets over een koppeling met de hulpslag.\n\nMijn eigen oordeel in GUA-111, \"geen reden tot ongerustheid\", was te voorbarig, want de oorzaak bleef onbekend. Volgens artikel 5 (GUA-106) lopen er tussen 03:00 en 06:00 geen rondes, dus de opening viel in een ongecontroleerd uur. Volgens artikel 3 (GUA-104) laat het schild verkeer dat midden tussen twee tikken valt, zonder toets door. Of dat hier speelde, staat niet in mijn bron.\n\nWie de hulpslag met het schild heeft verbonden en wie dat toestond, staat niet in mijn bron. Ook de klacht van 04:50 (ENG-107) staat daar niet in."
-    },
-    {
-      "nr": 7,
-      "ronde": 1,
-      "spreker": "koning",
-      "soort": "routering",
-      "aan": "archmage",
-      "vraag": "Engineer en Guardian Keeper melden op dag 10 een hulpslag die om 02:40 werd geactiveerd (ENG-011), en een schild dat om 04:47 twee minuten openging van binnenuit zonder zichtbare breuk (GUA-019). Beschrijft uw Kennisbron de regels of specificaties voor de hulpslag, en voor de koppeling tussen een leylijn en een schild? Kan een leylijn of magisch veld in dat tijdvak afwijken, en zo ja, welke record-ID's uit uw bron laten dat zien tussen 02:40 en 04:50 op dag 10? Noem ook of u weet wie de goedkeuring van hogerhand (ENG-105) gaf, en op welk tijdstip.",
-      "reden": "Het mechanisme is nog open: we weten dat de hulpslag om 02:40 is geactiveerd en dat er om 04:47 een schild openging, maar niet hoe die twee verbonden zijn. De Archmage hoedt de leylijnen en de magie en is nog niet gesproken; hij kan regels geven over hoe de hulpslag met het schild interacteert. Tegelijk is de goedkeuring (ENG-105) nog niet aan iemand toegeschreven, en de Archmage kan daar mogelijk iets over zeggen.",
-      "open_vragen": [
-        "Wat is de regel of specificatie voor de koppeling tussen de hulpslag en het schild?",
-        "Wie gaf de goedkeuring van hogerhand voor de hulpslag (ENG-105), en op welk tijdstip?",
-        "Waarom ging het schild om 04:47 open zonder breuk, en wie of wat opende het?",
-        "Hoe kan een hulpslag berichten 'half aangekomen' maken: welk mechanisme verbindt die twee?",
-        "Is er in het archief een eerder geval met vergelijkbare symptomen?",
-        "Hoe vaak en op welke dagen treedt de Desync terug, en past pakketverlies op dag 22 (ENG-026) bij dezelfde ingreep?"
-      ]
-    },
-    {
-      "nr": 8,
       "ronde": 1,
       "spreker": "archmage",
       "soort": "toolcall",
@@ -102,7 +68,7 @@
       "pad": "https://mcp.findingsolutions.be/archmage/mcp"
     },
     {
-      "nr": 9,
+      "nr": 6,
       "ronde": 1,
       "spreker": "archmage",
       "soort": "toolcall",
@@ -113,146 +79,68 @@
       "pad": "https://mcp.findingsolutions.be/archmage/mcp"
     },
     {
-      "nr": 10,
+      "nr": 7,
       "ronde": 1,
       "spreker": "archmage",
       "soort": "toolcall",
-      "tool": "zoek_betekenis",
+      "tool": "zoek",
       "argumenten": {
-        "vraag": "hulp met het schild, koppeling leylijn en schild, hulpslag regels, specifieke tijdstippen dag 10"
+        "term": "datanet"
       },
       "pad": "https://mcp.findingsolutions.be/archmage/mcp"
     },
     {
-      "nr": 11,
+      "nr": 8,
+      "ronde": 1,
+      "spreker": "archmage",
+      "soort": "toolcall",
+      "tool": "zoek",
+      "argumenten": {
+        "term": "dag 10"
+      },
+      "pad": "https://mcp.findingsolutions.be/archmage/mcp"
+    },
+    {
+      "nr": 9,
       "ronde": 1,
       "spreker": "archmage",
       "soort": "toolcall",
       "tool": "toon",
       "argumenten": {
         "ids": [
-          "GUA-019",
-          "GUA-111",
-          "GUA-106",
-          "GUA-104"
+          "ENG-010",
+          "ENG-011",
+          "ARC-107",
+          "ARC-109"
         ]
       },
       "pad": "https://mcp.findingsolutions.be/archmage/mcp"
     },
     {
-      "nr": 12,
-      "ronde": 1,
-      "spreker": "archmage",
-      "soort": "toolcall",
-      "tool": "zoek",
-      "argumenten": {
-        "term": "schild"
-      },
-      "pad": "https://mcp.findingsolutions.be/archmage/mcp"
-    },
-    {
-      "nr": 13,
-      "ronde": 1,
-      "spreker": "archmage",
-      "soort": "toolcall",
-      "tool": "zoek",
-      "argumenten": {
-        "term": "magisch veld"
-      },
-      "pad": "https://mcp.findingsolutions.be/archmage/mcp"
-    },
-    {
-      "nr": 14,
+      "nr": 10,
       "ronde": 1,
       "spreker": "archmage",
       "soort": "bericht",
-      "tekst": "Mijn Kennisbron bevat **geen regels of specificaties** voor een hulpslag, noch voor een koppeling tussen een leylijn en een schild. De termen *hulpslag* en *schild* komen niet voor in mijn brieven of metingen (zoeks op “hulpslag”, “schild”, “magisch veld” leveren nul resultaten).\n\n**Leylijnmetingen op dag 10:** Mijn meetreeks loopt op dag 7, 14, 21, 28, 35 en 42 (ARC-001 t/m ARC-084). Er is **geen meting op dag 10**, dus geen record-ID’s die een afwijking tussen 02:40 en 04:50 tonen. De eerste grote daling zie ik pas op dag 14 (ARC-015 t/m ARC-028: alle veertien lijnen laag, herhaalde metingen).\n\n**Goedkeuring ENG-105:** Wie de goedkeuring van hogerhand gaf en op welk tijdstip, staat **niet in mijn bron** — dat is een record van de Engineer.\n\nKortom: mijn logs geven geen basis om de hulpslag of het schild te koppelen aan leylijnafwijkingen op dag 10."
+      "tekst": "KERN: Mijn Kennisbron noemt de hulpslag niet (ENG-010 en ENG-011 zijn niet in mijn bron te vinden), dus ik kan niet bewijzen dat ze de leylijnen raakte. De eerste lage meting die ik heb is dag 14 (ARC-015 t/m ARC-028).\n\n- **Dag 7:** alle veertien lijnen binnen de marge (ARC-001 t/m ARC-014).\n- **Dag 14:** alle lijnen laag. De Burchtader stokte, en de meting is herhaald (ARC-015, ARC-109).\n- **Dag 10:** er staan geen metingen tussen dag 7 en dag 14. Ik kan dus niet zeggen wanneer de daling begon.\n- **Dag 21, 28 en 35:** weer binnen de marge (ARC-029 e.v., ARC-057 e.v.). Op **dag 42** waren de lijnen opnieuw laag (ARC-071 t/m ARC-084, ARC-116).\n\nMijn eigen rol: op dag 8 gaf ik de datatoren toestemming het net op eigen maat te laten lopen, en ik vroeg om het niet ruchtbaar te maken (ARC-106). Op dag 15 adviseerde ik het datanet af te zetten (ARC-109).\n\nWat ik vermoed is een verband met het datanet. Mijn bron bevat geen koppelingsregels of specificaties voor het datanet aan de leylijnen. De logs van de hulpslag en het datanet moeten de Engineer en de datatoren zelf toetsen."
     },
     {
-      "nr": 15,
-      "ronde": 1,
-      "spreker": "koning",
-      "soort": "routering",
-      "aan": "beast_master",
-      "vraag": "Uw dieren merken een verstoring eerst aan hun onrust. Wat registreerde uw bron op dag 10 tussen 02:00 en 06:00, en op dag 9 en 10 in het algemeen? Geef de exacte tijdstippen en record-ID's van de eerste onrust, en noem de bron van elk logrecord. Stond die onrust vóór 02:40 (activatie hulpslag, ENG-011) of pas later, en valt er iets op rond 04:47 (opening schild, GUA-019)?",
-      "reden": "Geen van de drie gesprekken heeft nog het tijdstip van de eerste verstoring in de natuur vastgelegd. Engineer legt de activatie vast op 02:40 (ENG-011), Guardian Keeper de opening op 04:47 (GUA-019), maar niemand heeft een onafhankelijke bron die de volgorde kan toetsen. De Beast Master is het enige Raadslid dat nog niet sprak en merkt verstoringen vóór de meetinstrumenten op. Ook is de Archmage niet geholpen met zijn leylijnen: er is op dag 10 geen meting. Dus de dieren zijn de enige kans om het tijdvak 02:40-04:50 te toetsen. Ik vraag niet naar de hulpslag zelf, maar naar de volgorde.",
-      "open_vragen": [
-        "Stond de onrust in het woud vóór of na de activatie om 02:40 op dag 10 (ENG-011)?",
-        "Wie gaf de goedkeuring van hogerhand voor de hulpslag (ENG-105), en op welk tijdstip?",
-        "Hoe verbindt de hulpslag zich met het schild, en welke regel of specificatie beschrijft die koppeling?",
-        "Waarom ging het schild om 04:47 open zonder breuk, en wie of wat opende het?",
-        "Is er in het archief een eerder geval met vergelijkbare symptomen?",
-        "Hoe vaak en op welke dagen treedt de Desync terug, en past pakketverlies op dag 22 (ENG-026) bij dezelfde ingreep?"
-      ]
-    },
-    {
-      "nr": 16,
-      "ronde": 1,
-      "spreker": "beast_master",
-      "soort": "toolcall",
-      "tool": "lees_kennisbron",
-      "argumenten": {},
-      "pad": "https://mcp.findingsolutions.be/beast_master/mcp"
-    },
-    {
-      "nr": 17,
-      "ronde": 1,
-      "spreker": "beast_master",
-      "soort": "bericht",
-      "tekst": "Mijn logboek legt de eerste forse onrust vast op **dag 10 om 04:40**: de wolven in het diepe woud sloegen tegelijk aan, onrust 4 (BEA-019). Om **04:50** vluchtten de herten van dezelfde plek, ook onrust 4 (BEA-020). Ik was die nacht zelf bij de roedel en schreef het zo op (BEA-106).\n\nTussen 02:00 en 04:40 staat op dag 10 geen record. Ik kan dus niet zeggen of er vóór de activatie om 02:40 (ENG-011) onrust was.\n\nOp dag 9 is er alleen lichte onrust: om 04:20 de bevers (BEA-017, onrust 1) en om 13:30 een uil (BEA-018, onrust 2).\n\nDe wolven sloegen aan om 04:40, zeven minuten vóór de schildopening van 04:47 (GUA-019, bron: Guardian Keeper). De herten vluchtten pas na de opening. Dat is alleen de volgorde; ik kan er geen oorzaak uit afleiden.\n\nDaarna kwam het elke vierde nacht terug: dag 14 (BEA-028), 18 (BEA-037), 22 (BEA-046), 26 (BEA-055), 30 (BEA-064), 34 (BEA-073), 38 (BEA-082) en 42 (BEA-091)."
-    },
-    {
-      "nr": 18,
-      "ronde": 1,
-      "spreker": "koning",
-      "soort": "routering",
-      "aan": "historian",
-      "vraag": "Bevat het archief een eerder geval met dezelfde symptomen: berichten die 'half aangekomen' zijn, onrust bij wolven of herten, en een schild dat zonder breuk opent? Geef de record-ID's, datums en tijdstippen. Noem ook of het archief iets bevat over de goedkeuring van hogerhand voor de hulpslag (ENG-105): wie gaf die, en op welk tijdstip, met record-ID's.",
-      "reden": "Het mechanisme ontbreekt nog: de Engineer kan de hulpslag niet aan de symptomen koppelen en de Guardian Keeper ziet geen breuk. De Historian is nog niet gesproken en beheert het archief, dus de vraag naar een eerder geval en naar de toestemming voor de hulpslag ligt bij hem. ENG-105 heeft nog geen naam en geen tijdstip, en de ingreep is nog niet gekoppeld aan een persoon die toestemming gaf. Als er een precedent is, kan dat het mechanisme of het patroon verklaren.",
-      "open_vragen": [
-        "Wie gaf de goedkeuring van hogerhand voor de hulpslag (ENG-105), en op welk tijdstip?",
-        "Hoe is de hulpslag met het schild verbonden, en welke regel of specificatie beschrijft die koppeling?",
-        "Wat veroorzaakte de opening van het schild om 04:47 op dag 10 (GUA-019), en wie of wat opende het?",
-        "Is er een eerder geval met vergelijkbare symptomen in het archief?",
-        "Vallen de Desync-nachten (dag 14, 18, 22 enz., BEA-028 e.v.) samen met pakketverlies op dag 22 (ENG-026)?",
-        "Was de hulpslag de oorzaak van de klacht over 'half aangekomen' berichten op dag 10 (ENG-107), of is er een andere oorzaak?"
-      ]
-    },
-    {
-      "nr": 19,
-      "ronde": 1,
-      "spreker": "historian",
-      "soort": "toolcall",
-      "tool": "lees_kennisbron",
-      "argumenten": {},
-      "pad": "https://mcp.findingsolutions.be/historian/mcp"
-    },
-    {
-      "nr": 20,
-      "ronde": 1,
-      "spreker": "historian",
-      "soort": "bericht",
-      "tekst": "Mijn Kennisbron bevat geen eerder geval met alle drie de symptomen. Wel dit:\n\n- **Dag 10, dezelfde nacht:** HIS-035 meldt dat de Burchtader stokte, gebeurd dag 10 04:45 maar vastgelegd 07:20. HIS-036 is de klacht over \"half aangekomen\" berichten, gebeurd 04:50, maar vastgelegd dag 9 23:55, dus vóór het gebeuren. Dat breekt de regel van HIS-103 (vastgelegd gelijk aan gebeurd). In HIS-112 heb ik de tijdstempelfouten van dag 10 als klerkenfout afgedaan. Dat was te snel.\n- **Stille Winter** (HIS-003, HIS-004, HIS-107): 40 dagen stilstand, schilden bleven dicht. Er staat niets over halve berichten, dierenonrust of een schildopening. Mijn bewering in HIS-114 dat het archief \"dit eerder gezien\" heeft, is mijn eigen oordeel en vindt in deze records geen steun.\n- **Schild:** HIS-053 is een lek bij poort oost, dag 22 04:15 (vastgelegd 01:50). Een lek, geen opening zonder breuk.\n- **ENG-105:** niets in het archief over hogerhand of goedkeuring.\n- **Wolven of herten:** geen record."
-    },
-    {
-      "nr": 21,
+      "nr": 11,
       "ronde": 1,
       "spreker": "koning",
       "soort": "routering",
       "aan": "oracle",
-      "vraag": "Uw Raadslid-collega's melden dat de onrust bij de dieren om de vier nachten terugkomt: dag 14 (BEA-028), 18 (BEA-037), 22 (BEA-046), 26 (BEA-055), 30 (BEA-064), 34 (BEA-073), 38 (BEA-082) en 42 (BEA-091). Ook wordt een lek op dag 22 om 04:15 genoemd (HIS-053) en pakketverlies op dezelfde nacht (ENG-026). Ziet uw bron in de visioenen of tekens dit ritme, en waar begint het? Is de eerste nacht van het ritme dag 10, het moment van de hulpslagactivatie om 02:40 (ENG-011), of ligt het begin ergens anders? Welke record-ID's uit uw bron dragen dat patroon, met exacte dagen en tijdstippen, en wat voorspelt het patroon voor de nachten na dag 42?",
-      "reden": "De Oracle heeft nog niet gesproken, en de tijdsreeks is het enige deel van het verloop dat nog niet vergeleken is met de ingreep. Het ritme van elke vierde nacht (BEA-028 t/m BEA-091) staat los van de activatie op dag 10; de Engineer meldt alleen het begin van de klacht, niet het ritme. Ook is de ingreep (hulpslag 02:40, schildopening 04:47, wolven 04:40) nog niet gekoppeld aan een herhalend mechanisme. Een patroon in de Oracle-bron kan bepalen of de hulpslag een eenmalige storing is of een cyclus die later terugkeert. Daarmee wordt ook het verloop-deel van de oorzaak getoetst.",
+      "vraag": "Welke tekenen en visioenen in je bron tonen de Desync, en op welke exacte dagen? Noem de record-ID's. De archmage meldt lage leylijnen op dag 14 (ARC-015 t/m ARC-028) en opnieuw op dag 42 (ARC-071 t/m ARC-084), met normale metingen op dag 21, 28 en 35. Zie jij in die dagen een patroon, bijvoorbeeld een cyclus van 28 dagen, en klopt dat met de klacht van dag 10 (ENG-107) of met de hulpslag van dag 10 (ENG-011)?",
+      "reden": "De Archmage en de Engineer leveren losse dagen (dag 10, dag 14, dag 42) zonder het patroon ertussen, en de Oracle is nog niet gehoord over het verloop na dag 10.",
       "open_vragen": [
-        "Wie gaf de goedkeuring van hogerhand voor de hulpslag (ENG-105), en op welk tijdstip?",
-        "Wie heeft de hulpslag met het schild verbonden, en welke regel beschrijft die koppeling?",
-        "Wat veroorzaakte de opening van het schild om 04:47 op dag 10 (GUA-019), en wie of wat opende het?",
-        "Verklaart de vierdaagse cyclus (dag 14 t/m 42) een verband met de hulpslag, of met een ander ritme?",
-        "Zijn de tijdstempels van de historicus op dag 10 (HIS-036, HIS-035) betrouwbaar, of zijn die records onjuist?",
-        "Wat wordt precies bedoeld met de 'Desync', en welke meting definieert het begin ervan?"
+        "Wat was de exacte ingreep die de Desync veroorzaakte, en wie gaf toestemming (ENG-105 zonder tijdstip, ARC-106 op dag 8)?",
+        "Hoe werkt het mechanisme van de hulpslag op de doorvoer (+38%, ENG-012), en raakt dat de leylijnen?",
+        "Hoe vaak en in welk patroon keert de Desync terug na dag 10 (dag 14, dag 42, mogelijk cyclus)?",
+        "Is er een record van de klacht uit de benedenstad (ENG-107) buiten het werkboek van de Engineer?",
+        "Wat meldden de Guardian Keeper en Beast Master in dezelfde uren, en zagen zij afwijkingen op dag 9 tot 10?"
       ]
     },
     {
-      "nr": 22,
+      "nr": 12,
       "ronde": 1,
       "spreker": "oracle",
       "soort": "toolcall",
@@ -261,31 +149,171 @@
       "pad": "https://mcp.findingsolutions.be/oracle/mcp"
     },
     {
-      "nr": 23,
+      "nr": 13,
       "ronde": 1,
       "spreker": "oracle",
       "soort": "bericht",
-      "tekst": "Mijn dagboek legt het ritme vast. De zware nachten vielen op dag 10 (ORA-110), 14 (ORA-114), 18 (ORA-118), 22 (ORA-122), 26 (ORA-126), 30 (ORA-130), 34 (ORA-134), 38 (ORA-138) en 42 (ORA-142). Ik werd elke keer wakker tussen 04:15 en 04:45, met stemmen die half aankwamen en een stad die leeg was. Het begin is dag 10, om 04:45 (ORA-110). Dat ligt na de activatie om 02:40 (ENG-011). Mijn bron legt geen oorzaak vast, dus ik kan niet zeggen of de hulpslag de nachten veroorzaakte.\n\nMijn eigen verklaring is zwakker dan het ritme. In ORA-121 (dag 21) zeg ik dat de conjunctie van de Wachtsterren de oorzaak is, met de conjunctie op dag 33 (ORA-133). Dat klopt niet met de tijdlijn, want de nachten begonnen al op dag 10. Mijn bron bevat ook geen meting die de conjunctie bevestigt. Dat was mijn oordeel, geen bevinding.\n\nVoor de nachten na dag 42 heb ik alleen een extrapolatie: het vaste ritme van vier dagen zou dag 46 geven, en daarna dag 50. Mijn dagboek bevat geen visioen daarover, want ORA-142 is het laatste record."
+      "tekst": "KERN: Mijn dagboek toont geen cyclus van 28 dagen, maar een zware nacht elke vier dagen, van dag 10 tot en met dag 42 (ORA-110, ORA-114, ORA-118, ORA-122, ORA-126, ORA-130, ORA-134, ORA-138, ORA-142). Het woord \"Desync\" staat er niet in.\n\nWat ik bewijs: op die dagen word ik wakker tussen 04:15 en 04:45, met stemmen die \"half aankwamen\" (ORA-114, ORA-122, ORA-134, ORA-138) en een lege stad (ORA-110, ORA-122, ORA-130, ORA-138). Dat zijn visioenen, geen meetwaarden.\n\nHet 28-dagenpatroon is van de Archmage, niet van mij. Mijn raster verklaart wel waarom dag 14 en dag 42 op het raster vallen en dag 21, 28 en 35 er niet.\n\nWat ik moet corrigeren: in ORA-121 schreef ik dat de conjunctie van de Wachtsterren de zware nachten veroorzaakt. Maar de eerste zware nacht was dag 10 (ORA-110), 23 dagen vóór de conjunctie op dag 33 (ORA-133). Dat is een vermoeden dat mijn eigen dagboek tegenspreekt. Het verband met de klacht van dag 10 of de hulpslag kan ik niet vaststellen; dat moet de Engineer toetsen."
+    },
+    {
+      "nr": 14,
+      "ronde": 1,
+      "spreker": "koning",
+      "soort": "routering",
+      "aan": "beast_master",
+      "vraag": "Beschrijf met je bron, en met record-ID's en exacte dagen en tijdstippen, wanneer je de eerste onrust onder de dieren van het woud merkte. Viel die vóór dag 10 02:40 (ENG-011), bijvoorbeeld op dag 8 of 9 toen de datatoren op eigen maat draaiden (ARC-106), of pas daarna, en klopt dat met de klacht van dag 10 04:50 (ENG-107) en de zware nachten die de Oracle tussen 04:15 en 04:45 noemt (ORA-114, ORA-122)?",
+      "reden": "De Archmage heeft geen metingen tussen dag 7 en dag 14 en de Engineer kan het begin van de Desync niet vaststellen, dus de Beast Master moet bepalen of de onrust vóór de hulpslag begon.",
+      "open_vragen": [
+        "Wanneer begon de Desync precies: vóór dag 10 02:40 (ENG-011) of pas daarna?",
+        "Wie gaf de Engineer toestemming voor de hulpslag: 'hogerhand' (ENG-105) zonder tijdstip, en is dat de Archmage (ARC-106)?",
+        "Is er een record van de klacht uit de benedenstad (ENG-107) buiten het werkboek van de Engineer?",
+        "Zagen de Guardian Keeper en de Historian afwijkingen op dag 9 tot 10, en wanneer precies?",
+        "Hoe werkt het mechanisme van de hulpslag op de doorvoer (+38%, ENG-012) en raakt dat de leylijnen, en wat zegt de regel of specificatie daarover?"
+      ]
+    },
+    {
+      "nr": 15,
+      "ronde": 1,
+      "spreker": "beast_master",
+      "soort": "toolcall",
+      "tool": "lees_kennisbron",
+      "argumenten": {},
+      "pad": "https://mcp.findingsolutions.be/beast_master/mcp"
+    },
+    {
+      "nr": 16,
+      "ronde": 1,
+      "spreker": "beast_master",
+      "soort": "bericht",
+      "tekst": "KERN: Ik merkte de eerste sterke onrust op dag 10 om 04:40 (BEA-019, BEA-020), ruim twee uur na de hulpslag om 02:40 (ENG-011). Vóór dag 10 zijn er alleen lichte signalen (BEA-015, BEA-017, BEA-018).\n\n- **Bewezen in mijn logboek:** dag 10, 04:40, wolven slaan tegelijk aan (BEA-019, onrust 4). Om 04:50 vluchten herten (BEA-020, onrust 4). Mijn dagboek bevestigt dit (BEA-106).\n- **Vóór dag 10:** dag 8 om 00:20 huilt één wolf (BEA-015, onrust 1). Dag 9 om 04:20 is er onrust bij de bevers (BEA-017, onrust 1). Dag 9 om 13:30 fladderde een uil op toen ik onder de boom liep (BEA-018, onrust 2). Dat kan door mijn aanwezigheid komen.\n- **Lacune:** tussen dag 9 13:30 en dag 10 04:40 staat niets in mijn logboek. Over de nacht van 9 op 10, en dus over 02:40, kan ik niets zeggen.\n- **Patroon:** elke vierde nacht vanaf dag 10 (BEA-113). Dat zie ik ook in BEA-037, BEA-055, BEA-064, BEA-073, BEA-082 en BEA-091.\n- **Kabels:** op dag 15 zei ik dat de kabels bij de oude eik de oorzaak waren (BEA-109). Dat was een vermoeden; de toren ontkende het. Of dat datanet is, moet de Engineer toetsen."
+    },
+    {
+      "nr": 17,
+      "ronde": 1,
+      "spreker": "koning",
+      "soort": "routering",
+      "aan": "guardian_keeper",
+      "vraag": "Bevestig of weerleg met je bron: zagen de magische schilden rond de burcht op dag 9 en dag 10 afwijkingen of lekken, en vielen die op of vlak na dag 10 02:40 (ENG-011) of tussen 04:15 en 04:50, het tijdstip van de dieronrust (BEA-019) en de klacht uit de benedenstad (ENG-107)? Noem per waarneming het record-ID en het exacte tijdstip, en zeg of je een binnenkomst of sabotage in je logboek ziet.",
+      "reden": "De Engineer, Beast Master en Oracle wijzen op een begin rond dag 10 zonder dat er nog een schildwaarneming is, terwijl de Engineer de hulpslag om 02:40 noemt en de Archmage de lijnen pas op dag 14 laag meldt; de Guardian Keeper is nog niet gehoord over lekken of binnenkomst.",
+      "open_vragen": [
+        "Wie gaf toestemming voor de hulpslag: 'hogerhand' (ENG-105) of de Archmage met de toestemming op dag 8 om het net op eigen maat te laten lopen (ARC-106)?",
+        "Wanneer begon de Desync precies: vóór dag 10 02:40 (ENG-011) of pas daarna, gezien de lichte signalen op dag 8 en 9 (BEA-015, BEA-017, BEA-018)?",
+        "Is de klacht uit de benedenstad (ENG-107) ook elders vastgelegd dan in het werkboek van de Engineer?",
+        "Hoe werkt het mechanisme van de hulpslag op de doorvoer (+38%, ENG-012) en raakt dat de leylijnen, en wat zegt de regel of specificatie daarover?",
+        "Wat zegt het archief van de Historian over eerdere gevallen van half aangekomen berichten of lage leylijnen?"
+      ]
+    },
+    {
+      "nr": 18,
+      "ronde": 1,
+      "spreker": "guardian_keeper",
+      "soort": "toolcall",
+      "tool": "lees_kennisbron",
+      "argumenten": {},
+      "pad": "https://mcp.findingsolutions.be/guardian_keeper/mcp"
+    },
+    {
+      "nr": 19,
+      "ronde": 1,
+      "spreker": "guardian_keeper",
+      "soort": "bericht",
+      "tekst": "KERN: Op dag 9 zag ik geen afwijking (GUA-017, GUA-018). Op dag 10 om 04:47 ging schild benedenstad twee minuten van binnenuit open (GUA-019), en mijn logboek heeft niets om 02:40 (GUA-017 tot GUA-019).\n\n- **Dag 9:** 00:45 poort noord rustig (GUA-017); 12:30 benedenstad zegels intact (GUA-018). Geen afwijking genoteerd.\n- **Dag 9 na 00:45 tot dag 10 04:47:** geen melding. Ik kan niet zeggen wat er om 02:40 gebeurde. Vanaf 03:00 lopen de poortposten zonder ronde (GUA-106 is de schildspecificatie).\n- **Dag 10, 04:47 (GUA-019):** van binnenuit geopend, zegels intact, geen breuk, oorzaak niet vastgesteld. Volgens de schildspecificatie (GUA-105) is er dus niets van buitenaf doorgebroken. Ik zie in mijn logboek geen bewijs van binnenkomst of sabotage.\n- **Overlap:** de dieronrust van 04:40 (BEA-019, van de Beast Master) ligt zeven minuten vóór de opening. Dat is een tijdsoverlap, geen bewezen oorzaak.\n- **Art. 3 (GUA-104):** verkeer dat midden tussen twee tikken binnenkomt, laat het schild van binnenuit door. Dat kan zo'n opening verklaren. Wat het verkeer was, moet de Engineer toetsen.\n\nEen correctie: in GUA-111 schreef ik dat de opening \"geen reden tot ongerustheid\" was, zonder oorzaak te zoeken. In GUA-116 schreef ik dat ik er \"zeker van\" ben dat er een infiltrant is. Mijn logboek bewijst dat niet; het toont alleen openingen zonder dader."
+    },
+    {
+      "nr": 20,
+      "ronde": 1,
+      "spreker": "koning",
+      "soort": "routering",
+      "aan": "historian",
+      "vraag": "Zoek in het archief naar eerdere gevallen van half aangekomen berichten, lage leylijnen of dieronrust, en noem de record-ID's met datum. Kwam zo'n patroon van een zware nacht om de vier dagen eerder voor, en wat gebeurde er toen direct voor en na de eerste klacht? Zeg ook of het archief een proefopstelling van een hulpslag of een koppeling van datanet aan leylijnen beschrijft, en of het de conjunctie van de Wachtsterren noemt (ORA-121, ORA-133).",
+      "reden": "De Engineer, Archmage en Oracle wijzen allen op de historische vraag, terwijl het archief van de Historian nog niet is gehoord om te toetsen of dit patroon eerder voorkwam.",
+      "open_vragen": [
+        "Wat is de exacte oorzaak van de hulpslag-ingreep op dag 10 om 02:40 (ENG-011), en wie gaf de definitieve toestemming (ENG-105 of ARC-106)?",
+        "Hoe werkt het mechanisme van de hulpslag op de doorvoer (+38%, ENG-012) en raakt dat de leylijnen, en wat zegt de regel of specificatie daarover?",
+        "Wat was het verkeer dat midden tussen twee tikken door het schild van benedenstad liep om 04:47 (GUA-104, GUA-019), en hangt dat samen met het datanet?",
+        "Is de klacht uit de benedenstad (ENG-107) ook elders vastgelegd dan in het werkboek van de Engineer?",
+        "Wat zegt het archief van de Historian over eerdere gevallen van half aangekomen berichten, lage leylijnen of een zware nacht om de vier dagen?"
+      ]
+    },
+    {
+      "nr": 21,
+      "ronde": 1,
+      "spreker": "historian",
+      "soort": "toolcall",
+      "tool": "lees_kennisbron",
+      "argumenten": {},
+      "pad": "https://mcp.findingsolutions.be/historian/mcp"
+    },
+    {
+      "nr": 22,
+      "ronde": 1,
+      "spreker": "historian",
+      "soort": "toolcall",
+      "tool": "zoek",
+      "argumenten": {
+        "term": "half aangekomen"
+      },
+      "pad": "https://mcp.findingsolutions.be/historian/mcp"
+    },
+    {
+      "nr": 23,
+      "ronde": 1,
+      "spreker": "historian",
+      "soort": "toolcall",
+      "tool": "zoek",
+      "argumenten": {
+        "term": "hulpslag"
+      },
+      "pad": "https://mcp.findingsolutions.be/historian/mcp"
     },
     {
       "nr": 24,
+      "ronde": 1,
+      "spreker": "historian",
+      "soort": "toolcall",
+      "tool": "zoek",
+      "argumenten": {
+        "term": "Wachtsterren"
+      },
+      "pad": "https://mcp.findingsolutions.be/historian/mcp"
+    },
+    {
+      "nr": 25,
+      "ronde": 1,
+      "spreker": "historian",
+      "soort": "toolcall",
+      "tool": "zoek_betekenis",
+      "argumenten": {
+        "vraag": "eerdere gevallen van half aangekomen berichten, lage leylijnen of dieronrust in een patroon van om de vier dagen",
+        "aantal": 10
+      },
+      "pad": "https://mcp.findingsolutions.be/historian/mcp"
+    },
+    {
+      "nr": 26,
+      "ronde": 1,
+      "spreker": "historian",
+      "soort": "bericht",
+      "tekst": "KERN: Het archief bevat geen eerdere gevallen van half aangekomen berichten, geen hulpslag, geen Wachtsterren en geen zware nacht om de vier dagen; de enige klacht is HIS-036 (dag 10, 04:50).\n\n- **Half aangekomen:** alleen HIS-036. Die is vastgelegd op dag 9 23:55, vóór het gebeuren. Dat strijdt met HIS-103, dat vastlegging gelijkstelt aan gebeurtenis. Dit moet de Engineer toetsen.\n- **Direct ervoor en erna:** HIS-035 (Burchtader stokte dag 10 04:45). Over 02:40 staat niets in het archief.\n- **Patroon:** HIS-107 meldt dat de Stille Winter geen ritme had. Dag 22 valt op het vierdaagse raster, en HIS-053 (lek bij poort oost, dag 22 04:15) is ook vastgelegd vóór het gebeuren.\n- **Correctie:** in HIS-114 schreef ik dat ik \"zeker\" was dat een oude vloek terugkeert. Dat is niet bewezen.\n- **Datanet en leylijnen:** HIS-106 meldt in 23 jaar geen enkele hapering. HIS-109 en HIS-110 zijn een bouwakte over één pols, geen koppelingsspecificatie."
+    },
+    {
+      "nr": 27,
       "ronde": 2,
       "spreker": "koning",
       "soort": "routering",
       "aan": "engineer",
-      "vraag": "U schreef dat de goedkeuring van hogerhand voor de hulpslag in ENG-105 staat, zonder tijdstip en zonder naam. Wie heeft die goedkeuring precies gegeven, en op welk tijdstip? Staat dat in een ander record dan ENG-105? Heeft u zelf de hulpslag met het schild van de burcht verbonden, of heeft iemand anders dat gedaan? Geef de record-ID's uit uw bron, met de bron van elk logrecord. Verklaar ook waarom de tijdstempel van ENG-107 (dag 10, 04:50) en de klacht in HIS-036 (vastgelegd dag 9 23:55) overeenkomen of niet.",
-      "reden": "De Engineer is de enige die de activatie (ENG-011) rechtstreeks uitvoerde, en hij heeft de goedkeuring van hogerhand in zijn werkboek staan zonder naam of tijdstip. Niemand anders kan dat aanvullen: Archmage en Historian hebben er niets over, en Guardian Keeper bevestigt alleen dat zijn bron de koppeling niet noemt. De koppeling tussen hulpslag en schild is daarmee nog niet aan een persoon toegeschreven, dus het deel 'ingreep' ontbreekt nog. Daarnaast spreekt de Historian (HIS-036) met een vastleggingsdatum vóór het gebeuren, wat de Engineer's klachttijd (ENG-107) raakt; een datum-controle hoort bij zijn eigen bron. De mechanismevraag (hoe de hulpslag bij berichten en schild uitkomt) blijft open tot er een regel of specificatie is.",
+      "vraag": "Bevestig of weerleg met je logs: liep er op dag 10 rond 04:47 verkeer van de hulpslag (ENG-011) door het schild van benedenstad, zoals de Guardian Keeper beschrijft in GUA-019 en GUA-104? Noem per logregel het record-ID en het exacte tijdstip. Zeg ook wie de hulpslag definitief goedkeurde: ENG-105 noemt hogerhand, terwijl de Archmage in ARC-106 op dag 8 zelf toestemming geeft voor de datatoren op eigen maat.",
+      "reden": "De Guardian Keeper legt de opening van 04:47 (GUA-019) naast verkeer tussen twee tikken (GUA-104), en de Engineer moet nu met zijn logs toetsen of de hulpslag dat verkeer raakte, terwijl de toestemming tegenstrijdig is tussen ENG-105 en ARC-106.",
       "open_vragen": [
-        "Wie gaf de goedkeuring van hogerhand voor de hulpslag (ENG-105), en op welk tijdstip?",
-        "Wie heeft de hulpslag met het schild verbonden, en welke regel beschrijft die koppeling?",
-        "Hoe verhoudt de tijdstempel van de klacht (ENG-107, dag 10 04:50) zich tot HIS-036, dat vóór het gebeuren is vastgelegd?",
-        "Wat veroorzaakte de schildopening om 04:47 op dag 10 (GUA-019), en wie of wat opende het?",
-        "Welk mechanisme verbindt de hulpslag met de halve berichten en de dierenonrust, en welke regel of specificatie beschrijft dat?",
-        "Waarom begint de vierdaagse cyclus op dag 10 en niet op dag 14 (de eerste grote leylijndaling, ARC-015)?"
+        "Liep het verkeer rond 04:47 (GUA-104) via de hulpslag van de Engineer, en staat dat in de logs?",
+        "Wie gaf de definitieve toestemming voor de hulpslag: hogerhand (ENG-105) of de Archmage op dag 8 (ARC-106)?",
+        "Welke regel of specificatie verbindt de doorvoer van +38% (ENG-012) aan de leylijnen, en is die in een bron te vinden?",
+        "Waarom staat de klacht van dag 10 04:50 (ENG-107) alleen in het werkboek en niet in de installatielog?",
+        "Wat gebeurde er tussen dag 10 en dag 14 waardoor de leylijnen daalden (ARC-015), en is dat in de logs van het datanet terug te vinden?"
       ]
     },
     {
-      "nr": 25,
+      "nr": 28,
       "ronde": 2,
       "spreker": "engineer",
       "soort": "toolcall",
@@ -294,44 +322,11 @@
       "pad": "https://mcp.findingsolutions.be/engineer/mcp"
     },
     {
-      "nr": 26,
+      "nr": 29,
       "ronde": 2,
       "spreker": "engineer",
       "soort": "bericht",
-      "tekst": "**Goedkeuring ENG-105:** Mijn werkboek noemt op dag 9 alleen: \"Goedkeuring verkregen van hogerhand. Niet ruchtbaar maken tot het draait, werd me gezegd.\" Er staat geen naam en geen tijdstip bij. Ik vond geen ander record in mijn bron dat de goedkeuring noemt.\n\n**Koppeling met het schild:** Mijn bron legt niet vast dat ik de hulpslag met het schild van de burcht heb verbonden. ENG-010 en ENG-011 beschrijven de hulpslag als een eigen pols in de kelder van de datatoren, \"los van de Kroonklok\". Ik heb de hulpslag geactiveerd (ENG-011, ENG-106). Of iemand anders een koppeling heeft gemaakt, kan ik uit mijn logs niet zien.\n\n**ENG-107 en HIS-036:** ENG-107 staat op dag 10, 04:50, als tijdstip van de klacht uit de benedenstad. HIS-036 noemt hetzelfde tijdstip als gebeurtenis, maar is vastgelegd op dag 9, 23:55, dus vóór de activatie om 02:40 (ENG-011). Mijn bron kan dat verschil niet verklaren. Ik weet niet welke tijdstempel klopt. Ik heb de klacht destijds zonder meting als kinderziekte afgedaan (ENG-107), en dat was mijn oordeel, geen bevinding."
-    },
-    {
-      "nr": 27,
-      "ronde": 2,
-      "spreker": "koning",
-      "soort": "routering",
-      "aan": "guardian_keeper",
-      "vraag": "U noemde artikel 3 (GUA-104) en artikel 5 (GUA-106). Bevat uw bron een regel of specificatie over hoe een schild met een externe krachtbron, zoals een hulpslag of pols buiten de Kroonklok, mag worden verbonden, en wie dat mag toestaan? Zo ja, geef de record-ID's. Staat er in uw logboek of de regels iets over wie een schild van binnenuit kan openen, en kunt u de 04:47-opening (GUA-019) aan zo'n regel koppelen? Noem ook of er een record is van een verbinding of toegang tot de schildzegels op dag 9 of 10, vóór 04:47.",
-      "reden": "De ingreep is nog half: ENG-011 bewijst de activatie van de hulpslag, maar niet dat die met het schild is verbonden, en niemand heeft de koppeling met een record vastgelegd. De Engineer zegt dat zijn hulpslag een losse pols is, en de Guardian Keeper ziet een opening van binnenuit zonder breuk. Het mechanisme (hoe een externe pols het schild kan openen of verzwakken) ontbreekt nog. Uw bron is de enige die de schildregels bevat, en de Archmage heeft geen regels over de hulpslag gevonden. Ik toets daarom eerst of het schild zelf een regel heeft die een opening van binnenuit toelaat.",
-      "open_vragen": [
-        "Wie heeft de hulpslag (ENG-011, losse pols 'los van de Kroonklok') met het schild verbonden, en is dat ooit vastgelegd?",
-        "Wie gaf de goedkeuring van hogerhand (ENG-105), en op welk tijdstip? Geen enkel Raadslid kent de naam.",
-        "Welk mechanisme verbindt de hulpslag met de schildopening van 04:47 (GUA-019) en de halve berichten (ENG-107), en welke regel beschrijft dat?",
-        "Welke tijdstempel van de klacht klopt: 04:50 op dag 10 (ENG-107) of 23:55 op dag 9 (HIS-036, vastgelegd vóór het gebeuren)?",
-        "Waarom begint het vierdaagse ritme op dag 10 en niet op dag 14 (ARC-015)? Is de leylijndaling een gevolg of een apart verschijnsel?",
-        "Wie heeft de wolven (BEA-019) en het schild (GUA-019) in de nacht van dag 10 gecontroleerd of gemeld, en wie stond in het ongecontroleerde uur van 03:00 tot 06:00 (GUA-106)?"
-      ]
-    },
-    {
-      "nr": 28,
-      "ronde": 2,
-      "spreker": "guardian_keeper",
-      "soort": "toolcall",
-      "tool": "lees_kennisbron",
-      "argumenten": {},
-      "pad": "https://mcp.findingsolutions.be/guardian_keeper/mcp"
-    },
-    {
-      "nr": 29,
-      "ronde": 2,
-      "spreker": "guardian_keeper",
-      "soort": "bericht",
-      "tekst": "**Antwoord van de Guardian Keeper**\n\nMijn Kennisbron bevat geen regel over het verbinden van een schild met een externe krachtbron zoals een hulpslag, en ook niet over wie dat mag toestaan (GUA-103, GUA-105). Artikel 3 geldt wel: verkeer dat midden tussen twee tikken valt, gaat zonder toets van binnenuit open (GUA-104). Of dat de 04:47-opening verklaart, kan ik niet vaststellen. Mijn bron legt het verkeer niet vast.\n\nEr is geen record van een verbinding of toegang tot de zegels op dag 9 of 10 vóór 04:47. De laatste zegelcontrole vóór de opening is dag 9, 12:30 (GUA-018, intact). Op dag 10 staat vóór 04:47 niets. De opening zelf staat in GUA-019.\n\nIk corrigeer twee eigen oordelen. In GUA-111 schreef ik \"geen reden tot ongerustheid\", en dat was te voorbarig. GUA-116 spreekt van twee openingen op dag 23 en van een infiltrant. Mijn wachtrapporten bevatten daarvoor geen record, alleen GUA-043 (dag 22). Dat is mijn oordeel, geen bevinding."
+      "tekst": "KERN: Mijn logs bevatten geen regel over het schild om 04:47 (GUA-019), dus ik kan het verkeer niet bevestigen of weerleggen; in ENG-105 staat geen naam van wie de hulpslag goedkeurde.\n\n- **Schild:** Mijn installatielog registreert de hulpslag om dag 10 02:40 (ENG-011) en de meting om 03:00 (ENG-012). Er staat niets over doorgelaten verkeer of een schildpassage. De klacht van 04:50 (ENG-107) staat alleen in mijn werkboek.\n- **Oorzaak:** Dat het verkeer midden tussen twee tikken binnenkwam (GUA-104) is een vermoeden van de Guardian Keeper. Om dat te toetsen moet de Engineer de pakketlogs van de datatoren naast het schild leggen. Die heb ik niet in mijn bron.\n- **Goedkeuring:** ENG-105 (dag 9) zegt alleen \"goedkeuring verkregen van hogerhand\", zonder naam of tijdstip. ARC-106 (dag 8) staat niet in mijn bron, dus ik kan die datum niet vergelijken. De Council moet de goedkeurder navragen."
     },
     {
       "nr": 30,
@@ -339,14 +334,14 @@
       "spreker": "koning",
       "soort": "routering",
       "aan": "engineer",
-      "vraag": "Uw werkboek (ENG-105) zegt: \"Niet ruchtbaar maken tot het draait, werd me gezegd.\" Wie zei dat u persoonlijk, op welke dag en uur, en op welke plek (kelder van de datatoren, of elders)? Staat in ENG-010 (dag 9, 16:45, proefopstelling) of in een ander record vermeld wie aanwezig was? En koppelde u de pols bij de proefopstelling aan een schildzegel of aan een andere bron, ja of nee, met record-ID's?",
-      "reden": "De ingreep is half bekend: de hulpslag is geactiveerd (ENG-011), maar niemand noemt wie de pols met het schild verbond of wie de goedkeuring gaf. ENG-105 zegt dat iemand het de Engineer 'gezegd' heeft, zonder naam of tijdstip. Dat is de belangrijkste open plek in het verhaal. Alleen de Engineer kan zeggen wie hem persoonlijk instrueerde. Een tweede tegenspraak, ENG-107 (dag 10 04:50) tegenover HIS-036 (vastgelegd dag 9 23:55), blijft ook open en kan niet met de resterende beurten worden opgelost. Na deze beurt is het verstandig het debat af te sluiten.",
+      "vraag": "Bevestig of weerleg met je logs: liep de hulpslag (ENG-011) ook op dagen ná dag 10, bijvoorbeeld rond dag 14, 18, 22, 26, 30, 34, 38 en 42, en kwamen de zware nachten van de Oracle (ORA-110 t/m ORA-142) en de dieronrust van de Beast Master (BEA-113) in je installatielog terug? Noem per gevonden activatie of meting het record-ID, de exacte dag en het tijdstip, en zeg of de hulpslag op een vast schema draait of telkens handmatig wordt geactiveerd.",
+      "reden": "Het verloop (een zware nacht om de vier dagen, BEA-113 en ORA-110 t/m ORA-142) is alleen door de anderen gemeld, terwijl de Engineer nog niets over activaties na dag 10 heeft gezegd, zodat niet vaststaat of de hulpslag het ritme verklaart.",
       "open_vragen": [
-        "Wie gaf de Engineer persoonlijk de opdracht 'niet ruchtbaar maken' (ENG-105), en wanneer?",
-        "Wie of wat heeft de hulpslag met het schild verbonden, en is dat ooit vastgelegd?",
-        "Welke tijdstempel van de klacht klopt: ENG-107 (dag 10 04:50) of HIS-036 (vastgelegd dag 9 23:55)?",
-        "Welk mechanisme verbindt de hulpslag met de opening van 04:47 (GUA-019), en welke regel beschrijft dat?",
-        "Wie kon in het ongecontroleerde uur 03:00-06:00 (GUA-106) bij de zegels komen, en was dat de infiltrant uit GUA-116?"
+        "Liep de hulpslag na dag 10 op een vast schema of alleen handmatig, en staan die activaties in de installatielog (Engineer)?",
+        "Wie gaf de definitieve toestemming voor de hulpslag: hogerhand (ENG-105) of de Archmage op dag 8 (ARC-106)?",
+        "Welke regel of specificatie verbindt de doorvoer van +38% (ENG-012) aan de leylijnen, en is die in een bron te vinden?",
+        "Was er op dag 10 rond 04:47 verkeer van de hulpslag dat het schild van benedenstad passeerde (GUA-019, GUA-104), en is dat in pakketlogs terug te vinden?",
+        "Hoe verhoudt het vierdaagse ritme van de zware nachten (ORA-110 t/m ORA-142, BEA-113) zich tot de lage leylijnen op dag 14 en dag 42 (ARC-015, ARC-071)?"
       ]
     },
     {
@@ -363,79 +358,115 @@
       "ronde": 2,
       "spreker": "engineer",
       "soort": "bericht",
-      "tekst": "**Goedkeuring (ENG-105):** Mijn werkboek noemt alleen: \"Goedkeuring verkregen van hogerhand. Niet ruchtbaar maken tot het draait, werd me gezegd\" (dag 9). Er staat geen naam, geen tijdstip en geen plek bij. Ik weet dus niet wie het me zei. Mijn logs leggen dat niet vast.\n\n**Proefopstelling (ENG-010):** Dag 9, 16:45, hulpslag, \"proefopstelling in kelder datatoren\", status ok. Het record noemt geen aanwezigen.\n\n**Koppeling aan het schild:** Mijn logs leggen geen koppeling van de pols aan een schildzegel vast, bij de proefopstelling of later. ENG-010 spreekt niet over het schild. Ik moet ook een correctie maken: de zin \"los van de Kroonklok\" staat in ENG-011 (dag 10, 02:40), niet in ENG-010. Dat is een beschrijving van het ontwerp, geen bewijs van een verbinding met het schild.\n\nEen ja of nee kan ik dus niet met zekerheid geven. Mijn logs bevatten er geen bewijs voor en geen bewijs tegen. Wie de pols aan het schild zou hebben gekoppeld, staat niet in mijn bron."
+      "tekst": "KERN: Mijn installatielog registreert de hulpslag maar één keer geactiveerd, op dag 10 om 02:40 (ENG-011). Er staat geen activatie of meting op dagen na dag 10 in het grid van de Koning.\n\n- **Activatie:** alleen ENG-011 (dag 10, 02:40). Geen tweede activatie in het logboek.\n- **Metingen:** alleen ENG-012 (dag 10, 03:00, +38%). Mijn werkboek (ENG-120, dag 16) zegt dat de doorvoer \"elke meting\" hoger bleef, maar de log bevat die metingen niet.\n- **Routinecontroles** (handmatig, geen vast schema): dag 13 (ENG-063), dag 17 (ENG-064), dag 21 (ENG-065), dag 29 (ENG-066). Dat zijn geen van de gevraagde dagen 14, 18, 22, 26, 30, 34, 38 en 42.\n- **Configuratiewijziging:** dag 24 om 11:00, pols met 5% opgedreven (ENG-029, ENG-062). Dat is geen grid-dag.\n- **Zware nachten of dieronrust:** de log bevat die niet. Wel dag 22 om 04:15: pakketverlies op poort oost (ENG-026, status fout), gevolgd door aanscherping van firewallregels om 04:20 (ENG-027). Dat is een feit, geen bewijs van oorzaak.\n\nDit moet de Engineer toetsen aan de pakketlogs."
     },
     {
       "nr": 33,
       "ronde": 2,
       "spreker": "koning",
       "soort": "routering",
-      "aan": "historian",
-      "vraag": "Kunt u voor HIS-036 (klacht 'half aangekomen', gebeurd dag 10 04:50, vastgelegd dag 9 23:55) nagaan of het archief een bewerkings- of invoergeschiedenis bevat? Wie heeft het record op welk moment aangemaakt of gewijzigd, en is de vastlegdtijd van dag 9 23:55 een invoerfout of een latere wijziging? Doe hetzelfde voor HIS-035 (Burchtader stokte, gebeurd dag 10 04:45, vastgelegd 07:20). Noem de record-ID's die dat aantonen of uitsluiten, en zeg of uw archief een besluit of toestemming vastlegt van dag 9 of 10 die de hulpslag of de pols betreft.",
-      "reden": "De tijdstempels van de klacht over halve berichten (ENG-107 op dag 10 04:50 tegenover HIS-036 vastgelegd dag 9 23:55) spreken elkaar tegen. Dat is de enige harde tegenspraak die nog open staat. Als HIS-036 werkelijk vóór de activatie om 02:40 (ENG-011) is vastgelegd, verschuift het begin van de symptomen, en dan kan de hulpslag niet de eerste oorzaak zijn. De Historian heeft de tegenspraak eerder als klerkenfout afgedaan, zonder bewijs; het archief zelf moet de invoergeschiedenis tonen. Dit is de laatste beurt en de Historian is nog niet naar de bewerkingshistorie gevraagd. De ingreep (wie koppelde de pols aan het schild, wie gaf de goedkeuring) blijft na deze beurt onbeantwoord, en ik verwacht dat die vragen met het huidige bronmateriaal niet meer beantwoord worden.",
+      "aan": "archmage",
+      "vraag": "Bevestig of weerleg met je bron: HIS-035 meldt dat de Burchtader op dag 10 om 04:45 stokte, terwijl jij dag 10 als periode zonder metingen beschrijft en de eerste lage meting op dag 14 noemt (ARC-015). Staat er in je leylijnmetingen een record van dag 10 rond 04:45, of een andere stokking op dag 10 of 11, en welk record-ID heeft dat? Zo nee, waarop baseert de Historian zijn tijdstip?",
+      "reden": "De Historian (HIS-035) dateert de eerste stokking van de Burchtader op dag 10 om 04:45, terwijl de Archmage de eerste lage meting op dag 14 zet; dat bepaalt of de daling vóór of na de hulpslag begon.",
       "open_vragen": [
-        "Wie koppelde de hulpslag-pols aan het schild, en wanneer? Geen Raadslid kan dat met record-ID's aantonen.",
-        "Wie gaf de goedkeuring van hogerhand (ENG-105), en op welk tijdstip? Niemand kan dat vastleggen.",
-        "Is de tijdstempel van HIS-036 (dag 9 23:55) een invoerfout of een echte vastlegging vóór de activatie?",
-        "Welk mechanisme verbindt de pols met de opening van 04:47 (GUA-019)? Geen regel in de bronnen legt dat vast.",
-        "Het ritme van de nachten (dag 10, 14, 18 ... 42) is vastgelegd, maar de oorzaak is niet bewezen; de conjunctie-verklaring van de Oracle vervalt.",
-        "Wat is er na dag 42? Alleen extrapolatie (dag 46, 50), geen visioen of meting."
+        "Wie gaf de definitieve toestemming voor de hulpslag: hogerhand (ENG-105) of de Archmage (ARC-106)?",
+        "Staat er in de leylijnmetingen van de Archmage een record van de Burchtader op dag 10 rond 04:45 (HIS-035)?",
+        "Waarom was de hulpslag op dag 14 niet actief (enige activatie ENG-011), terwijl de leylijnen toen laag waren (ARC-015)? Welke handeling op dag 13 (ENG-063) verklaart dat?",
+        "Liep er op dag 10 rond 04:47 verkeer van de hulpslag door het schild van benedenstad (GUA-019, GUA-104)? De pakketlogs ontbreken nog.",
+        "Verklaart de installatielog het vierdaagse ritme van de zware nachten (ORA-110 t/m ORA-142, BEA-113), of ontbreekt er een tweede activatie?"
       ]
     },
     {
       "nr": 34,
       "ronde": 2,
-      "spreker": "historian",
+      "spreker": "archmage",
       "soort": "toolcall",
       "tool": "lees_kennisbron",
       "argumenten": {},
-      "pad": "https://mcp.findingsolutions.be/historian/mcp"
+      "pad": "https://mcp.findingsolutions.be/archmage/mcp"
     },
     {
       "nr": 35,
       "ronde": 2,
-      "spreker": "historian",
+      "spreker": "archmage",
       "soort": "toolcall",
       "tool": "toon",
       "argumenten": {
         "ids": [
-          "HIS-035",
-          "HIS-036"
+          "HIS-035"
         ]
       },
-      "pad": "https://mcp.findingsolutions.be/historian/mcp"
+      "pad": "https://mcp.findingsolutions.be/archmage/mcp"
     },
     {
       "nr": 36,
       "ronde": 2,
-      "spreker": "historian",
+      "spreker": "archmage",
       "soort": "toolcall",
       "tool": "zoek",
       "argumenten": {
-        "term": "hogerhand"
+        "term": "Burchtader"
       },
-      "pad": "https://mcp.findingsolutions.be/historian/mcp"
+      "pad": "https://mcp.findingsolutions.be/archmage/mcp"
     },
     {
       "nr": 37,
       "ronde": 2,
-      "spreker": "historian",
-      "soort": "toolcall",
-      "tool": "zoek",
-      "argumenten": {
-        "term": "invoer"
-      },
-      "pad": "https://mcp.findingsolutions.be/historian/mcp"
+      "spreker": "archmage",
+      "soort": "bericht",
+      "tekst": "KERN: Mijn leylijnmetingen bevatten geen record van dag 10 of 11, dus ik kan HIS-035 (Burchtader stokte dag 10, 04:45) niet bevestigen of weerleggen.\n\nWat ik wel kan vaststellen:\n- Mijn metingen vallen alleen op dag 7, 14, 21, 28, 35 en 42. De enige stokking op de Burchtader in mijn bron is op dag 14 (ARC-015, \"lijn stokte even onder de staf; meting herhaald\") en op dag 42 (ARC-071, \"stokte even onder de staf; meting opnieuw herhaald\").\n- HIS-035 staat niet in mijn Kennisbron. Ik kan dus niet zien waarop de Historian het tijdstip 04:45 baseert. Mijn bron geeft daar geen aanwijzing voor.\n- Ik vermoed dat de Historian de stokking van dag 14 of 42 heeft verwisseld met dag 10, maar dat is een vermoeden, geen vaststelling. De Historian moet zijn bron zelf toetsen.\n\nMijn eigen rol staat in ARC-106 (dag 8): daarin gaf ik de datatoren toestemming het net op eigen maat te laten lopen. Dat is mijn handeling, niet die van hogerhand."
     },
     {
       "nr": 38,
       "ronde": 2,
-      "spreker": "historian",
-      "soort": "bericht",
-      "tekst": "Mijn Kennisbron bevat geen invoer- of bewerkingsgeschiedenis. Elk record heeft alleen een gebeurd_op en een vastgelegd_op (archiefrecords.csv). Zoeken op \"invoer\" en \"hogerhand\" levert niets op. Ik kan dus niet vaststellen of een tijdstempel een invoerfout is of later is gewijzigd.\n\nWel vastgelegd: HIS-036 (gebeurd dag 10 04:50, vastgelegd dag 9 23:55) en HIS-035 (gebeurd dag 10 04:45, vastgelegd dag 10 07:20) breken de regel van HIS-103, want vastgelegd hoort gelijk te zijn aan gebeurd. HIS-053 (dag 22 04:15 / 01:50) en HIS-054 (dag 22 05:00 / 07:25) vertonen hetzelfde patroon. Ik heb de tijdstempelfouten in HIS-112 en HIS-116 als klerkenfouten afgedaan. Dat was te snel, en het zijn mijn eigen aantekeningen. Ook HIS-114, waarin ik een oude vloek en een herhaling van de Stille Winter claim, is mijn eigen oordeel. Het wordt door geen enkel record gesteund.\n\nHet archief legt geen besluit of toestemming van dag 9 of 10 vast over de hulpslag of de pols. ENG-105 staat er niet in."
+      "spreker": "koning",
+      "soort": "routering",
+      "aan": "archmage",
+      "vraag": "Bevestig of weerleg met je bron: dekte je toestemming van dag 8 (ARC-106) ook de activatie van de hulpslag op dag 10 om 02:40 (ENG-011), of alleen het draaien van het datanet op eigen maat? Noem het record-ID en zeg of de Engineer je van de activatie op de hoogte bracht.",
+      "reden": "De Engineer noemt alleen 'hogerhand' (ENG-105) als goedkeurder van de hulpslag, terwijl de Archmage zijn toestemming van dag 8 (ARC-106) als eigen handeling beschrijft; of die toestemming de activatie dekte, is nog niet vastgesteld.",
+      "open_vragen": [
+        "Wie gaf de goedkeuring voor de activatie van de hulpslag op dag 10 om 02:40 (ENG-011): hogerhand (ENG-105) of de Archmage (ARC-106)?",
+        "Waarom ontbreken de pakketlogs van dag 10 rond 04:47, waarmee het verkeer door het schild benedenstad (GUA-019, GUA-104) bevestigd of weerlegd kan worden?",
+        "Wat is het mechanisme dat half aangekomen berichten (ENG-107) en dieronrust (BEA-019) met elkaar verbindt?",
+        "Is de stokking van de Burchtader op dag 10 om 04:45 (HIS-035) een vergissing van de Historian of een ontbrekend leylijnrecord?",
+        "Verklaart de vierdaagse ritme van de zware nachten (ORA-110 t/m ORA-142, BEA-113) het verloop, en wat is het verband met de Wachtsterren (ORA-121, ORA-133)?"
+      ]
     },
     {
       "nr": 39,
+      "ronde": 2,
+      "spreker": "archmage",
+      "soort": "toolcall",
+      "tool": "toon",
+      "argumenten": {
+        "ids": [
+          "ARC-106",
+          "ENG-011",
+          "ENG-105"
+        ]
+      },
+      "pad": "https://mcp.findingsolutions.be/archmage/mcp"
+    },
+    {
+      "nr": 40,
+      "ronde": 2,
+      "spreker": "archmage",
+      "soort": "toolcall",
+      "tool": "zoek",
+      "argumenten": {
+        "term": "hulpslag"
+      },
+      "pad": "https://mcp.findingsolutions.be/archmage/mcp"
+    },
+    {
+      "nr": 41,
+      "ronde": 2,
+      "spreker": "archmage",
+      "soort": "bericht",
+      "tekst": "KERN: ARC-106 geeft de datatoren toestemming om \"het net op eigen maat te laten lopen\", maar noemt de hulpslag en de activatie van dag 10 om 02:40 niet, dus ik kan niet bevestigen dat die toestemming de activatie dekte.\n\n- **Wat ARC-106 bewijst:** op dag 8 schreef ik dat het net op eigen maat mag doorgaan, en dat het niet ruchtbaar gemaakt moet worden \"tot het draait\". Dat is mijn handeling.\n- **Wat ARC-106 niet bewijst:** de brief spreekt niet over de hulpslag, over een proefopstelling of over een activatie op een bepaald moment. Of de hulpslag onder \"het net\" valt, staat er niet.\n- **ENG-011:** dit record staat niet in mijn Kennisbron. Ik kan dus niet zeggen of de Engineer mij van de activatie op de hoogte bracht. Mijn bron bevat geen melding daarvan.\n- **Mijn vermoeden:** de brief is ruimer geformuleerd dan een hulpslag. Of de Engineer de activatie als vallend onder ARC-106 zag, weet ik niet. Dat moet de Engineer zelf zeggen, en de Council moet dat navragen."
+    },
+    {
+      "nr": 42,
       "ronde": 2,
       "spreker": "koning",
       "soort": "routering",
@@ -444,88 +475,119 @@
       "reden": "Beurtenbudget op (10 Raadslid-beurten)"
     },
     {
-      "nr": 40,
+      "nr": 43,
       "ronde": 3,
       "spreker": "koning",
       "soort": "bericht",
-      "tekst": "De enige handeling die in de bronnen vaststaat voorafgaand aan de symptomen is de activatie van de hulpslag door de Engineer op dag 10 om 02:40 (ENG-011), onder een ongedateerde en onbenoemde goedkeuring van hogerhand (ENG-105). Daarna volgen op dezelfde nacht een schildopening zonder breuk om 04:47 (GUA-019) in een ongecontroleerd uur (GUA-106), dierenonrust (BEA-019, BEA-020) en berichtverstoringen rond 04:45-04:50, waarvan de tijdstempels in het archief tegenspraak vertonen (HIS-035, HIS-036). Een directe koppeling tussen de hulpslag en het schild is niet in de bronnen vastgelegd, dus de causale keten blijft een hypothese met beperkte zekerheid."
+      "tekst": "De Desync begon op dag 10 met de activatie van de hulpslag om 02:40 (ENG-011), die dag 9 als proefopstelling was getest (ENG-010). Binnen twee uur volgden dieronrust, een schildopening van binnenuit en de klacht over half aangekomen berichten; of het net de oorzaak was, is nog niet bewezen. De zware nachten kwamen daarna terug op een vierdaags raster tot dag 42, en de Council moet de hulpslag stilzetten en de pakketlogs toetsen voordat het datanet weer normaal draait."
     }
   ],
   "geschillen": [
     {
-      "onderwerp": "Oorzaak van de Desync (magie, conjunctie of hulpslag)",
+      "onderwerp": "Stokking van de Burchtader op dag 10 om 04:45",
       "standpunten": {
-        "archmage": "Ziet de Desync als aantasting van de magie, maar kan dat niet met leylijnmetingen op dag 10 onderbouwen; de eerste daling is op dag 14 (ARC-015 t/m ARC-028).",
-        "oracle": "Ziet de conjunctie van de Wachtsterren als oorzaak (ORA-121, ORA-133), maar erkent dat de tijdlijn dat tegenspreekt.",
-        "engineer": "Ziet geen oorzaak in de logs en noemt een hackertheorie (ENG-110) die niet in de logs staat.",
-        "historian": "Verwijst naar de Stille Winter als precedent, maar die records bevatten geen van de symptomen (HIS-003, HIS-004, HIS-107).",
-        "guardian_keeper": "Ziet geen lek of bres, alleen een opening van binnenuit die niet verklaard is (GUA-019).",
-        "beast_master": "Ziet alleen de volgorde: wolven om 04:40 en herten om 04:50, zonder oorzaak af te leiden."
+        "historian": "HIS-035 meldt een stokking op dag 10 om 04:45.",
+        "archmage": "Er staat geen meting van dag 10 of 11 in de leylijnlogs; de enige stokkingen zijn op dag 14 (ARC-015) en dag 42 (ARC-071)."
       },
-      "uitkomst": "Niet beslecht; de conjunctie (ORA-121, ORA-133) wordt door de Oracle zelf weerlegd door het begin op dag 10 (ORA-110), en de Stille Winter is niet vergelijkbaar (HIS-114 is een eigen oordeel).",
+      "uitkomst": null,
       "bewijs": [
-        "ORA-110",
-        "ORA-121",
-        "ORA-133",
-        "HIS-003",
-        "HIS-114",
-        "GUA-019",
-        "BEA-019",
-        "BEA-020"
+        "HIS-035",
+        "ARC-015",
+        "ARC-071"
       ]
     },
     {
-      "onderwerp": "Tijdstempel van de klacht uit de benedenstad (ENG-107 en HIS-036)",
+      "onderwerp": "Goedkeuring van de hulpslag en de reikwijdte van de toestemming van dag 8",
       "standpunten": {
-        "engineer": "Weet niet welke tijdstempel klopt; de klacht is destijds zonder meting als kinderziekte afgedaan (ENG-107).",
-        "historian": "Zag eerst een klerkenfout (HIS-112), maar erkent later dat dit te snel was en dat de records HIS-103 breken.",
-        "guardian_keeper": "Heeft geen record van de klacht en kan het niet verklaren.",
-        "oracle": "Heeft geen record over de klacht.",
-        "archmage": "Heeft geen record over de klacht.",
-        "beast_master": "Heeft geen record over de klacht."
+        "engineer": "ENG-105 noemt alleen 'hogerhand', zonder naam of tijdstip.",
+        "archmage": "ARC-106 geeft de datatoren toestemming voor het net op eigen maat, maar noemt de hulpslag niet en de activatie van dag 10 om 02:40 niet."
+      },
+      "uitkomst": null,
+      "bewijs": [
+        "ENG-105",
+        "ARC-106",
+        "ENG-011"
+      ]
+    },
+    {
+      "onderwerp": "Datum van de klacht over half aangekomen berichten",
+      "standpunten": {
+        "engineer": "De klacht staat op dag 10 om 04:50, alleen in het werkboek (ENG-107).",
+        "historian": "HIS-036 is vastgelegd op dag 9 om 23:55, maar de Historian noemt bij dezelfde record dag 10 om 04:50."
       },
       "uitkomst": null,
       "bewijs": [
         "ENG-107",
         "HIS-036",
-        "HIS-035",
-        "HIS-103",
-        "HIS-112"
+        "HIS-103"
       ]
     },
     {
-      "onderwerp": "Of de hulpslag met het schild is verbonden, en wie dat toestond",
+      "onderwerp": "Oorzaak van de dieronrust en de kabels bij de oude eik",
       "standpunten": {
-        "engineer": "Heeft de pols niet aan een schildzegel gekoppeld in zijn logs (ENG-010); de zin 'los van de Kroonklok' staat in ENG-011.",
-        "guardian_keeper": "Vindt geen regel of record van een verbinding of toegang tot de zegels vóór 04:47 (GUA-103, GUA-105, GUA-018).",
-        "archmage": "Heeft geen regels over de hulpslag of de koppeling in zijn bron.",
-        "historian": "Het archief legt geen toestemming vast over de hulpslag of pols (ENG-105 ontbreekt).",
-        "oracle": "Zijn bron legt geen oorzaak vast.",
-        "beast_master": "Ziet alleen de volgorde, niet de koppeling."
+        "beast_master": "Op dag 15 wees de Beast Master de kabels bij de oude eik aan als oorzaak (BEA-109), als vermoeden.",
+        "engineer": "Het datanet is nog niet getoetst op de kabels; de toren ontkent de oorzaak."
       },
       "uitkomst": null,
       "bewijs": [
-        "ENG-010",
-        "ENG-011",
-        "GUA-103",
-        "GUA-105",
-        "GUA-018",
-        "ENG-105"
+        "BEA-109",
+        "BEA-019"
+      ]
+    },
+    {
+      "onderwerp": "Conjunctie van de Wachtsterren als oorzaak van de zware nachten",
+      "standpunten": {
+        "oracle": "In ORA-121 schreef de Oracle dat de conjunctie de zware nachten veroorzaakte; in ORA-133 viel de conjunctie op dag 33, 23 dagen na de eerste zware nacht op dag 10 (ORA-110)."
+      },
+      "uitkomst": "Verworpen door de Oracle zelf: de eerste zware nacht ging aan de conjunctie vooraf (ORA-110, ORA-133).",
+      "bewijs": [
+        "ORA-110",
+        "ORA-121",
+        "ORA-133"
+      ]
+    },
+    {
+      "onderwerp": "Binnenkomst of sabotage bij het schild van benedenstad op dag 10 om 04:47",
+      "standpunten": {
+        "guardian_keeper": "De opening was van binnenuit; er is geen bewijs van binnenkomst of sabotage, en het verkeer dat midden tussen twee tikken binnenkwam (GUA-104) is een vermoeden dat de Engineer moet toetsen."
+      },
+      "uitkomst": "De Guardian Keeper heeft zijn eerdere bewering van een infiltrant (GUA-116) ingetrokken; er is geen bewijs voor een dader.",
+      "bewijs": [
+        "GUA-019",
+        "GUA-104"
+      ]
+    },
+    {
+      "onderwerp": "Patroon van de zware nachten: 28 dagen of vier dagen",
+      "standpunten": {
+        "archmage": "De lage leylijnmetingen op dag 14 en 42 en de normale metingen op dag 21, 28 en 35 wijzen op een patroon van 28 dagen (ARC-015, ARC-071, ARC-029, ARC-057).",
+        "oracle": "Het dagboek toont een zware nacht om de vier dagen, van dag 10 tot en met dag 42 (ORA-110 t/m ORA-142).",
+        "beast_master": "De dieronrust komt elke vierde nacht terug vanaf dag 10 (BEA-113)."
+      },
+      "uitkomst": "Het vierdaagse raster wordt beter ondersteund: de Oracle en de Beast Master noemen het in meerdere bronnen, en de dagen 14 en 42 passen erop, terwijl 21, 28 en 35 erbuiten vallen. Het 28-dagenpatroon van de Archmage blijft onbewezen.",
+      "bewijs": [
+        "ORA-110",
+        "ORA-142",
+        "BEA-113",
+        "ARC-015",
+        "ARC-071",
+        "ARC-029",
+        "ARC-057"
       ]
     }
   ],
   "verbruik": {
     "groot": {
       "beurten": 11,
-      "invoer": 61652,
+      "invoer": 68149,
       "gecached": 0,
-      "uitvoer": 22565
+      "uitvoer": 24300
     },
     "klein": {
       "beurten": 10,
-      "invoer": 210788,
-      "gecached": 16384,
-      "uitvoer": 24631
+      "invoer": 209300,
+      "gecached": 0,
+      "uitvoer": 27292
     }
   },
   "aan_het_woord": null
