@@ -96,7 +96,7 @@ function typ(el, tekst, animeer) {
   const o = { k: 0 }
   const zet = () => { const k = Math.round(o.k); el.innerHTML = `${esc(tekst.slice(0, k))}<span class="rest">${esc(tekst.slice(k))}</span>` }
   zet()
-  typTween = gsap.to(o, { k: tekst.length, duration: Math.min(2.6, 0.4 + tekst.length * 0.016) / snel, ease: 'none', onUpdate: zet })
+  typTween = gsap.to(o, { k: tekst.length, duration: Math.min(4, 0.5 + tekst.length * 0.026) / snel, ease: 'none', onUpdate: zet })
 }
 let vorigeSpreker = null
 function dialoog({ wie, icoon, kop, tekst = '', lijst = '', chips = '', sub = '', subKlasse = '', k, klik }, animeer) {
@@ -361,12 +361,21 @@ function zet(nieuw, animeer) {
   tekenHtml(animeer)
 }
 
+const woorden = (t) => String(t || '').split(/\s+/).filter(Boolean).length
+/** Leestijd in seconden voor zoveel woorden in beeld: een vaste aanloop plus tijd per woord. */
+const leestijd = (w) => Math.min(T.max, Math.max(T.min, T.basis + w * T.perWoord))
+/** Hoe lang een stap in beeld blijft: lang genoeg om de tekst in het venster rustig te lezen. */
 function duur(stap) {
-  if (stap >= n()) return extras[stap - n()].soort === 'g' ? T.geschil : T.finale
+  if (stap >= n()) {
+    const e = extras[stap - n()]
+    if (e.soort !== 'g') return T.finale
+    const g = (trace.geschillen || [])[e.i] || {}
+    return leestijd(Math.min(16, woorden(g.onderwerp)) + Object.values(g.standpunten || {}).slice(0, 3).reduce((s, t) => s + Math.min(15, woorden(t)) + 2, 0) + Math.min(20, woorden(g.uitkomst)))
+  }
   const b = beurten[stap]
-  if (b.soort === 'routering') return b.aan == null ? T.stop : T.routering
+  if (b.soort === 'routering') return b.aan == null ? leestijd(Math.min(28, woorden(b.reden)) + 10) : leestijd(Math.min(W.vraagWoorden, woorden(b.vraag)) + Math.min(W.redenWoorden, woorden(b.reden)) + 3)
   if (b.soort === 'toolcall' || b.soort === 'bestand') return T.toolcall
-  return Math.min(T.berichtMax, Math.max(T.berichtMin, 1.6 + kernVan(b.tekst).split(/\s+/).length * T.berichtPerWoord))
+  return leestijd(Math.min(W.kernWoorden, woorden(kernVan(b.tekst))) + 8)
 }
 function tik() {
   clearTimeout(timer)
@@ -473,3 +482,5 @@ tekenHtml()
 poll()
 
 if (import.meta.env?.DEV) window.__raad = { zaal, zet, staat: () => ({ pos, fase: st.fase, denker: denkerNu() }) } // alleen in de dev-server, om te debuggen
+
+if (import.meta.env?.DEV) window.__raad.duur = () => { let s = T.opening; const per = []; for (let i = 0; i < totaal(); i++) { per.push(+duur(i).toFixed(1)); s += duur(i) } return { totaal: Math.round(s), per } }

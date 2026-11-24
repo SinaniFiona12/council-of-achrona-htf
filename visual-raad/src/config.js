@@ -19,19 +19,17 @@ export const CONFIG = {
   // duur per stap in seconden bij 1× (de snelheid schaalt alles)
   tempo: {
     opening: 3.2,
-    routering: 4.2,
-    stop: 5,
-    toolcall: 0.9,
-    berichtMin: 3.6,
-    berichtPerWoord: 0.09, // leestijd van de KERN-regel
-    berichtMax: 7.5,
-    geschil: 4.2, // per geschil
-    finale: 9, // per scherm van het vonnis
+    toolcall: 1.1,
+    basis: 2.4, // leestijd per dialoog: vaste aanloop (het uittypen) ...
+    perWoord: 0.32, // ... plus zoveel seconden per woord in beeld (ongeveer 3 woorden per seconde)
+    min: 5,
+    max: 14,
+    finale: 15, // per scherm van het vonnis
   },
 
   // tekstbudget (alles wat langer is, staat volledig in het paneel)
   tekst: { redenWoorden: 14, vraagWoorden: 24, kernWoorden: 30, openVragen: 2, openWoorden: 9, kernTekens: 400, idChips: 7, vonnisWoorden: 26, actieWoorden: 16 },
-  presentatieSeconden: 110, // toets P: de hele run in ongeveer zoveel seconden
+  presentatieSeconden: 180, // toets P: de hele run in ongeveer zoveel seconden (sneller dan je alles kunt lezen)
   pixel: 4, // grootte van één beeldpixel (in schermpixels): hoger = grover
   kleurNiveaus: 11, // aantal tinten per kleurkanaal: lager = vlakker, meer raster
   budget: 10, // het Beurtenbudget = de tien kaarsen op tafel
