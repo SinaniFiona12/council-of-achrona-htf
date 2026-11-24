@@ -13,7 +13,7 @@ def check(naam, ok):
 # lees_json
 check("json met tekst eromheen", council.lees_json('Zeker! ```json\n{"rol": "engineer", "x": {"a": 1}}\n``` klaar') == {"rol": "engineer", "x": {"a": 1}})
 check("geen json -> None", council.lees_json("geen idee") is None)
-check("koppeltekens", council.normaliseer("zie ENG‑011 en HIS–109") == "zie ENG-011 en HIS-109")
+check("koppeltekens", council.normaliseer("zie ENG‑901 en HIS–903") == "zie ENG-901 en HIS-903")
 
 # kies_volgende met nep-antwoorden
 def met(antwoord, beurten):
@@ -35,29 +35,37 @@ vijf = [{"soort": "bericht", "spreker": l.ROL, "tekst": "t"} for l in leden[:5]]
 r = met('{"rol": null, "vraag": null, "reden": "genoeg", "open_vragen": []}', vijf); check("stoppen na 5 mag", r[0] is None and r[2] == "genoeg")
 r = met("x", [{"soort": "bericht", "spreker": l.ROL, "tekst": "t"} for l in leden]); check("fallback als iedereen sprak", r[0] == "archmage")
 
+# de Koning krijgt te horen wanneer zijn laatste keuze eraan komt en wanneer beurten niets nieuws brachten
+gezien = {}
+council.koning_chat = lambda s, g: gezien.update(g=g) or '{"rol": null, "vraag": null, "reden": "genoeg", "open_vragen": []}'
+negen = [{"soort": "bericht", "spreker": leden[i % len(leden)].ROL, "tekst": "t"} for i in range(9)]
+r = council.kies_volgende(negen, leden)
+check("laatste keuze gemeld", r[0] is None and "laatste keuze" in gezien["g"])
+check("niets nieuws gemeld", "geen nieuwe record-ID" in gezien["g"])
+
 # verdict + geschillen
 debat = [
  {"soort": "routering", "spreker": "koning", "aan": "engineer"},
- {"soort": "bericht", "spreker": "engineer", "tekst": "Ik deed X (ENG‑011, ENG-012)."},
- {"soort": "bericht", "spreker": "historian", "tekst": "Het archief zegt Y (HIS-109)."},
+ {"soort": "bericht", "spreker": "engineer", "tekst": "Ik deed X (ENG‑901, ENG-902)."},
+ {"soort": "bericht", "spreker": "historian", "tekst": "Het archief zegt Y (HIS-903)."},
 ]
 antwoord = json.dumps({
  "samenvatting": "Samenvatting.",
- "oorzaak": {"ingreep": {"bewering": "X", "bewijs": ["ENG-011", "ENG-999"], "zekerheid": 1.4},
-             "mechanisme": {"bewering": "Y", "bewijs": ["ARC-001"], "zekerheid": 0.5},
+ "oorzaak": {"ingreep": {"bewering": "X", "bewijs": ["ENG-901", "ENG-905"], "zekerheid": 1.4},
+             "mechanisme": {"bewering": "Y", "bewijs": ["ARC-904"], "zekerheid": 0.5},
              "verloop": {"bewering": None, "bewijs": []}},
- "acties": [{"actie": "A", "reden": "R", "bewijs": ["HIS-109"]}, {"actie": "", "reden": "x"}],
+ "acties": [{"actie": "A", "reden": "R", "bewijs": ["HIS-903"]}, {"actie": "", "reden": "x"}],
  "risicos": [{"risico": "Z", "mitigatie": "M"}],
- "voorspelling": {"dag": "46", "bewering": "dan", "bewijs": ["ENG-012"]},
- "geschillen": [{"onderwerp": "O", "standpunten": {"engineer": "a", "historian": "b", "koning": "c"}, "uitkomst": "historian", "bewijs": ["HIS-109"]},
+ "voorspelling": {"dag": "3", "bewering": "dan", "bewijs": ["ENG-902"]},
+ "geschillen": [{"onderwerp": "O", "standpunten": {"engineer": "a", "historian": "b", "koning": "c"}, "uitkomst": "historian", "bewijs": ["HIS-903"]},
                 {"onderwerp": "P", "standpunten": {"oracle": "a"}, "uitkomst": "zo", "bewijs": []}]})
 council.koning_chat = lambda s, g: "Hier is het:\n" + antwoord
 v, g = council.stel_verdict_op(debat, leden, "run-1")
-check("verzonnen ID weg", v["oorzaak"]["ingreep"]["bewijs"] == ["ENG-011"])
+check("verzonnen ID weg", v["oorzaak"]["ingreep"]["bewijs"] == ["ENG-901"])
 check("zekerheid geklemd", v["oorzaak"]["ingreep"]["zekerheid"] == 1.0)
 check("bewering zonder debat-bewijs -> null", v["oorzaak"]["mechanisme"] == {"bewering": None, "bewijs": []})
 check("lege actie weg", len(v["acties"]) == 1)
-check("voorspelling dag als int", v["voorspelling"]["dag"] == 46)
+check("voorspelling dag als int", v["voorspelling"]["dag"] == 3)
 check("verdict schema", council.schema_fouten("verdict.json", v) == [])
 check("koning geen standpunt", "koning" not in g[0]["standpunten"])
 check("onbeslecht zonder bewijs", g[1]["uitkomst"] is None and g[1]["toelichting"] == "zo")

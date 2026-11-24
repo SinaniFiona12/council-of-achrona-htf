@@ -200,6 +200,22 @@ De reden is één zin: de jury leest hem. open_vragen: hoogstens {MAX_OPEN_VRAGE
 open staan; werk ze elke beurt bij (beantwoorde vragen verdwijnen)."""
 
 
+def stand_van_het_debat(beurten, rollen):
+    """Feiten over het verloop die de Koning helpen beslissen of hij zelf stopt (geen inhoud, alleen tellingen)."""
+    berichten = [b for b in beurten if b["soort"] == "bericht" and b["spreker"] in rollen]
+    regels = []
+    if len(berichten) >= MIN_BEURTEN:
+        regels.append("Je mag nu zelf stoppen. Weeg elke beurt af: kan ze nog iets bewijzen dat het Verdict verandert?")
+    if len(berichten) >= 2:
+        eerder = {i for b in berichten[:-2] for i in ids_in(b.get("tekst"))}
+        if not any(i not in eerder for b in berichten[-2:] for i in ids_in(b.get("tekst"))):
+            regels.append("De laatste twee beurten brachten geen nieuwe record-ID's in het debat.")
+    if len(berichten) == BEURTENBUDGET - 1:
+        regels.append("Dit is je laatste keuze: na nog één Raadslid-beurt is het budget op en stopt het debat vanzelf. "
+                      "Geef die beurt alleen als ze een nog open deel beslissend kan bewijzen; anders stop je nu zelf, met je reden.")
+    return "".join(r + "\n" for r in regels)
+
+
 def kies_volgende(beurten, leden):
     """De Koning leidt het debat: hij beslist wie spreekt. De kit roept deze functie op vóór elke beurt.
 
@@ -221,6 +237,7 @@ def kies_volgende(beurten, leden):
         f"Nog niet gesproken: {', '.join(r for r in rollen if not per_rol[r]) or 'iedereen sprak al'}\n"
         f"Raadslid-beurten gebruikt: {len(gesproken)} van {BEURTENBUDGET} (nog {over}).\n"
         f"Stoppen kan pas na {MIN_BEURTEN} Raadslid-beurten.\n"
+        f"{stand_van_het_debat(beurten, rollen)}"
         f"Jouw open vragen tot nu toe: {json.dumps(vorige_open, ensure_ascii=False)}\n\n"
         f"Debat tot nu toe:\n\n{debat_tekst(beurten, leden)}"
     )
