@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>De Raadzaal van Achrona</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Alegreya+SC:wght@400;700&family=Alegreya:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div id="scene"></div>
+  <div class="vignet" aria-hidden="true"></div>
+
+  <!-- bovenbalk: titel, wat er nu gebeurt, en het Beurtenbudget -->
+  <header class="balk">
+    <h1 id="titel">De Raad van Achrona</h1>
+    <ol id="stappen" class="stappen">
+      <li data-s="1"><b>1</b> De Koning kiest wie spreekt</li>
+      <li data-s="2"><b>2</b> Het Raadslid leest zijn eigen bron</li>
+      <li data-s="3"><b>3</b> Het Raadslid antwoordt met bewijs</li>
+    </ol>
+    <div id="budget" class="budget" title="Beurtenbudget: elk Raadslid-bericht dooft één kaars"></div>
+  </header>
+
+  <!-- namen boven de personages -->
+  <div id="labels"></div>
+
+  <!-- links: de open vragen van de Koning; rechts: de laatste beurten -->
+  <aside id="vragen-blok" class="zij links" hidden>
+    <h2>Open vragen van de Koning</h2>
+    <ul id="vragen"></ul>
+  </aside>
+  <aside id="historie" class="zij rechts" hidden>
+    <h2>Eerder gezegd</h2>
+    <ul id="hist"></ul>
+  </aside>
+
+  <!-- het dialoogvenster: wie spreekt, wat hij zegt -->
+  <section id="dialoog" class="dialoog" hidden>
+    <div class="portret" id="d-portret"></div>
+    <div class="d-inhoud">
+      <div class="d-kop" id="d-kop"></div>
+      <p class="d-tekst" id="d-tekst"></p>
+      <div class="d-lijst" id="d-lijst"></div>
+      <div class="chips" id="d-chips"></div>
+      <div class="d-sub" id="d-sub"></div>
+    </div>
+  </section>
+
+  <!-- het vonnis: wat is er gebeurd, en hoe lossen we het op -->
+  <section id="vonnis" class="vonnis" hidden></section>
+
+  <!-- ruwe trace-beurt (klik op een element) -->
+  <aside id="paneel" class="paneel" hidden>
+    <button class="sluit" id="paneel-sluit" aria-label="Sluiten">×</button>
+    <h2 id="paneel-titel">Trace</h2>
+    <div id="paneel-inhoud"></div>
+  </aside>
+
+  <div id="bediening" class="bediening">
+    <button id="k-speel" title="Afspelen / pauzeren (spatie)">❚❚</button>
+    <button id="k-live" title="Live: spring naar het einde en volg de run">Live</button>
+    <button id="k-snel" title="Snelheid">1×</button>
+    <button id="k-lite" title="Lite: zonder schaduwen en gloed">Lite</button>
+    <button id="k-pres" title="Presentatiemodus (P): de hele run in ±110 seconden. R = herstart">P</button>
+    <span id="k-stap" class="stap"></span>
+  </div>
+  <div id="leeg" class="leeg" hidden>Wachten op <code>trace.json</code>…<br /><small>Start <code>uv run council</code> in de root van de repo.</small></div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

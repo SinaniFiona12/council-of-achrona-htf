@@ -1,6 +1,86 @@
-# Council of Achrona: Starter kit
+# Council of Achrona
 
-Starter kit voor challenge 113 van Hack The Future 2026, aangeboden door Roboest.
+Onze inzending voor challenge 113 van Hack The Future 2026 (Roboest): een Council van AI-agenten die samen uitzoekt wat Achrona overkwam en hoe het hersteld wordt.
+
+## Wat is er gebeurd?
+
+De **Desync** heeft de herinneringen en systemen van Achrona versnipperd: de magie hapert, de schilden lekken en het archief klopt niet meer. Niemand ziet het geheel. Zes Rollen (Archmage, Engineer, Guardian Keeper, Historian, Oracle, Beast Master) kennen elk maar een stuk van het verhaal, in hun eigen Kennisbron, en elke Rol heeft een eigen Belang.
+
+De vraag: **wat is de oorzaak, hoe herstellen we het, en wat kan daarbij misgaan?**
+
+## Onze oplossing
+
+Een raadszitting. De **Koning** (een LLM-agent) leidt het debat, maar leest zelf geen enkele Kennisbron. Elke beurt verloopt in drie stappen:
+
+1. **De Koning kiest wie spreekt**, met een gerichte vraag en een reden (de `routering` in de trace).
+2. **Het Raadslid leest zijn eigen Kennisbron** via MCP. Zonder toolcall krijgt het één herkansing.
+3. **Het Raadslid antwoordt met bewijs**: één KERN-zin en record-ID's uit zijn bron.
+
+De Koning houdt een lijst open vragen bij, laat beweringen door een andere Rol toetsen en stopt zelf zodra verdere beurten niets meer toevoegen (uiterlijk na 10 Raadslid-beurten). Daarna stelt hij het **Council Verdict** op:
+
+| Deel van het Verdict | De vraag die het beantwoordt |
+|---|---|
+| `oorzaak.ingreep` | Wie deed wat, en wanneer? |
+| `oorzaak.mechanisme` | Hoe leidde dat tot de Desync? |
+| `oorzaak.verloop` | Welk patroon zien we in de tijd? |
+| `acties` | Hoe lossen we het op, in welke volgorde? |
+| `risicos` | Wat kan er misgaan, en hoe vangen we dat op? |
+| `voorspelling` | Wanneer slaat de Desync opnieuw toe als niemand ingrijpt? |
+
+Elk deel van de oorzaak krijgt een `zekerheid` en record-ID's als bewijs. De code houdt alleen ID's over die een Raadslid echt in het debat noemde; een bewering zonder bewijs wordt eerlijk `null`. De meningsverschillen tussen de Raadsleden staan als `geschillen` in de trace.
+
+**Waarom werkt een Council hier beter dan één agent?** Eén agent met alle bronnen neemt de stelligste bron over. In de Council kent elk Raadslid alleen zijn eigen bron en heeft het een eigen Belang, dus moet elke bewering door een andere Rol getoetst worden. De Koning weegt alleen wat met record-ID's op tafel kwam, en elke keuze is na te lezen in de trace.
+
+### Het resultaat bekijken
+
+Het antwoord van onze Council staat in [`verdict.json`](verdict.json), het volledige debat in [`trace.json`](trace.json) (uit dezelfde run). Het duidelijkst zie je het in **de Raadzaal**, onze 3D-visualisatie:
+
+```
+cd visual-raad
+npm install
+npm run dev
+```
+
+Open http://localhost:5176 en druk op **P**: de hele zitting speelt in ongeveer 110 seconden af en eindigt met twee schermen, *Wat is er gebeurd?* en *Hoe lossen we het op?*. Meer uitleg staat bij "De Raadzaal starten" hieronder.
+
+### Zelf een zitting draaien
+
+```
+uv sync
+uv run python tests/test_offline.py   # gratis: test de Koning, het Verdict en de spelregels zonder LLM
+uv run council                        # een echte zitting (kost tokens van de teamkey)
+uv run validate                       # toetst verdict.json en trace.json aan de schema's en de spelregels
+```
+
+Je hebt een `.env` nodig (kopie van `.env.example`) met de teamkey en de MCP-adressen.
+
+### Waar staat wat?
+
+| Bestand | Wat |
+|---|---|
+| `council.py` | De Koning (`kies_volgende()`, `stel_verdict_op()`), de instructies van de Raadsleden en het debat zelf |
+| `raadsleden/` | Eén bestand per Rol: naam, perspectief en publiek Belang uit `rolkaarten.md` |
+| `tests/test_offline.py` | Tests zonder LLM-calls |
+| `visual-raad/` | De Raadzaal: de zitting in 3D bij kaarslicht (voor de pitch) |
+| `visual-stars/`, `visual-book/`, `visual/` | Eerdere visualisaties van dezelfde trace, als reserve |
+| `verdict.json`, `trace.json` | De ingeleverde run |
+
+### Zo houden we ons aan de spelregels
+
+| Spelregel | Hoe |
+|---|---|
+| Elk Raadslid leest alleen zijn eigen Kennisbron | Elk Raadslid krijgt alleen de MCP-tool van zijn eigen Rol; het pad staat bij elke toolcall in de trace |
+| De Koning leest geen Kennisbron | De Koning heeft geen tools: hij krijgt alleen de tekst van het debat |
+| Maximaal 10 Raadslid-beurten | `BEURTENBUDGET` in `council.py`; `uv run validate` telt na |
+| Een routering vóór elke Raadslid-beurt | De code schrijft elke keuze van de Koning in de trace, met vraag, reden en open vragen |
+| Geen inhoud uit de Kennisbronnen in prompts of code | De prompts beschrijven alleen de werkwijze; wat de Council weet, komt uit het debat |
+| `trace.json` is onbewerkt | De code schrijft de trace tijdens de run; de visualisaties lezen alleen |
+
+---
+
+# De starter kit van Roboest
+
+Hieronder staat de oorspronkelijke handleiding van de starter kit waarop we bouwden, met de spelregels en de jurering. Waar de kit "TODO" of "vaste volgorde" noemt, beschrijft dat het vertrekpunt, niet onze inzending.
 
 De Desync heeft de herinneringen en systemen van Achrona versnipperd. Jullie bouwen een **Council**: een zwerm van samenwerkende AI-agenten (Raadsleden) die elk één Rol vertolken, debatteren, verspreide kennis analyseren en samen tot een **Council Verdict** komen: wat is de oorzaak, wat is het herstelplan, welke risico's zijn er.
 
@@ -80,7 +160,24 @@ Open http://localhost:5173. Start daarna in een tweede terminal `uv run council`
 - **Eigen avatars**: vervang `visual/assets/avatars/<rol>.svg` door je eigen SVG met dezelfde bestandsnaam.
 - **Netwerk**: de lettertypes (UnifrakturMaguntia, Alegreya SC, Alegreya) komen van Google Fonts; zonder internet valt de pagina terug op een gewone serif.
 
-### Het Sterrenbeeld starten (visualisatie voor de pitch)
+### De Raadzaal starten (3D-visualisatie voor de pitch)
+
+De zitting als een raadzaal bij kaarslicht (Three.js + GSAP) in `visual-raad/`. Alles is in code gebouwd: de zaal, de tafel en de personages bestaan uit eenvoudige vormen, zonder modellen of afbeeldingen, en de portretten zijn momentopnamen van die personages. Net als de andere viewers leest de Raadzaal alleen `trace.json` en `verdict.json`: ze schrijft niets en roept geen LLM aan.
+
+```
+cd visual-raad
+npm install
+npm run dev
+```
+
+Open http://localhost:5176. Start `uv run council` in een tweede terminal om live mee te kijken; een afgeronde run speelt vanaf het begin af. Testdata: http://localhost:5176/?trace=voorbeeld.
+
+- **Wat je ziet**: de Koning zit op zijn troon, de Raadsleden rond de tafel, elk onder de banier van zijn Rol. Bovenaan staat welke van de drie stappen bezig is. De camera gaat naar wie spreekt en iedereen kijkt naar de spreker. Een routering is een lichtstraal over de tafel van de Koning naar het gekozen Raadslid. Leest een Raadslid zijn bron, dan gaat er een oplichtend boek voor hem open. Elk record-ID wordt een blad bewijs op tafel; noemt een tweede Rol hetzelfde ID, dan schuift het blad naar het midden. De tien kaarsen zijn het Beurtenbudget: elk Raadslid-bericht dooft er één. Het sigil in de tafel is paars en onrustig zolang de Desync onverklaard is en wordt goud bij het vonnis.
+- **Na het debat**: de geschillen komen één voor één (goud = beslecht, oranje en trillend = open). Dan volgt het vonnis in twee schermen: *Wat is er gebeurd?* (ingreep, mechanisme en verloop, met bewijs, zekerheid en de Rollen die het bewijs leverden) en *Hoe lossen we het op?* (herstelplan, risico's en de voorspelling).
+- **Bediening**: **P** = presentatiemodus (de hele run in ongeveer 110 seconden), **R** = herstart, **spatie** = pauze, **← →** = vorige of volgende beurt. Rechtsonder staan ook Live, de snelheid en Lite (zonder schaduwen en gloed). Klik op het dialoogvenster, een personage, een blad bewijs of een deel van het vonnis voor de ruwe trace.
+- **Instellen**: tempo, kleuren en tekstlengtes staan in `visual-raad/src/config.js`.
+
+### Het Sterrenbeeld starten (eerdere visualisatie, reserve)
 
 Het debat als een levend sterrenbeeld (Three.js + GSAP) in `visual-stars/`. Alles is licht, deeltjes en lijnen; er zijn geen getekende assets. Net als de andere viewers leest het alleen `trace.json` en `verdict.json`: het schrijft niets en roept geen LLM aan.
 
@@ -142,7 +239,7 @@ Open http://localhost:5174. Start `uv run council` in een tweede terminal om liv
 - **Welke Rollen** meedoen: kopieer `raadsleden/oracle.py` naar bv. `raadsleden/engineer.py` en pas aan: `ROL` = de mapnaam van de Rol in kleine letters (`archmage`, `engineer`, `guardian_keeper`, `historian`, `oracle`, `beast_master`); `NAAM` en `PERSPECTIEF` haal je van de Rolkaart in `rolkaarten.md`. Het nieuwe bestand doet vanzelf mee; de volgorde in het debat is alfabetisch op bestandsnaam. Voeg in `.env` een regel `MCP_<ROL>=https://<mcp-host>/<rol>/mcp` toe.
 - **Kennisbronnen**: standaard leest elk Raadslid via MCP. Laat je `MCP_<ROL>` leeg, dan plakt de kit de bestanden uit `kennisbronnen/<rol>/` (uit `pack.zip`) in de prompt van dat Raadslid. Heeft een Raadslid geen van beide, dan meldt de kit dat bij de start.
 - **Modellen**: `MODEL_KLEIN` voor de Raadsleden, `MODEL_GROOT` voor de Koning, `REASONING` voor het denkwerk. Op het Roboest-endpoint zijn dat `achrona` en `achrona-groot`. Een andere provider kies je alleen via `.env` (blokken voor het Roboest-endpoint, FreeLLMAPI en Ollama). Met FreeLLMAPI kies je `auto:fast`/`auto:smartest` of een vast model uit de catalogus op http://localhost:3001. Support geven we op het Roboest-endpoint en FreeLLMAPI; andere eigen modellen mogen, zonder support.
-- **Rondes**: `RONDES` in `.env` geldt alleen voor de vaste volgorde van de kit. Het Beurtenbudget (10 Raadslid-beurten) geldt altijd.
+- **Rondes**: `RONDES` gold alleen voor de vaste volgorde van de kit en wordt niet meer gebruikt: de Koning kiest zelf. Het Beurtenbudget (10 Raadslid-beurten) geldt altijd.
 - **Het debat zelf**: de instructies, wie wie aan het woord laat (`kies_volgende()`), wat elk Raadslid van het debat ziet, en hoe de Koning het Verdict invult. Dat staat allemaal in `council.py`.
 
 **Verbruik**: je teamkey heeft $5 budget en maximaal 60 calls per minuut; dat volstaat voor tientallen volledige runs. Gratis tiers van FreeLLMAPI hebben eigen limieten per provider. De viewer en de terminal tonen per run hoeveel tokens het kleine en het grote model gebruikten; het staat ook in `trace.json` onder `verbruik`. Bij een rate limit (429) wacht de kit en probeert opnieuw. Budget op? Dan geeft het endpoint een fout over het budget: schakel over op FreeLLMAPI (blok 2) of vraag een coach.

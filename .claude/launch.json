@@ -33,6 +33,17 @@
         "dev"
       ],
       "port": 5175
+    },
+    {
+      "name": "raadzaal",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "visual-raad",
+        "run",
+        "dev"
+      ],
+      "port": 5176
     }
   ]
 }
