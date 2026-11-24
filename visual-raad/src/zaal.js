@@ -153,7 +153,11 @@ function maakFiguur(rol, kleurHex) {
   const geel = licht(3, 2.1, 0.5)
   const streep = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.32, 0.1), geel); streep.position.y = 0.24; uitroep.add(streep)
   uitroep.add(new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.1, 0.1), geel))
-  return { rol, groep: g, hoofd, bron, zweef, ogen, mond, wolk, uitroep, fase: Math.random() * 6, kijk: null, spreekt: false, leest: false, denkt: false }
+  const vink = new THREE.Group(); vink.position.set(0, 2.8, 0); vink.visible = false; g.add(vink)
+  const groen = licht(0.6, 2.8, 2.0)
+  const kort = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.22, 0.1), groen); kort.position.set(-0.12, 0.07, 0); kort.rotation.z = 0.8; vink.add(kort)
+  const lang = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.42, 0.1), groen); lang.position.set(0.07, 0.17, 0); lang.rotation.z = -0.6; vink.add(lang)
+  return { rol, groep: g, hoofd, bron, zweef, ogen, mond, wolk, uitroep, vink, fase: Math.random() * 6, kijk: null, spreekt: false, leest: false, denkt: false }
 }
 
 export function maakZaal(container) {
@@ -264,7 +268,6 @@ export function maakZaal(container) {
   const sigilMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(1.5, 0.5, 2.6), transparent: true, opacity: 0.9, side: THREE.DoubleSide })
   const plat = (geo, mat, y = TAFEL_Y + 0.004) => { const o = new THREE.Mesh(geo, mat); o.rotation.x = -Math.PI / 2; o.position.y = y; scene.add(o); return o }
   plat(new THREE.RingGeometry(1.02, 1.05, 72), sigilMat); plat(new THREE.RingGeometry(0.2, 0.25, 32), sigilMat)
-  for (let i = 0; i < 6; i++) { const s = plat(new THREE.PlaneGeometry(0.02, 0.7), sigilMat); s.rotation.z = i * Math.PI / 3; s.position.set(Math.sin(i * Math.PI / 3) * -0.62, TAFEL_Y + 0.004, Math.cos(i * Math.PI / 3) * -0.62) }
   plat(new THREE.RingGeometry(2.2, 2.215, 72), new THREE.MeshBasicMaterial({ color: '#8a6a2f', side: THREE.DoubleSide }))
 
   // ---- tien kaarsen: het Beurtenbudget
@@ -332,7 +335,8 @@ export function maakZaal(container) {
   const banierVorm = new THREE.Shape([[-0.575, 1.6], [0.575, 1.6], [0.575, -1.09], [0, -1.6], [-0.575, -1.09]].map(([x, y]) => new THREE.Vector2(x, y)))
   const banierGeo = new THREE.ShapeGeometry(banierVorm)
   for (let i = 0, p = banierGeo.attributes.position, uv = banierGeo.attributes.uv; i < p.count; i++) uv.setXY(i, p.getX(i) / 1.15 + 0.5, p.getY(i) / 3.2 + 0.5)
-  const figuren = new Map(), plekken = new Map(), banieren = []
+  const figuren = new Map(), plekken = new Map(), banieren = [], spaken = new Map()
+  const SPAAK_UIT = new THREE.Color(0.3, 0.24, 0.42)
   const papieren = new Map(), papierGeo = new THREE.PlaneGeometry(0.19, 0.13)
   const cam = { x: 0, y: 5.4, z: 9, tx: 0, ty: 0.6, tz: 0 }
   let camSleutel = '', lite = false, herstel = 0, geschil = null, geschilMesh = null, finale = null, focus = null
@@ -348,12 +352,18 @@ export function maakZaal(container) {
   api.zetRaad = (rollen) => {
     for (const f of figuren.values()) ruimOp(f.groep)
     for (const b of banieren) ruimOp(b)
-    figuren.clear(); plekken.clear(); banieren.length = 0
+    figuren.clear(); plekken.clear(); banieren.length = 0; spaken.clear()
     const alle = ['koning', ...rollen]
     alle.forEach((rol, i) => {
       const hoek = i === 0 ? 0 : (i / (rollen.length + 1)) * Math.PI * 2 // de Koning zit achteraan, de rest verdeelt zich rond de tafel
       const dir = V(Math.sin(hoek), 0, -Math.cos(hoek)), pos = dir.clone().multiplyScalar(R_STOEL)
       plekken.set(rol, { hoek, dir, pos })
+      if (rol !== 'koning') { // zijn stukje van de puzzel: een spaak van het sigil die oplicht zodra hij voor het eerst spreekt
+        const spaak = new THREE.Mesh(new THREE.PlaneGeometry(0.07, 0.7), new THREE.MeshBasicMaterial({ color: SPAAK_UIT.clone(), side: THREE.DoubleSide }))
+        spaak.rotation.x = -Math.PI / 2; spaak.rotation.z = Math.atan2(dir.x, dir.z); spaak.position.set(dir.x * 0.62, TAFEL_Y + 0.006, dir.z * 0.62)
+        spaak.userData.kleur = new THREE.Color(kleurVan(rol, i - 1)).multiplyScalar(2.6); spaak.userData.aan = false
+        scene.add(spaak); banieren.push(spaak); spaken.set(rol, spaak)
+      }
       const kleur = kleurVan(rol, i - 1)
       const f = maakFiguur(rol, kleur); f.groep.position.copy(pos); f.groep.lookAt(0, 0, 0); scene.add(f.groep); figuren.set(rol, f)
       // banier in de kleur van de Rol, met zijn symbool, aan de muur achter zijn stoel
@@ -423,6 +433,19 @@ export function maakZaal(container) {
   api.zetDenker = (rol) => { for (const f of figuren.values()) { f.denkt = f.rol === rol; f.wolk.visible = f.denkt } }
   /** Rollen die de spreker net noemde, krijgen een uitroepteken boven het hoofd. */
   api.zetGenoemd = (rollen) => { for (const f of figuren.values()) f.uitroep.visible = rollen.includes(f.rol) }
+  /** Rollen van wie de spreker een bewijsstuk noemt, krijgen een vinkje (dat gaat voor op het uitroepteken). */
+  api.zetBevestigd = (rollen) => { for (const f of figuren.values()) { f.vink.visible = rollen.includes(f.rol); if (f.vink.visible) f.uitroep.visible = false } }
+  /** Het sigil als puzzel: de spaak van elk Raadslid dat al sprak, licht op in zijn kleur. */
+  api.zetSpaken = (rollen, animeer) => {
+    for (const [rol, m] of spaken) {
+      const aan = rollen.includes(rol)
+      if (m.userData.aan === aan) continue
+      m.userData.aan = aan
+      const doel = aan ? m.userData.kleur : SPAAK_UIT
+      gsap.to(m.material.color, { r: doel.r, g: doel.g, b: doel.b, duration: animeer ? 0.9 : 0, overwrite: true })
+      if (aan && animeer) gsap.fromTo(m.scale, { x: 3.5 }, { x: 1, duration: 0.9, ease: 'power2.out' })
+    }
+  }
 
   function papierPlek(id, rol, gedeeld) {
     const p = plekken.get(rol) || plekken.get('koning')
@@ -569,6 +592,7 @@ export function maakZaal(container) {
       for (const o of f.ogen) o.scale.y = knipper
       if (f.wolk.visible) { f.wolk.position.y = 2.3 + Math.sin(t * 2.2) * 0.04; f.wolk.children.forEach((b, i) => b.scale.setScalar(0.85 + 0.15 * Math.sin(t * 3 - i))) }
       if (f.uitroep.visible) { f.uitroep.position.y = 2.8 + Math.abs(Math.sin(t * 5)) * 0.14; f.uitroep.rotation.y = t * 2.5 }
+      if (f.vink.visible) { f.vink.position.y = 2.8 + Math.abs(Math.sin(t * 4)) * 0.1; f.vink.rotation.y = Math.sin(t * 2) * 0.5 }
     }
     // toortsen flakkeren; de kroonluchter en het rozetvenster kleuren mee met het sigil
     toortsen.forEach((v, i) => { v.scale.y = 0.85 + 0.3 * Math.abs(Math.sin(t * 9 + i * 2.1)) })

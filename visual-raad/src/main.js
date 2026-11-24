@@ -19,7 +19,7 @@ let st = leeg()
 let rolRe = {}, camTimer = null
 let technisch = false, gestart = false // taal: eenvoudig (standaard) of technisch; gestart: het startscherm is weg
 
-function leeg() { return { goud: new Map(), berichten: 0, rout: null, msg: null, tool: null, besluit: null, vragen: [], weg: [], fase: 'debat', paren: [], gi: -1, pagina: 0, verwijzing: null } }
+function leeg() { return { goud: new Map(), berichten: 0, rout: null, msg: null, tool: null, besluit: null, vragen: [], weg: [], fase: 'debat', paren: [], gi: -1, pagina: 0, verwijzing: null, sprekers: [], bevestiging: null } }
 const n = () => beurten.length
 const totaal = () => n() + extras.length
 const isRol = (r) => rollen.includes(r)
@@ -47,11 +47,14 @@ function toestand(p) {
       if (!isRol(b.spreker)) continue
       t.verwijzing = { b, i, van: b.spreker, naar: rollen.filter((x) => x !== b.spreker && rolRe[x]?.test(b.tekst || '')) } // welke Rollen noemt hij?
       t.berichten++
+      if (!t.sprekers.includes(b.spreker)) t.sprekers.push(b.spreker)
+      const bev = new Set() // van wie noemt hij een bewijsstuk?
       for (const id of idsIn(b.tekst)) {
         const g = t.goud.get(id)
         if (!g) t.goud.set(id, { id, rol: b.spreker, links: [] })
-        else if (g.rol !== b.spreker && !g.links.includes(b.spreker)) g.links.push(b.spreker)
+        else if (g.rol !== b.spreker) { bev.add(g.rol); if (!g.links.includes(b.spreker)) g.links.push(b.spreker) }
       }
+      t.bevestiging = { b, wie: [...bev] }
     }
   }
   if (t.tool && t.tool.i !== Math.min(p, n()) - 1) t.tool = null
@@ -350,6 +353,11 @@ function zet(nieuw, animeer) {
   zaal.zetDenker(denker)
   if (denker && st.fase === 'debat') { clearTimeout(camTimer); zaal.camNaar('persoon', denker, D || 1.2) }
   zaal.zetGenoemd(st.verwijzing && nu && (nu === st.verwijzing.b || (nu.soort === 'routering' && pos - 1 === st.verwijzing.i + 1)) ? st.verwijzing.naar : [])
+  // bevestigd bewijs: wie zijn bewijsstuk door de spreker genoemd wordt, krijgt een vinkje; de camera laat ze daarna samen zien
+  const bevestigd = st.bevestiging && nu === st.bevestiging.b ? st.bevestiging.wie : []
+  zaal.zetBevestigd(bevestigd)
+  if (animeer && bevestigd.length && !denker) camTimer = setTimeout(() => zaal.camNaar('duo', [nu.spreker, bevestigd[0]], 1.4 / Math.max(1, snel * 0.8)), duur(pos - 1) * 560 / snel)
+  zaal.zetSpaken(st.sprekers, animeer) // het sigil als puzzel: één spaak per Raadslid dat al sprak
   tekenHtml(animeer)
 }
 
@@ -405,7 +413,7 @@ function begin(pres) {
   else herstart()
 }
 $('s-start').onclick = () => begin(false)
-$('s-pres').onclick = () => begin(true)
+
 addEventListener('keydown', (e) => {
   if (!gestart) { // op het startscherm
     if (e.code === 'Space' || e.code === 'Enter') { e.preventDefault(); begin(false) } else if (e.code === 'KeyP') begin(true); else if (e.code === 'KeyT') wisselTaal()
