@@ -1,0 +1,100 @@
+:root {
+  --nacht: #150F1F; --koning: #1D4ED8; --koning-licht: #6C9BFF; --ijs: #E6F4FF; --paars: #A855F7;
+  --geschil: #E8562A; --goud: #F0A830; --herstel: #5EC4B6;
+  --glas: rgba(21, 15, 31, 0.78); --rand: rgba(230, 244, 255, 0.16);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: var(--nacht); color: var(--ijs);
+  font: 22px/1.35 Alegreya, Georgia, serif; }
+#scene, #scene canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+.korrel { position: fixed; inset: -50%; pointer-events: none; opacity: 0.11; z-index: 2;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  animation: korrel 0.9s steps(5) infinite; }
+@keyframes korrel { 0% { transform: translate(0, 0); } 25% { transform: translate(-3%, 2%); } 50% { transform: translate(2%, -3%); } 75% { transform: translate(-2%, -2%); } 100% { transform: translate(3%, 3%); } }
+.vignet { position: fixed; inset: 0; pointer-events: none; z-index: 2;
+  background: radial-gradient(ellipse at center, transparent 52%, rgba(8, 5, 14, 0.82) 100%); }
+body.lite .korrel { display: none; }
+
+.titel { position: fixed; top: 14px; left: 0; right: 0; margin: 0; text-align: center; z-index: 3; pointer-events: none;
+  font: 400 38px/1 UnifrakturMaguntia, Alegreya, serif; color: var(--ijs); letter-spacing: 0.02em;
+  text-shadow: 0 0 18px rgba(168, 85, 247, 0.7); transition: opacity 0.8s, transform 1.2s, font-size 1.2s; }
+.titel.groot { font-size: 84px; transform: translateY(38vh); }
+.titel.weg { opacity: 0; }
+.status { position: fixed; top: 18px; right: 22px; z-index: 4; font: 700 16px/1 "Alegreya SC", serif; letter-spacing: 0.08em;
+  color: var(--herstel); opacity: 0.9; }
+
+#labels { position: fixed; inset: 0; z-index: 3; pointer-events: none; }
+.label { position: absolute; transform: translate(-50%, 0); text-align: center; white-space: nowrap; pointer-events: auto;
+  cursor: pointer; font: 700 21px/1.1 "Alegreya SC", serif; letter-spacing: 0.06em; color: var(--k, var(--ijs));
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.9), 0 0 3px rgba(0, 0, 0, 1); transition: opacity 0.5s; }
+.label.dim { opacity: 0.32; }
+.label.weg { opacity: 0; pointer-events: none; }
+.label .tool { display: block; margin-top: 4px; font: 400 17px/1 Alegreya, serif; letter-spacing: 0; color: var(--ijs); opacity: 0;
+  transition: opacity 0.25s; }
+.label .tool.aan { opacity: 0.95; }
+.label.deel { font-size: 24px; color: var(--goud); cursor: pointer; }
+.label.deel.leeg { color: var(--paars); }
+.label.deel .balk { display: block; width: 130px; height: 4px; margin: 7px auto 0; background: rgba(230, 244, 255, 0.16); border-radius: 2px; }
+.label.deel .balk i { display: block; height: 100%; background: var(--goud); border-radius: 2px; box-shadow: 0 0 8px var(--goud); }
+.label.deel small { display: block; margin-top: 4px; font: 400 16px/1 Alegreya, serif; letter-spacing: 0; color: var(--ijs); opacity: 0.8; }
+
+.kaart { position: fixed; left: 50%; transform: translateX(-50%); z-index: 4; width: min(900px, 62vw); padding: 12px 22px 14px;
+  background: var(--glas); border: 1px solid var(--rand); border-radius: 14px; backdrop-filter: blur(6px); cursor: pointer;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45); transition: opacity 0.4s; }
+.kaart[hidden] { display: block; opacity: 0; pointer-events: none; }
+.kaart p { margin: 4px 0 0; font-size: 23px; }
+.kaart-kop { font: 700 19px/1.2 "Alegreya SC", serif; letter-spacing: 0.07em; color: var(--k, var(--koning-licht)); }
+.kaart-kop b { color: var(--k2, var(--ijs)); }
+.bevel { top: 66px; border-top: 2px solid var(--koning); }
+.bevel p { font-style: italic; }
+.bevel.stop { top: 30vh; text-align: center; border-top-color: var(--herstel); }
+.bevel.stop .kaart-kop { font: 400 44px/1.1 UnifrakturMaguntia, serif; letter-spacing: 0.02em; color: var(--ijs); }
+.kern { bottom: 74px; border-bottom: 2px solid var(--k, var(--goud)); }
+.chips { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font: 600 16px/1 ui-monospace, Consolas, monospace; padding: 4px 8px; border-radius: 6px; color: var(--goud);
+  border: 1px solid rgba(240, 168, 48, 0.5); background: rgba(240, 168, 48, 0.1); }
+.chip.meer { color: var(--ijs); border-color: var(--rand); background: none; }
+
+.vragen { position: fixed; left: 22px; top: 96px; z-index: 4; width: min(300px, 19vw); cursor: pointer; }
+.vragen h2 { margin: 0 0 6px; font: 700 17px/1 "Alegreya SC", serif; letter-spacing: 0.1em; color: var(--koning-licht); }
+.vragen ul { margin: 0; padding: 0; list-style: none; }
+.vragen li { font-size: 18px; line-height: 1.25; margin: 0 0 9px; padding-left: 14px; border-left: 2px solid var(--koning);
+  text-shadow: 0 0 8px #000; }
+.vragen li.weg { text-decoration: line-through; opacity: 0.42; border-left-color: var(--herstel); }
+.vragen li.meer { border: 0; opacity: 0.6; font-size: 16px; }
+
+.budget { position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%); z-index: 4; display: flex; gap: 14px; cursor: pointer; }
+.budget i { width: 15px; height: 15px; border-radius: 50%; background: var(--goud); box-shadow: 0 0 14px 3px rgba(240, 168, 48, 0.75);
+  transition: background 0.6s, box-shadow 0.6s, transform 0.6s; }
+.budget i.uit { background: rgba(230, 244, 255, 0.13); box-shadow: none; transform: scale(0.7); }
+
+.vonnis { position: fixed; left: 50%; bottom: 62px; transform: translateX(-50%); z-index: 5; width: min(1500px, 94vw); max-height: 45vh;
+  overflow: auto; padding: 16px 24px; background: var(--glas); border: 1px solid rgba(240, 168, 48, 0.4); border-radius: 16px;
+  backdrop-filter: blur(8px); display: grid; grid-template-columns: 1.15fr 1.25fr 1fr; gap: 6px 30px; transition: opacity 0.8s; }
+.vonnis[hidden] { display: grid; opacity: 0; pointer-events: none; }
+.vonnis h2 { margin: 0 0 6px; font: 400 28px/1 UnifrakturMaguntia, serif; color: var(--goud); }
+.vonnis h3 { margin: 10px 0 2px; font: 700 16px/1 "Alegreya SC", serif; letter-spacing: 0.1em; color: var(--goud); }
+.vonnis p, .vonnis li { margin: 0 0 6px; font-size: 19px; line-height: 1.28; cursor: pointer; }
+.vonnis ol { margin: 0; padding-left: 24px; }
+.vonnis .leeg-deel { color: var(--paars); font-style: italic; }
+.vonnis .risico { border-left: 2px solid var(--geschil); padding-left: 10px; }
+.vonnis .voet { grid-column: 1 / -1; font-size: 15px; opacity: 0.65; margin: 4px 0 0; }
+.vonnis .dag { font: 400 40px/1 UnifrakturMaguntia, serif; color: var(--herstel); }
+
+.paneel { position: fixed; top: 0; right: 0; bottom: 0; z-index: 9; width: min(560px, 92vw); padding: 20px 22px; overflow: auto;
+  background: rgba(14, 10, 22, 0.96); border-left: 1px solid var(--rand); box-shadow: -20px 0 60px rgba(0, 0, 0, 0.6); }
+.paneel h2 { margin: 0 34px 12px 0; font: 700 20px/1.2 "Alegreya SC", serif; letter-spacing: 0.06em; color: var(--goud); }
+.paneel pre { margin: 0 0 14px; padding: 12px; white-space: pre-wrap; overflow-wrap: anywhere; font: 14px/1.45 ui-monospace, Consolas, monospace;
+  background: rgba(230, 244, 255, 0.05); border: 1px solid var(--rand); border-radius: 8px; }
+.sluit { position: absolute; top: 12px; right: 14px; width: 34px; height: 34px; border: 1px solid var(--rand); border-radius: 50%;
+  background: none; color: var(--ijs); font-size: 20px; cursor: pointer; }
+
+.bediening { position: fixed; right: 18px; bottom: 16px; z-index: 6; display: flex; gap: 6px; align-items: center; }
+.bediening button { min-width: 42px; height: 36px; padding: 0 10px; border: 1px solid var(--rand); border-radius: 9px; background: var(--glas);
+  color: var(--ijs); font: 700 15px/1 "Alegreya SC", serif; cursor: pointer; }
+.bediening button.aan { border-color: var(--herstel); color: var(--herstel); }
+.stap { font: 14px/1 ui-monospace, Consolas, monospace; opacity: 0.6; min-width: 58px; text-align: right; }
+.leeg { position: fixed; inset: 0; z-index: 5; display: grid; place-content: center; text-align: center; font-size: 26px; pointer-events: none; }
+.leeg[hidden] { display: none; }
+[hidden]:not(.kaart):not(.vonnis) { display: none !important; }
+@media (max-width: 1100px) { .vonnis { grid-template-columns: 1fr; } .vragen { display: none; } .kaart { width: 90vw; } }

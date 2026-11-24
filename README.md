@@ -80,6 +80,22 @@ Open http://localhost:5173. Start daarna in een tweede terminal `uv run council`
 - **Eigen avatars**: vervang `visual/assets/avatars/<rol>.svg` door je eigen SVG met dezelfde bestandsnaam.
 - **Netwerk**: de lettertypes (UnifrakturMaguntia, Alegreya SC, Alegreya) komen van Google Fonts; zonder internet valt de pagina terug op een gewone serif.
 
+### Het Sterrenbeeld starten (visualisatie voor de pitch)
+
+Het debat als een levend sterrenbeeld (Three.js + GSAP) in `visual-stars/`. Alles is licht, deeltjes en lijnen; er zijn geen getekende assets. Net als de andere viewers leest het alleen `trace.json` en `verdict.json`: het schrijft niets en roept geen LLM aan.
+
+```
+cd visual-stars
+npm install
+npm run dev
+```
+
+Open http://localhost:5175. Start `uv run council` in een tweede terminal om live mee te kijken; een afgeronde run speelt vanaf het begin af. Testdata: http://localhost:5175/?trace=voorbeeld.
+
+- **Wat je ziet**: elk Raadslid is een ster met een eigen lijnsymbool, de Koning is de blauwe poolster in het midden. Een routering is een blauwe lichtstraal naar de gekozen ster, met de reden bovenaan. Leest een Raadslid zijn bron, dan pulseert zijn ster en trekt ze deeltjes aan. Elk record-ID in een bericht wordt een gouden ster bij dat Raadslid; noemt een andere Rol hetzelfde ID, dan komt er een gouden lijn. Onderaan dooft per Raadslid-bericht één van de 10 lichtjes (het Beurtenbudget). Geschillen zijn oranje flitslijnen: beslecht wordt goud, onbeslecht blijft flikkeren. In de finale vliegen de bewijssterren naar drie sterrenbeelden (ingreep, mechanisme, verloop; helderheid = zekerheid) en verdwijnt de paarse Desync-glitch. Een deel zonder bewering blijft een donkere, flikkerende vlek.
+- **Bediening** (rechtsonder): afspelen/pauzeren (spatie), Live (naar het einde en de run volgen), snelheid 1×/2×/0.5×, geluid (standaard uit) en Lite (zonder bloom, nevel en korrel). Met ← → ga je per beurt. Klik op een naam, een kaart, een gouden ster, de open vragen, het budget of een deel van het vonnis om de ruwe trace-beurt te zien.
+- **Instellen**: tempo, kleuren en tekstlengtes staan in `visual-stars/src/config.js`.
+
 ### Het Kroniekboek starten (3D-visualisatie)
 
 Een 3D pop-upboek op een houten tafel bij kaarslicht (Three.js + GSAP) in `visual-book/`. Net als de andere viewers leest het alleen `trace.json` en `verdict.json`; het schrijft niets en roept geen LLM aan.

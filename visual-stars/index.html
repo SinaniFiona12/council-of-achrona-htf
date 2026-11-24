@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Het Sterrenbeeld van Achrona</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Alegreya+SC:wght@400;700&family=Alegreya:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div id="scene"></div>
+  <div class="korrel" aria-hidden="true"></div>
+  <div class="vignet" aria-hidden="true"></div>
+
+  <h1 id="titel" class="titel">Het Sterrenbeeld van Achrona</h1>
+  <div id="status" class="status"></div>
+
+  <!-- namen bij de sterren en de drie sterrenbeelden -->
+  <div id="labels"></div>
+
+  <!-- links: de open vragen van de Koning -->
+  <aside id="vragen-blok" class="vragen" hidden>
+    <h2>Open vragen</h2>
+    <ul id="vragen"></ul>
+  </aside>
+
+  <!-- boven: de keuze van de Koning -->
+  <div id="bevel" class="kaart bevel" hidden>
+    <div class="kaart-kop" id="bevel-kop"></div>
+    <p id="bevel-reden"></p>
+  </div>
+
+  <!-- onder: wat de spreker inbrengt -->
+  <div id="kern" class="kaart kern" hidden>
+    <div class="kaart-kop" id="kern-kop"></div>
+    <p id="kern-tekst"></p>
+    <div class="chips" id="kern-ids"></div>
+  </div>
+
+  <!-- onder: het Beurtenbudget -->
+  <div id="budget" class="budget" title="Beurtenbudget: elk Raadslid-bericht dooft één licht"></div>
+
+  <!-- het vonnis onder het sigil -->
+  <div id="vonnis" class="vonnis" hidden></div>
+
+  <!-- ruwe trace-beurt (klik op een element) -->
+  <aside id="paneel" class="paneel" hidden>
+    <button class="sluit" id="paneel-sluit" aria-label="Sluiten">×</button>
+    <h2 id="paneel-titel">Trace</h2>
+    <div id="paneel-inhoud"></div>
+  </aside>
+
+  <div id="bediening" class="bediening">
+    <button id="k-speel" title="Afspelen / pauzeren (spatie)">❚❚</button>
+    <button id="k-live" title="Live: spring naar het einde en volg de run">Live</button>
+    <button id="k-snel" title="Snelheid">1×</button>
+    <button id="k-geluid" title="Geluid aan/uit">🔇</button>
+    <button id="k-lite" title="Lite: minder effecten">Lite</button>
+    <span id="k-stap" class="stap"></span>
+  </div>
+  <div id="leeg" class="leeg" hidden>Wachten op <code>trace.json</code>…<br /><small>Start <code>uv run council</code> in de root van de repo.</small></div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
