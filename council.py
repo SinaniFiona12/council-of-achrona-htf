@@ -196,7 +196,8 @@ Antwoord met alleen JSON, zonder tekst eromheen:
 {{"rol": "<rol uit de lijst, of null om te stoppen>", "vraag": "<je vraag, of null>",
  "reden": "<één concrete zin die naar het debat verwijst: welke bewering, tegenspraak of welk ontbrekend deel>",
  "open_vragen": ["<korte open vraag>", "..."]}}
-Schrijf kort: de jury leest alles.
+Schrijf kort en eenvoudig: de jury leest alles. Gebruik alledaagse woorden, zodat iemand zonder voorkennis je vraag
+en je reden begrijpt.
 - reden: één zin van hoogstens 15 woorden: waarom precies deze Rol nu ("Om <bewering, tegenspraak of ontbrekend deel>
   te toetsen."). Stop je, dan is de reden één zin die zegt waarom het debat klaar is.
 - open_vragen: hoogstens {MAX_OPEN_VRAGEN} vragen van elk hoogstens 8 woorden die na deze keuze nog open staan; werk ze
@@ -299,7 +300,9 @@ def instructies(lid, bestanden, mcp):
         "2. Begin je antwoord met precies één regel: KERN: <één zin van hoogstens 20 woorden die de vraag van de Koning "
         "direct beantwoordt, met record-ID's>\n"
         "   Daarna hoogstens 3 korte bullets van elk hoogstens 20 woorden: het bewijs, wat het betekent, en wie het moet "
-        "toetsen. Gewone taal, geen jargon, geen inleiding en geen slot.\n"
+        "toetsen. Gewone taal, geen jargon, geen inleiding.\n"
+        "   Sluit af met precies één regel: SIMPEL: <dezelfde kern in één zin die een kind van 13 begrijpt, zonder "
+        "record-ID's en zonder vaktermen>\n"
         "3. Noem bij elke bewering de record-ID's precies zoals ze in je Kennisbron staan, tussen haakjes. "
         "Verzin nooit een ID, en gebruik geen ID's van een ander Raadslid als jouw bewijs.\n"
         "4. Geef concrete dagen en tijdstippen als je bron die heeft.\n"
@@ -365,6 +368,8 @@ Stel het Council Verdict en de lijst geschillen op. Regels:
   (niet alleen verder onderzoeken) en volgt voorschriften over herstel die in het debat genoemd werden. Denk na over
   wat een maatregel kan kapotmaken voor je hem voorstelt;
 - risicos: minstens één, met mitigatie;
+- samenvatting_eenvoudig: leg in 2 of 3 korte zinnen uit wat er gebeurde en hoe het opgelost wordt, zo dat een kind
+  van 13 het begrijpt, zonder record-ID's en zonder vaktermen;
 - schrijf kort en in gewone taal: de samenvatting hoogstens 3 zinnen, elke bewering hoogstens 25 woorden, elke actie,
   reden, risico, mitigatie, standpunt en uitkomst hoogstens 20 woorden;
 - voorspelling: alleen als het patroon het toelaat: op welke dag slaat de Desync opnieuw toe als niemand ingrijpt? Anders null;
@@ -373,6 +378,7 @@ Stel het Council Verdict en de lijst geschillen op. Regels:
 
 Antwoord met alleen JSON, zonder tekst eromheen, in deze vorm:
 {"samenvatting": "<hoogstens 3 zinnen>",
+ "samenvatting_eenvoudig": "<2-3 korte zinnen voor een kind van 13>",
  "oorzaak": {"ingreep": {"bewering": "<tekst of null>", "bewijs": ["<ID>"], "zekerheid": 0.0},
              "mechanisme": {"bewering": "...", "bewijs": ["..."], "zekerheid": 0.0},
              "verloop": {"bewering": "...", "bewijs": ["..."], "zekerheid": 0.0}},
@@ -431,6 +437,9 @@ def maak_verdict(data, run_id, toegestaan):
         "risicos": risicos or [{"risico": "De oorzaak is niet volledig vastgesteld.",
                                 "mitigatie": "Geen ingrijpende maatregelen nemen voor ze met bewijs onderbouwd zijn."}],
     }
+    eenvoudig = tekst_of_none(data.get("samenvatting_eenvoudig"))  # extra veld (mag volgens het schema): uitleg in gewone woorden
+    if eenvoudig:
+        verdict["samenvatting_eenvoudig"] = eenvoudig
     v = data.get("voorspelling")
     if isinstance(v, dict) and tekst_of_none(v.get("bewering")):
         try:

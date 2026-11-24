@@ -50,7 +50,7 @@ debat = [
  {"soort": "bericht", "spreker": "historian", "tekst": "Het archief zegt Y (HIS-903)."},
 ]
 antwoord = json.dumps({
- "samenvatting": "Samenvatting.",
+ "samenvatting": "Samenvatting.", "samenvatting_eenvoudig": "Simpel gezegd.",
  "oorzaak": {"ingreep": {"bewering": "X", "bewijs": ["ENG-901", "ENG-905"], "zekerheid": 1.4},
              "mechanisme": {"bewering": "Y", "bewijs": ["ARC-904"], "zekerheid": 0.5},
              "verloop": {"bewering": None, "bewijs": []}},
@@ -66,6 +66,8 @@ check("zekerheid geklemd", v["oorzaak"]["ingreep"]["zekerheid"] == 1.0)
 check("bewering zonder debat-bewijs -> null", v["oorzaak"]["mechanisme"] == {"bewering": None, "bewijs": []})
 check("lege actie weg", len(v["acties"]) == 1)
 check("voorspelling dag als int", v["voorspelling"]["dag"] == 3)
+check("eenvoudige samenvatting blijft", v.get("samenvatting_eenvoudig") == "Simpel gezegd.")
+check("SIMPEL-regel in instructies", "SIMPEL:" in council.instructies(leden[0], [], "mcp"))
 check("verdict schema", council.schema_fouten("verdict.json", v) == [])
 check("koning geen standpunt", "koning" not in g[0]["standpunten"])
 check("onbeslecht zonder bewijs", g[1]["uitkomst"] is None and g[1]["toelichting"] == "zo")
