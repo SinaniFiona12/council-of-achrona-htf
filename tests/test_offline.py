@@ -24,6 +24,11 @@ r = met('{"rol": "historian", "vraag": "Wat zegt het archief?", "reden": "nog ni
 check("geldige keuze", r == ("historian", "Wat zegt het archief?", "nog niet gehoord", ["wie?"]))
 r = met("blabla", leeg); check("onleesbaar -> fallback", r[0] == "archmage" and r[2].startswith("fallback"))
 r = met(Exception, leeg); check("call faalt -> fallback", r[0] == "archmage" and "mislukte" in r[2])
+antwoorden = iter(["onzin", '{"rol": "oracle", "vraag": "v?", "reden": "r.", "open_vragen": []}'])
+council.koning_chat = lambda s, g: next(antwoorden)
+r = council.kies_volgende(leeg, leden); check("herkansing na ongeldige JSON", r[0] == "oracle")
+check("Belang zichtbaar voor de Koning", all(getattr(l, "BELANG", "") for l in leden) and "Publiek Belang" in council.leden_tekst(leden))
+check("KERN-regel in instructies", "KERN:" in council.instructies(leden[0], [], "mcp"))
 r = met('{"rol": "koning", "vraag": "x", "reden": "y"}', leeg); check("onbekende rol -> fallback", r[2].startswith("fallback"))
 r = met('{"rol": null, "vraag": null, "reden": "genoeg"}', leeg); check("te vroeg stoppen -> fallback", r[0] is not None)
 vijf = [{"soort": "bericht", "spreker": l.ROL, "tekst": "t"} for l in leden[:5]]

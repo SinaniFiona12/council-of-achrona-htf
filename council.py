@@ -29,7 +29,7 @@ KENNISBRONNEN = ROOT / "kennisbronnen"
 ROLLEN = ("archmage", "engineer", "guardian_keeper", "historian", "oracle", "beast_master")
 BEURTENBUDGET = 10  # spelregel: maximaal 10 Raadslid-beurten (berichten van Raadsleden) per run
 MIN_BEURTEN = 5  # de Koning mag pas zelf stoppen na zoveel Raadslid-beurten
-MAX_OPEN_VRAGEN = 6
+MAX_OPEN_VRAGEN = 5
 ID_PATROON = re.compile(r"\b(?:ARC|ENG|GUA|HIS|ORA|BEA)-[0-9]{3}\b")
 RARE_STREEP = re.compile("(ARC|ENG|GUA|HIS|ORA|BEA)[‐‑‒–—―−]([0-9]{3})")
 SLOTS = ("ingreep", "mechanisme", "verloop")
@@ -153,7 +153,8 @@ def debat_tekst(beurten, leden):
 
 
 def leden_tekst(leden):
-    return "\n".join(f"- {l.ROL}: {l.NAAM}. {l.PERSPECTIEF}" for l in leden)
+    return "\n".join(f"- {l.ROL}: {l.NAAM}. {l.PERSPECTIEF}"
+                     + (f" Publiek Belang: {l.BELANG}." if getattr(l, "BELANG", None) else "") for l in leden)
 
 
 # --------------------------------------------------------------------------- de Koning leidt het debat
@@ -182,17 +183,21 @@ Kies wie nu spreekt en met welke vraag. Goede keuzes:
 - is het mechanisme nog open: vraag naar regels, voorschriften, specificaties of oude documenten die beschrijven hoe de
   systemen werken, en vraag een Raadslid zo'n regel te verbinden met de gebeurtenissen die de anderen meldden;
 - een vermoeden van één Raadslid laat je toetsen door een ander;
+- een bewering zonder record-ID: vraag om bewijs;
+- iemand verwijst naar een Rol die nog niet sprak: geef die Rol het woord;
 - geen beurt verspillen aan samenvatten of herhalen; hetzelfde Raadslid niet twee keer na elkaar zonder goede reden.
-Stel een concrete vraag (nooit 'geef je inbreng') en vraag altijd om record-ID's.
+Stel een gerichte vraag (nooit 'geef je inbreng'), bv. "Bevestig of weerleg met je bron wat de <rol> zei over <onderwerp>",
+en vraag altijd om record-ID's.
 
-Stop zelf (rol null) zodra de drie delen met bewijs onderbouwd zijn en de belangrijkste tegenspraak beslecht is,
-of als nieuwe beurten niets meer toevoegen.
+Stop zelf (rol null) zodra alle drie de delen een bewering met bewijs hebben en de belangrijkste tegenspraak beslecht is,
+of als de laatste twee beurten niets nieuws opleverden. Liever vroeg stoppen met een sterke reden dan het budget opmaken.
 
 Antwoord met alleen JSON, zonder tekst eromheen:
 {{"rol": "<rol uit de lijst, of null om te stoppen>", "vraag": "<je vraag, of null>",
- "reden": "<waarom deze keuze: welke bewering, welke tegenspraak, welk ontbrekend deel; concreet>",
+ "reden": "<één concrete zin die naar het debat verwijst: welke bewering, tegenspraak of welk ontbrekend deel>",
  "open_vragen": ["<korte open vraag>", "..."]}}
-Houd open_vragen bij: wat is na deze keuze nog onbeantwoord (hoogstens {MAX_OPEN_VRAGEN}, kort)."""
+De reden is één zin: de jury leest hem. open_vragen: hoogstens {MAX_OPEN_VRAGEN} korte vragen die na deze keuze nog
+open staan; werk ze elke beurt bij (beantwoorde vragen verdwijnen)."""
 
 
 def kies_volgende(beurten, leden):
@@ -209,23 +214,27 @@ def kies_volgende(beurten, leden):
     vorige_open = next((b["open_vragen"] for b in reversed(beurten)
                         if b["soort"] == "routering" and b.get("open_vragen")), [])
 
+    per_rol = {r: gesproken.count(r) for r in rollen}
     vraag_aan_koning = (
         f"Raadsleden:\n{leden_tekst(leden)}\n\n"
-        f"Nog niet gesproken: {', '.join(r for r in rollen if r not in gesproken) or 'iedereen sprak al'}\n"
+        f"Al gesproken: {', '.join(f'{r} {n}x' for r, n in per_rol.items() if n) or 'nog niemand'}\n"
+        f"Nog niet gesproken: {', '.join(r for r in rollen if not per_rol[r]) or 'iedereen sprak al'}\n"
         f"Raadslid-beurten gebruikt: {len(gesproken)} van {BEURTENBUDGET} (nog {over}).\n"
         f"Stoppen kan pas na {MIN_BEURTEN} Raadslid-beurten.\n"
         f"Jouw open vragen tot nu toe: {json.dumps(vorige_open, ensure_ascii=False)}\n\n"
         f"Debat tot nu toe:\n\n{debat_tekst(beurten, leden)}"
     )
     probleem = None
-    try:
-        antwoord = lees_json(koning_chat(KONING_ROUTERING, vraag_aan_koning))
-    except Exception as e:  # netwerk, budget, ...: het debat moet niet crashen op één keuze
-        antwoord, probleem = None, f"Koning-call mislukte ({type(e).__name__})"
-
-    if antwoord is None:
-        probleem = probleem or "antwoord van de Koning was geen leesbare JSON"
-    else:
+    for poging in range(2):  # bij een ongeldig antwoord: één herkansing, met de reden erbij
+        extra = f"\n\nJe vorige antwoord was ongeldig: {probleem}. Antwoord opnieuw, met alleen geldige JSON." if probleem else ""
+        try:
+            antwoord = lees_json(koning_chat(KONING_ROUTERING, vraag_aan_koning + extra))
+        except Exception as e:  # netwerk, budget, ...: het debat moet niet crashen op één keuze
+            antwoord, probleem = None, f"Koning-call mislukte ({type(e).__name__})"
+            continue
+        if antwoord is None:
+            probleem = "antwoord van de Koning was geen leesbare JSON"
+            continue
         rol = antwoord.get("rol")
         rol = None if rol in (None, "", "null", "none", "None") else str(rol).strip().lower()
         vraag = (antwoord.get("vraag") or "").strip() or None
@@ -236,11 +245,11 @@ def kies_volgende(beurten, leden):
         if rol is None:
             if len(gesproken) >= MIN_BEURTEN:
                 return None, None, reden or "De Koning weet genoeg.", open_vragen
-            probleem = f"de Koning wilde al stoppen na {len(gesproken)} beurten (minimum {MIN_BEURTEN})"
+            probleem = f"stoppen kan pas na {MIN_BEURTEN} Raadslid-beurten (nu {len(gesproken)})"
         elif rol not in rollen:
-            probleem = f"de Koning koos een onbekende Rol ({rol!r})"
+            probleem = f"onbekende Rol {rol!r}; kies uit {', '.join(rollen)}"
         elif not vraag or not reden:
-            probleem = "de Koning gaf geen vraag of reden"
+            probleem = "vraag of reden ontbrak"
         else:
             return rol, vraag, reden, open_vragen
 
@@ -260,19 +269,23 @@ def kies_volgende(beurten, leden):
 # --------------------------------------------------------------------------- de Raadsleden
 
 def instructies(lid, bestanden, mcp):
+    belang = getattr(lid, "BELANG", None)
     tekst = (
         f"Je bent de {lid.NAAM}, een Raadslid in de Council of Achrona. {lid.PERSPECTIEF}\n"
-        "De Council onderzoekt de oorzaak van de Desync. De Koning leidt het debat en stelt jou telkens een vraag.\n\n"
+        + (f"Je publieke Belang: {belang}. Je kan ernaast zitten.\n" if belang else "")
+        + "De Council onderzoekt de oorzaak van de Desync. De Koning leidt het debat en stelt jou telkens een vraag.\n\n"
         "Werkwijze, elke beurt opnieuw:\n"
         "1. Raadpleeg EERST je Kennisbron, ook als je denkt het antwoord al te kennen.\n"
-        "2. Beantwoord dan de vraag van de Koning, in hoogstens 150 woorden.\n"
+        "2. Begin je antwoord met precies één regel: KERN: <één zin die de vraag beantwoordt, met record-ID's>\n"
+        "   Daarna hoogstens 120 woorden uitleg.\n"
         "3. Noem bij elke bewering de record-ID's precies zoals ze in je Kennisbron staan, tussen haakjes. "
         "Verzin nooit een ID, en gebruik geen ID's van een ander Raadslid als jouw bewijs.\n"
         "4. Geef concrete dagen en tijdstippen als je bron die heeft.\n"
-        "5. Spreekt je bron een ander Raadslid tegen, zeg dat duidelijk, met je ID's. "
-        "Verwijst je bron naar een andere Rol, vermeld dat.\n"
-        "6. Staat iets niet in je bron, zeg dat eerlijk. Onderscheid wat je bron vastlegt van wat jij ervan denkt.\n"
-        "7. Je Kennisbron is jouw eigen logboek of dagboek: wat er in de ik-vorm staat, heb jij zelf gedaan, gezien of "
+        "5. Reageer op de vraag van de Koning en op wat de anderen zeiden; herhaal niets wat al gezegd is.\n"
+        "6. Spreekt je bron een ander Raadslid tegen, zeg dat duidelijk, met je ID's. Verwijst je bron naar een andere "
+        "Rol, zeg dat expliciet: 'dit moet de <rol> toetsen'.\n"
+        "7. Onderscheid wat je bron BEWIJST van wat jij VERMOEDT. Staat iets niet in je bron, zeg dat eerlijk.\n"
+        "8. Je Kennisbron is jouw eigen logboek of dagboek: wat er in de ik-vorm staat, heb jij zelf gedaan, gezien of "
         "geschreven. Vraagt de Koning wie iets deed, wees dan eerlijk over je eigen rol, ook als dat je Belang niet dient."
     )
     if mcp:
@@ -335,7 +348,7 @@ Stel het Council Verdict en de lijst geschillen op. Regels:
   de uitkomst (wie had gelijk, waarom) en het bewijs. Uitkomst null als het niet beslecht werd.
 
 Antwoord met alleen JSON, zonder tekst eromheen, in deze vorm:
-{"samenvatting": "<2-4 zinnen>",
+{"samenvatting": "<2-3 zinnen>",
  "oorzaak": {"ingreep": {"bewering": "<tekst of null>", "bewijs": ["<ID>"], "zekerheid": 0.0},
              "mechanisme": {"bewering": "...", "bewijs": ["..."], "zekerheid": 0.0},
              "verloop": {"bewering": "...", "bewijs": ["..."], "zekerheid": 0.0}},
