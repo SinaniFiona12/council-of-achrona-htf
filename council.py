@@ -177,6 +177,11 @@ Kies wie nu spreekt en met welke vraag. Goede keuzes:
 - iemand die een bewering van een ander kan toetsen of weerleggen met zijn eigen bron;
 - bij tegenspraak: confronteer een Raadslid met de concrete bewering en ID's van een ander;
 - een gerichte vraag naar een ontbrekend deel van de oorzaak, of naar exacte dagen en tijdstippen om een patroon te zien;
+- is de ingreep bekend maar niet wie: vraag het Raadslid in wiens bron de handeling staat rechtstreeks of hij het zelf deed,
+  en wie er toestemming voor gaf;
+- is het mechanisme nog open: vraag naar regels, voorschriften, specificaties of oude documenten die beschrijven hoe de
+  systemen werken, en vraag een Raadslid zo'n regel te verbinden met de gebeurtenissen die de anderen meldden;
+- een vermoeden van één Raadslid laat je toetsen door een ander;
 - geen beurt verspillen aan samenvatten of herhalen; hetzelfde Raadslid niet twee keer na elkaar zonder goede reden.
 Stel een concrete vraag (nooit 'geef je inbreng') en vraag altijd om record-ID's.
 
@@ -266,7 +271,9 @@ def instructies(lid, bestanden, mcp):
         "4. Geef concrete dagen en tijdstippen als je bron die heeft.\n"
         "5. Spreekt je bron een ander Raadslid tegen, zeg dat duidelijk, met je ID's. "
         "Verwijst je bron naar een andere Rol, vermeld dat.\n"
-        "6. Staat iets niet in je bron, zeg dat eerlijk. Onderscheid wat je bron vastlegt van wat jij ervan denkt."
+        "6. Staat iets niet in je bron, zeg dat eerlijk. Onderscheid wat je bron vastlegt van wat jij ervan denkt.\n"
+        "7. Je Kennisbron is jouw eigen logboek of dagboek: wat er in de ik-vorm staat, heb jij zelf gedaan, gezien of "
+        "geschreven. Vraagt de Koning wie iets deed, wees dan eerlijk over je eigen rol, ook als dat je Belang niet dient."
     )
     if mcp:
         tekst += ("\n\nJe Kennisbron lees je met je tools: zoek, zoek_betekenis (op betekenis), "
@@ -310,12 +317,18 @@ je baseert je alleen op wat de Raadsleden in het debat zeiden, met hun record-ID
 Stel het Council Verdict en de lijst geschillen op. Regels:
 - gebruik alleen record-ID's die een Raadslid in het debat noemde, en alleen bij een bewering die ze ook echt ondersteunen;
 - de oorzaak heeft drie delen: ingreep (wie deed wat, wanneer), mechanisme (hoe leidt dat tot de symptomen),
-  verloop (welk patroon in de tijd). Is een deel niet onderbouwd, zet dan "bewering": null en "bewijs": [];
+  verloop (welk patroon in de tijd). Noem bij de ingreep de uitvoerder als een Raadslid zijn eigen handeling beschreef
+  of toegaf, en wie er toestemming gaf als dat in het debat bleek;
+- verbind bewijs uit verschillende bronnen tot één verklaring: een regel of voorschrift uit de ene bron en gebeurtenissen
+  uit andere bronnen kunnen samen het mechanisme vormen, ook als geen enkel Raadslid het alleen kon zien;
+- twijfel druk je uit met een lagere zekerheid, niet met null. Zet "bewering": null en "bewijs": [] alleen als er in het
+  debat echt geen bewijs voor dat deel is;
 - zekerheid per deel: een getal van 0 tot 1, eerlijk (hoeveel onafhankelijke bronnen bevestigen het, was er tegenspraak?);
 - weeg af: elk Raadslid heeft een Belang en kan ernaast zitten. Kies de verklaring die het meeste bewijs uit
   verschillende bronnen verklaart, niet de luidste;
-- acties: een geordend herstelplan, in uitvoeringsvolgorde, met een reden per actie. Denk na over wat een maatregel
-  kan kapotmaken voor je hem voorstelt;
+- acties: een geordend herstelplan, in uitvoeringsvolgorde, met een reden per actie. Het plan neemt de oorzaak weg
+  (niet alleen verder onderzoeken) en volgt voorschriften over herstel die in het debat genoemd werden. Denk na over
+  wat een maatregel kan kapotmaken voor je hem voorstelt;
 - risicos: minstens één, met mitigatie;
 - voorspelling: alleen als het patroon het toelaat: op welke dag slaat de Desync opnieuw toe als niemand ingrijpt? Anders null;
 - geschillen: waarover waren Raadsleden het oneens? Per geschil het onderwerp, het standpunt per Rol (sleutel = rol),
