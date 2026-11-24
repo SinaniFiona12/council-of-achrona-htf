@@ -6,10 +6,10 @@ export const CONFIG = {
     historian: '#D4A373', oracle: '#E879F9', beast_master: '#84CC16',
   },
   extraKleuren: ['#F472B6', '#FBBF24', '#34D399', '#60A5FA', '#FB7185'],
-  // publiek Belang per Rol, uit rolkaarten.md
+  // waar elke Rol voor opkomt: het publieke Belang uit rolkaarten.md, in gewone woorden
   belang: {
-    archmage: 'gezag en zuiverheid van de magie', engineer: 'vooruitgang van het datanet', guardian_keeper: 'veiligheid van de burcht',
-    historian: 'integriteit van het archief', oracle: 'gezag van de profetieën', beast_master: 'bescherming van dieren en woud',
+    archmage: 'de magie', engineer: 'het datanet', guardian_keeper: 'de veiligheid van de burcht',
+    historian: 'het archief', oracle: 'de profetieën', beast_master: 'de dieren en het woud',
   },
   rolNamen: {
     archmage: 'Archmage', engineer: 'Engineer', guardian_keeper: 'Guardian Keeper',
@@ -30,10 +30,10 @@ export const CONFIG = {
   },
 
   // tekstbudget (alles wat langer is, staat volledig in het paneel)
-  tekst: { redenWoorden: 20, vraagWoorden: 28, openVragen: 3, openWoorden: 11, kernTekens: 220, idChips: 7, histWoorden: 10, vonnisWoorden: 28, actieWoorden: 20 },
+  tekst: { redenWoorden: 14, vraagWoorden: 24, kernWoorden: 30, openVragen: 2, openWoorden: 9, kernTekens: 400, idChips: 7, vonnisWoorden: 26, actieWoorden: 16 },
   presentatieSeconden: 110, // toets P: de hele run in ongeveer zoveel seconden
   pixel: 4, // grootte van één beeldpixel (in schermpixels): hoger = grover
-  kleurNiveaus: 9, // aantal tinten per kleurkanaal: lager = vlakker, meer raster
+  kleurNiveaus: 11, // aantal tinten per kleurkanaal: lager = vlakker, meer raster
   budget: 10, // het Beurtenbudget = de tien kaarsen op tafel
   pollMs: 1000,
 }

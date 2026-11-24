@@ -2,7 +2,7 @@
 // Leest alleen (via /data/...), schrijft niets terug en roept geen LLM aan. Elk element komt uit de trace.
 import gsap from 'gsap'
 import { CONFIG, kleurVan, naamVan } from './config.js'
-import { haal, idsIn, kernVan, kortZin, BRON } from './data.js'
+import { haal, idsIn, kernVan, kortZin, normaalID, BRON } from './data.js'
 import { maakZaal } from './zaal.js'
 
 const $ = (id) => document.getElementById(id)
@@ -17,6 +17,7 @@ let trace = null, verdict = null, beurten = [], rollen = [], extras = [], portre
 let pos = 0, spelend = true, snel = 1, timer = null, vorigeSleutel = '', presentatie = false, lite = false
 let st = leeg()
 let rolRe = {}, camTimer = null
+let technisch = false, gestart = false // taal: eenvoudig (standaard) of technisch; gestart: het startscherm is weg
 
 function leeg() { return { goud: new Map(), berichten: 0, rout: null, msg: null, tool: null, besluit: null, vragen: [], weg: [], fase: 'debat', paren: [], gi: -1, pagina: 0, verwijzing: null } }
 const n = () => beurten.length
@@ -110,79 +111,110 @@ function dialoog({ wie, icoon, kop, tekst = '', lijst = '', chips = '', sub = ''
 }
 const chipsVan = (ids) => ids.slice(0, W.idChips).map((i) => `<span class="chip">${esc(i)}</span>`).join('') + (ids.length > W.idChips ? `<span class="chip meer">+${ids.length - W.idChips} meer</span>` : '')
 
+// ---------------------------------------------------------------- leesbaar maken
+// Een record-ID (drie letters van de Rol, een streepje en een nummer) is het nummer van één bewijsstuk uit de bron van een Raadslid. In beeld tonen we wat het
+// betekent ("een bewijsstuk van de Beast Master"); de nummers zelf staan achter de toets I en in de ruwe trace.
+const PREFIX = { ARC: 'archmage', ENG: 'engineer', GUA: 'guardian_keeper', HIS: 'historian', ORA: 'oracle', BEA: 'beast_master' }
+let eigenaarVan = new Map() // id -> het Raadslid dat het als eerste noemde (voor ID's met een onbekend voorvoegsel)
+const rolVanId = (id) => { const r = PREFIX[id.slice(0, 3)]; return r && isRol(r) ? r : eigenaarVan.get(id)?.rol || null }
+const ID_EEN = '[A-Z]{3}[-‐‑‒–—―−]\\d{3}'
+const ID_HAAKJES = new RegExp('\\s*\\((?:\\s*' + ID_EEN + '\\s*(?:,|;|/|en|t/m|tot en met|tot)?\\s*)+\\)', 'g')
+const ID_LOS = new RegExp(ID_EEN, 'g')
+const HAAKJE_ID = new RegExp(String.raw`(\([^()]*?),\s*` + ID_EEN + String.raw`(?:\s*(?:,|en)\s*` + ID_EEN + String.raw`)*\s*\)`, 'g')
+/** Dezelfde zin zonder nummers: een rij nummers tussen haakjes valt weg; een los nummer wordt "een bewijsstuk van de <Rol>". */
+function leesbaar(tekst) {
+  let t = String(tekst || '').replace(ID_HAAKJES, '')
+  t = t.replace(HAAKJE_ID, '$1)') // "(tekst, <nummer>)" wordt "(tekst)"
+  t = t.replace(ID_LOS, (id) => { const r = rolVanId(normaalID(id)); return r ? 'een bewijsstuk van de ' + naamVan(r) : 'een bewijsstuk' })
+  t = t.replace(/(een bewijsstuk(?: van de [A-Z][A-Za-z ]*?)?)(?:(?:, | en | of | t\/m | tot en met )\1)+/g, (m, een) => een.replace('een bewijsstuk', 'bewijsstukken'))
+  return t.replace(/\s+([.,;:!?])/g, '$1').replace(/\(\s*\)/g, '').replace(/\s{2,}/g, ' ').trim()
+}
+/** Eenvoudig of technisch woord, naar de gekozen taal. */
+const w = (eenvoudig, tech) => technisch ? tech : eenvoudig
+/** Technisch: de zin zoals hij in de trace staat (met record-ID's). Eenvoudig: zonder nummers. */
+const zin = (t) => technisch ? String(t || '') : leesbaar(t)
+/** De SIMPEL-regel van een Raadslid (als de Council die schreef): dezelfde kern in woorden voor een kind van 13. */
+const simpelVan = (tekst) => { const m = /^\s*[-*]?\s*\**SIMPEL\**\s*:\s*\**\s*(.+)$/im.exec(String(tekst || '')); return m ? m[1].replace(/\*\*|__|`/g, '').trim() : '' }
+const stuks = (a) => a + ' bewijsstuk' + (a === 1 ? '' : 'ken')
+/** Eén regel over het bewijs in een bericht: hoeveel uit de eigen bron, en naar wiens bewijs het verwijst. */
+function bewijsRegel(ids, spreker) {
+  if (!ids.length) return ''
+  const eigen = ids.filter((i) => rolVanId(i) === spreker).length, ander = {}
+  for (const i of ids) { const r = rolVanId(i); if (r && r !== spreker) ander[r] = (ander[r] || 0) + 1 }
+  const delen = eigen ? ['📜 ' + stuks(eigen) + ' uit de eigen bron'] : []
+  for (const [r, a] of Object.entries(ander)) delen.push('🔗 verwijst naar ' + a + ' van de ' + naamVan(r))
+  return (delen.length ? delen : ['📜 ' + stuks(ids.length)]).slice(0, 3).join('   ·   ')
+}
+
 function tekenHtml(animeer = false) {
   const fin = st.fase === 'finale', gsh = st.fase === 'geschil', laatste = st.fase === 'debat' ? beurten[Math.min(pos, n()) - 1] : null
   // wat gebeurt er nu? (de drie stappen van elke beurt)
   const stappen = $('stappen')
   const stap = !laatste || st.besluit ? 0 : laatste.soort === 'routering' ? (laatste.aan == null ? 0 : 1) : laatste.soort === 'bericht' ? (isRol(laatste.spreker) ? 3 : 0) : 2
   const denker = denkerNu()
-  const titel = fin ? ['', 'Het Vonnis · wat is er gebeurd?', 'Het Vonnis · hoe lossen we het op?', 'Waarom een Council?'][st.pagina] : gsh ? 'Geschillen tussen de Raadsleden'
-    : st.besluit ? 'De Koning velt zijn oordeel' : laatste?.soort === 'routering' && laatste.aan == null ? 'De Koning sluit het debat' : !laatste ? 'De Raad komt samen' : ''
+  const titel = fin ? ['', w('Wat is er gebeurd?', 'Verdict · oorzaak'), w('Hoe lossen we het op?', 'Verdict · acties en risico\'s'), 'Waarom een Council?'][st.pagina] : gsh ? w('Waar waren ze het oneens?', 'Geschillen')
+    : st.besluit ? 'De Koning beslist' : laatste?.soort === 'routering' && laatste.aan == null ? 'De Koning sluit het debat' : !laatste ? 'De Raad komt samen' : ''
   stappen.classList.toggle('titel', !!titel); stappen.dataset.titel = titel
-  for (const li of stappen.children) li.classList.toggle('aan', +li.dataset.s === stap)
+  const stapNaam = technisch ? ['Routering door de Koning', 'Toolcall op de eigen Kennisbron', 'Bericht met record-ID\'s'] : ['De Koning stelt een vraag', 'Het Raadslid zoekt het op', 'Het Raadslid antwoordt']
+  for (const li of stappen.children) { li.classList.toggle('aan', +li.dataset.s === stap); li.innerHTML = `<b>${li.dataset.s}</b> ${stapNaam[li.dataset.s - 1]}` }
   // namen
   const actief = fin ? null : gsh ? null : st.besluit ? 'koning' : laatste?.soort === 'routering' ? 'koning' : laatste?.spreker
   for (const d of $('labels').children) {
     const r = d.dataset.rol
     d.classList.toggle('actief', r === actief || r === denker || (gsh && Object.keys((trace.geschillen || [])[st.gi]?.standpunten || {}).includes(r)))
-    d.querySelector('.doet').textContent = r === denker ? '💭 denkt na…' : st.tool && st.tool.b.spreker === r ? (st.tool.b.soort === 'bestand' ? '📖 bron in de prompt' : '📖 leest bron…') : ''
+    d.querySelector('.doet').textContent = r === denker ? '💭 denkt na…' : st.tool && st.tool.b.spreker === r ? w('📖 zoekt het op…', '📖 ' + (st.tool.b.tool || 'bron in de prompt')) : ''
   }
-  // dialoog
+  // dialoog: telkens één spreker, één zin, één regel uitleg
   const r = st.rout
   if (fin) $('dialoog').hidden = true
   else if (gsh) {
     const gs = trace.geschillen || [], g = gs[st.gi] || {}, wie = Object.keys(g.standpunten || {})
     dialoog({
       icoon: '⚡', k: g.uitkomst ? CONFIG.kleuren.goud : CONFIG.kleuren.geschil,
-      kop: `Geschil ${st.gi + 1} van ${gs.length}<span>·</span><b>${esc(kortZin(g.onderwerp, 16))}</b><i class="stempel ${g.uitkomst ? 'ok' : 'open'}">${g.uitkomst ? 'Beslecht' : 'Open'}</i>`,
-      lijst: wie.slice(0, 3).map((x) => `<div style="--k:${kleur(x)}">${plaatje(x)}<span><b>${esc(naamVan(x))}</b> ${esc(kortZin(g.standpunten[x], 18))}</span></div>`).join(''),
-      sub: g.uitkomst ? `✦ Beslecht: ${kortZin(g.uitkomst, 26)}` : '⚡ Niet beslecht: dit blijft een open punt in het vonnis.', subKlasse: 'uitkomst',
+      kop: `${w('Onenigheid', 'Geschil')} ${st.gi + 1} van ${gs.length}<i class="stempel ${g.uitkomst ? 'ok' : 'open'}">${g.uitkomst ? w('Opgelost', 'Beslecht') : w('Nog open', 'Open')}</i>`,
+      tekst: kortZin(zin(g.onderwerp), 16),
+      lijst: wie.slice(0, 3).map((x) => `<div style="--k:${kleur(x)}">${plaatje(x)}<span><b>${esc(naamVan(x))}</b> ${esc(kortZin(zin(g.standpunten[x]), 15))}</span></div>`).join(''),
+      sub: g.uitkomst ? '✔ ' + kortZin(zin(g.uitkomst), 20) : '', subKlasse: 'uitkomst',
       chips: chipsVan(g.bewijs || []), klik: () => toonPaneel(`Geschil ${st.gi + 1}`, [g]),
     }, animeer)
   } else if (st.besluit) {
-    dialoog({ wie: 'koning', kop: 'De Koning<span>·</span><b>zijn besluit</b>', tekst: kortZin(st.besluit.b.tekst, 34), klik: () => toonPaneel('De Koning besluit', [st.besluit.b]) }, animeer)
+    dialoog({ wie: 'koning', kop: 'De Koning<span>·</span><b>zijn besluit</b>', tekst: kortZin(zin(st.besluit.b.tekst), 30), klik: () => toonPaneel('De Koning besluit', [st.besluit.b]) }, animeer)
   } else if (st.msg) {
-    const b = st.msg.b
+    const b = st.msg.b, ids = idsIn(b.tekst)
     dialoog({
       wie: b.spreker, k: b.spreker === 'mens' ? CONFIG.kleuren.geschil : kleur(b.spreker),
-      kop: esc(naamVan(b.spreker)) + (CONFIG.belang[b.spreker] ? `<small class="belang">Belang: ${esc(CONFIG.belang[b.spreker])}</small>` : ''),
-      lijst: st.verwijzing?.b === b && st.verwijzing.naar.length ? `<div class="noemt">❗ verwijst naar ${st.verwijzing.naar.slice(0, 4).map((x) => `<span style="--k:${kleur(x)}">${plaatje(x)}<b>${esc(naamVan(x))}</b></span>`).join('')}</div>` : '',
-      tekst: kernVan(b.tekst), chips: chipsVan(idsIn(b.tekst)),
-      sub: r && r.b.aan === b.spreker ? `↳ antwoord op de Koning: “${kortZin(r.b.vraag, 13)}”` : '',
+      kop: esc(naamVan(b.spreker)) + (CONFIG.belang[b.spreker] ? `<small class="belang">${w('komt op voor', 'Belang:')} ${esc(CONFIG.belang[b.spreker])}</small>` : ''),
+      tekst: technisch ? kortZin(kernVan(b.tekst), 42) : (simpelVan(b.tekst) || kortZin(leesbaar(kernVan(b.tekst)), W.kernWoorden)),
+      sub: technisch ? '' : bewijsRegel(ids, b.spreker), chips: chipsVan(ids),
       klik: () => toonPaneel(`Bericht #${b.nr ?? st.msg.i + 1} · ${naamVan(b.spreker)}`, [r?.b, b]),
     }, animeer && laatste === b)
   } else if (r && r.b.aan == null) {
     dialoog({
-      wie: 'koning', kop: 'De Koning<span>·</span><b>sluit het debat</b>', tekst: kortZin(r.b.reden, 34),
-      sub: st.berichten < CONFIG.budget ? `${CONFIG.budget - st.berichten} van de ${CONFIG.budget} kaarsen branden nog: de Koning stopte zelf.` : 'Alle tien de kaarsen zijn gedoofd: het Beurtenbudget is op.',
-      klik: () => toonPaneel('Routering: de Koning stopt', [r.b]),
+      wie: 'koning', kop: 'De Koning<span>·</span><b>sluit het debat</b>', tekst: kortZin(zin(r.b.reden), 28),
+      sub: st.berichten < CONFIG.budget ? `Er branden nog ${CONFIG.budget - st.berichten} kaarsen: de Koning stopte zelf.` : 'Alle tien de beurten zijn gebruikt.',
+      klik: () => toonPaneel('De Koning stopt', [r.b]),
     }, animeer)
   } else if (r) {
-    const d = $('dialoog'); d.style.setProperty('--k2', kleur(r.b.aan))
+    $('dialoog').style.setProperty('--k2', kleur(r.b.aan))
     dialoog({
-      wie: r.b.spreker, kop: `${esc(naamVan(r.b.spreker))}<span>→</span><b>${esc(naamVan(r.b.aan))}</b>`,
-      tekst: kortZin(r.b.vraag, W.vraagWoorden), sub: `waarom deze keuze: ${kortZin(r.b.reden)}`,
-      lijst: st.verwijzing && r.i === st.verwijzing.i + 1 && st.verwijzing.naar.includes(r.b.aan) ? `<div class="noemt" style="--k:${kleur(st.verwijzing.van)}">❗ ${esc(naamVan(r.b.aan))} werd net genoemd door ${plaatje(st.verwijzing.van)}<b>${esc(naamVan(st.verwijzing.van))}</b></div>` : '',
-      klik: () => toonPaneel(`Routering #${r.b.nr ?? r.i + 1}`, [r.b]),
+      wie: r.b.spreker, kop: `${esc(naamVan(r.b.spreker))}<span>${w('vraagt aan', '→')}</span><b>${esc(naamVan(r.b.aan))}</b>`,
+      tekst: kortZin(zin(r.b.vraag), technisch ? 34 : W.vraagWoorden), sub: w('waarom: ', 'reden: ') + kortZin(zin(r.b.reden), technisch ? 24 : W.redenWoorden),
+      klik: () => toonPaneel(`Keuze van de Koning #${r.b.nr ?? r.i + 1}`, [r.b]),
     }, animeer && laatste === r.b)
   } else if (trace) {
-    dialoog({ wie: 'koning', kop: 'De Raad van Achrona', tekst: `De Koning en ${rollen.length} Raadsleden zoeken de oorzaak van de Desync.`,
-      sub: 'Elk Raadslid kent alleen zijn eigen Kennisbron. De Koning leest er geen: hij kiest wie spreekt.' }, animeer)
+    dialoog({ wie: 'koning', kop: 'De Raad van Achrona', tekst: `De Koning en ${rollen.length} Raadsleden zoeken uit wat er misging in Achrona.`,
+      sub: 'Elk Raadslid heeft een eigen bron. Elk blad op tafel is een bewijsstuk daaruit.' }, animeer)
   } else $('dialoog').hidden = true
-  // open vragen
-  $('vragen-blok').hidden = fin || gsh || !(st.vragen.length || st.weg.length)
-  $('vragen').innerHTML = st.weg.slice(0, 1).map((v) => `<li class="weg">${esc(kortZin(v, W.openWoorden))}</li>`).join('')
-    + st.vragen.slice(0, W.openVragen).map((v) => `<li>${esc(kortZin(v, W.openWoorden))}</li>`).join('')
+  // nog uitzoeken: de twee belangrijkste open vragen van de Koning
+  $('vragen-blok').hidden = fin || gsh || !st.vragen.length
+  $('vragen').innerHTML = st.vragen.slice(0, W.openVragen).map((v) => `<li>${esc(kortZin(zin(v), W.openWoorden))}</li>`).join('')
     + (st.vragen.length > W.openVragen ? `<li class="meer">+ ${st.vragen.length - W.openVragen} meer</li>` : '')
+  $('vragen-blok').querySelector('h2').textContent = w('Nog uitzoeken', 'open_vragen')
   $('vragen-blok').onclick = () => toonPaneel('Open vragen van de Koning', [st.rout?.b])
-  // eerder gezegd
-  const eerder = st.paren.filter((p) => p.msg !== st.msg?.b).slice(-3)
-  $('historie').hidden = fin || gsh || !eerder.length
-  $('hist').innerHTML = eerder.map((p, i) => `<li data-i="${i}" style="--k:${kleur(p.msg.spreker)}">${plaatje(p.msg.spreker)}<span><b>${esc(naamVan(p.msg.spreker))}</b>${esc(kortZin(kernVan(p.msg.tekst), W.histWoorden))}</span></li>`).join('')
-  $('hist').onclick = (e) => { const p = eerder[e.target.closest('li')?.dataset.i]; if (p) toonPaneel(`Eerder: ${naamVan(p.msg.spreker)}`, [p.rout, p.msg]) }
-  // beurtenbudget
-  $('budget').innerHTML = Array.from({ length: CONFIG.budget }, (_, i) => `<i class="${i >= CONFIG.budget - st.berichten ? 'uit' : ''}"></i>`).join('') + `<span>beurt ${st.berichten} / ${CONFIG.budget}</span>`
-  $('budget').onclick = () => toonPaneel(`Beurtenbudget: ${st.berichten} van ${CONFIG.budget} gebruikt`, [{ raadslid_beurten: st.berichten, budget: CONFIG.budget, verbruik: trace?.verbruik }])
+  $('historie').hidden = true
+  // beurten: tien lichtjes, net als de kaarsen op tafel
+  $('budget').innerHTML = Array.from({ length: CONFIG.budget }, (_, i) => `<i class="${i >= CONFIG.budget - st.berichten ? 'uit' : ''}"></i>`).join('')
+  $('budget').onclick = () => toonPaneel(`Beurten: ${st.berichten} van ${CONFIG.budget} gebruikt`, [{ raadslid_beurten: st.berichten, budget: CONFIG.budget, verbruik: trace?.verbruik }])
   // vonnis
   $('vonnis').hidden = !fin
   if (fin) tekenVonnis(animeer)
@@ -191,34 +223,35 @@ function tekenHtml(animeer = false) {
   $('k-snel').textContent = (Number.isInteger(snel) ? snel : snel.toFixed(1)) + '×'
 }
 
-/** Het vonnis in twee schermen: 1. wat is er gebeurd?  2. hoe lossen we het op? */
+/** Het vonnis in drie schermen: wat is er gebeurd, hoe lossen we het op, en waarom een Council. */
+const DELEN = [['ingreep', 'Wie deed wat?', 'Ingreep'], ['mechanisme', 'Hoe ging het mis?', 'Mechanisme'], ['verloop', 'Hoe verloopt het?', 'Verloop']]
 function tekenVonnis(animeer) {
-  const el = $('vonnis'), o = verdict.oorzaak, eigenaar = toestand(n()).goud
+  const el = $('vonnis'), o = verdict.oorzaak
   if (st.pagina === 3) return tekenCijfers(el, animeer)
   if (st.pagina === 1) {
-    el.innerHTML = `<h2>Wat is er gebeurd?</h2><p class="v-sam">${esc(verdict.samenvatting || '')}</p><div class="v-rij">`
-      + SLOTS.map(([k, naam, vraag]) => {
-        const s = o[k] || {}
-        if (!s.bewering) return `<article class="v-kaart leeg" data-k="${k}"><h3>${naam}<small>${vraag}</small></h3><p>Onbekend: het debat leverde hier geen bewijs voor.</p></article>`
-        const wie = [...new Set((s.bewijs || []).map((id) => eigenaar.get(id)?.rol).filter(Boolean))]
-        return `<article class="v-kaart" data-k="${k}"><h3>${naam}<small>${vraag}</small></h3><p>${esc(kortZin(s.bewering, W.vonnisWoorden))}</p>`
-          + `<div class="chips klein">${(s.bewijs || []).slice(0, 7).map((i) => `<span class="chip">${esc(i)}</span>`).join('')}${(s.bewijs || []).length > 7 ? `<span class="chip meer">+${s.bewijs.length - 7}</span>` : ''}</div>`
-          + `<div class="v-voet">${typeof s.zekerheid === 'number' ? `<span class="balk-z"><i style="width:${Math.round(s.zekerheid * 100)}%"></i></span><span>${Math.round(s.zekerheid * 100)}% zeker</span>` : '<span style="flex:1"></span>'}<span class="v-av" title="Bewijs van">${wie.map(plaatje).join('')}</span></div></article>`
-      }).join('') + '</div>'
+    const uitleg = technisch ? verdict.samenvatting : verdict.samenvatting_eenvoudig // de uitleg in gewone woorden schrijft de Koning zelf (extra veld)
+    el.innerHTML = `<h2>${w('Wat is er gebeurd?', 'Oorzaak')}</h2>${uitleg ? `<p class="v-sam">${esc(uitleg)}</p>` : ''}<div class="v-rij" style="margin-top:12px">` + DELEN.map(([k, eenvoudig, tech]) => {
+      const vraag = w(eenvoudig, tech)
+      const s = o[k] || {}
+      if (!s.bewering) return `<article class="v-kaart leeg" data-k="${k}"><h3>${vraag}</h3><p>Dat weten we nog niet: er kwam geen bewijs voor op tafel.</p></article>`
+      const bewijs = s.bewijs || [], wie = [...new Set(bewijs.map(rolVanId).filter(Boolean))], pct = Math.round((s.zekerheid ?? 0) * 100)
+      return `<article class="v-kaart" data-k="${k}"><h3>${vraag}</h3><p>${esc(kortZin(zin(s.bewering), W.vonnisWoorden))}</p>`
+        + `<div class="chips klein">${chipsVan(bewijs)}</div>`
+        + `<div class="v-voet"><span class="v-av">${wie.map(plaatje).join('')}</span><span>${stuks(bewijs.length)}</span>`
+        + (typeof s.zekerheid === 'number' ? `<span class="balk-z"><i style="width:${pct}%"></i></span><span>${pct}% zeker</span>` : '') + '</div></article>'
+    }).join('') + '</div>'
   } else {
-    const v = verdict.voorspelling, vb = trace.verbruik || {}
-    const tokens = Object.entries(vb).map(([m, x]) => `${m}: ${(x.invoer || 0).toLocaleString('nl-BE')} in · ${(x.uitvoer || 0).toLocaleString('nl-BE')} uit`).join(' — ')
-    el.innerHTML = '<h2>Hoe lossen we het op?</h2><div class="v-rij twee" style="margin-top:12px">'
-      + `<article class="v-kaart"><h3>Herstelplan<small>in deze volgorde uitvoeren</small></h3><ol>${(verdict.acties || []).slice(0, 5).map((a, i) => `<li data-a="${i}">${esc(kortZin(a.actie, W.actieWoorden))}<small>${esc(kortZin(a.reden, 16))}</small></li>`).join('')}</ol></article>`
-      + `<article class="v-kaart"><h3>Wat kan er misgaan?<small>risico en hoe we het opvangen</small></h3>${(verdict.risicos || []).slice(0, 3).map((x, i) => `<div class="risico" data-r="${i}">${esc(kortZin(x.risico, W.actieWoorden))}<small>→ ${esc(kortZin(x.mitigatie, 16))}</small></div>`).join('')}`
-      + (v ? `<h3 style="margin-top:14px">Als niemand ingrijpt<small>de voorspelling van de Raad</small></h3><p data-v="1"><span class="dag">dag ${esc(v.dag)}</span><br>${esc(kortZin(v.bewering, W.actieWoorden))}</p>` : '') + '</article></div>'
-      + `<p class="voet">${esc(trace.run_id || '')}${tokens ? ' · tokens ' + esc(tokens) : ''}</p>`
+    const v = verdict.voorspelling
+    el.innerHTML = `<h2>${w('Hoe lossen we het op?', 'Acties en risico\'s')}</h2><div class="v-rij twee" style="margin-top:12px">`
+      + `<article class="v-kaart"><h3>${w('Dit gaan we doen', 'Herstelplan')}<small>in deze volgorde</small></h3><ol>${(verdict.acties || []).slice(0, 4).map((a, i) => `<li data-a="${i}">${esc(kortZin(zin(a.actie), W.actieWoorden))}</li>`).join('')}</ol></article>`
+      + `<article class="v-kaart"><h3>${w('Wat kan er misgaan?', 'Risico\'s en mitigatie')}</h3>${(verdict.risicos || []).slice(0, 2).map((x, i) => `<div class="risico" data-r="${i}">${esc(kortZin(zin(x.risico), W.actieWoorden))}<small>→ ${esc(kortZin(zin(x.mitigatie), 12))}</small></div>`).join('')}`
+      + (v ? `<h3 style="margin-top:14px">${w('Als niemand iets doet', 'Voorspelling')}</h3><p data-v="1"><span class="dag">dag ${esc(v.dag)}</span><br>${esc(kortZin(zin(v.bewering), W.actieWoorden))}</p>` : '') + '</article></div>'
   }
   el.onclick = (e) => {
     const d = e.target.closest('[data-k],[data-a],[data-r],[data-v]')?.dataset
     if (!d) return toonPaneel('Council Verdict', [verdict])
-    if (d.k) toonPaneel(`Oorzaak: ${d.k}`, [o[d.k]])
-    else if (d.a) toonPaneel(`Actie ${+d.a + 1}`, [verdict.acties[d.a]])
+    if (d.k) toonPaneel('Oorzaak: ' + d.k, [o[d.k]])
+    else if (d.a) toonPaneel('Actie ' + (+d.a + 1), [verdict.acties[d.a]])
     else if (d.r) toonPaneel('Risico', [verdict.risicos[d.r]])
     else toonPaneel('Voorspelling', [verdict.voorspelling])
   }
@@ -236,7 +269,7 @@ function cijfers() {
     else if (b.soort === 'toolcall' || b.soort === 'bestand') {
       if (b.spreker === 'koning') { koningLas++; continue }
       if (b.soort === 'bestand') { vast.add(b.spreker); if (b.bestand && !b.bestand.startsWith(b.spreker + '/')) padFout++ }
-      else { gelezen.add(b.spreker); if (b.pad && !b.pad.includes(`/${b.spreker}/`)) padFout++ }
+      else { gelezen.add(b.spreker); if (b.pad && !b.pad.includes('/' + b.spreker + '/')) padFout++ }
     } else if (b.soort === 'bericht' && isRol(b.spreker)) {
       sprekers.add(b.spreker)
       if (toegewezen !== b.spreker) zonderRout++
@@ -247,32 +280,29 @@ function cijfers() {
   const laatste = routs.at(-1)
   return {
     tegels: [
-      [sprekers.size, `van de ${rollen.length} Rollen spraken`],
-      [eind.goud.size, "bewijsstukken (record-ID's) op tafel"],
-      [[...eind.goud.values()].filter((g) => g.links.length).length, 'door meer dan één Rol genoemd'],
-      [gs.filter((g) => g.uitkomst).length, `van de ${gs.length} geschillen beslecht`],
-      [eind.berichten, `van de ${CONFIG.budget} beurten gebruikt`],
-      [routs.filter((b) => Array.isArray(b.open_vragen)).length, `van de ${routs.length} keuzes met open vragen`],
+      [sprekers.size, 'van de ' + rollen.length + ' Raadsleden spraken'],
+      [eind.goud.size, 'bewijsstukken op tafel'],
+      [[...eind.goud.values()].filter((g) => g.links.length).length, 'ook genoemd door een tweede Raadslid'],
+      [gs.filter((g) => g.uitkomst).length, 'van de ' + gs.length + ' onenigheden opgelost'],
     ],
     regels: [
-      [padFout === 0, 'Elk Raadslid las alleen zijn eigen Kennisbron'],
-      [koningLas === 0, 'De Koning las geen enkele Kennisbron'],
-      [zonderBron === 0, 'Elk Raadslid las zijn bron vóór het sprak'],
-      [zonderRout === 0, 'Elke beurt begon met een keuze van de Koning'],
-      [eind.berichten <= CONFIG.budget, `Hoogstens ${CONFIG.budget} Raadslid-beurten`],
-      [mens === 0, 'Geen menselijke tussenkomst'],
-      [verdictOk(), 'Vonnis en debat komen uit dezelfde run'],
-      [!!laatste && laatste.aan == null && eind.berichten < CONFIG.budget, 'Extra: de Koning stopte zelf, vóór het budget op was', true],
+      [padFout === 0, 'Elk Raadslid las alleen zijn eigen bron'],
+      [koningLas === 0, 'De Koning las zelf geen enkele bron'],
+      [zonderBron === 0, 'Iedereen zocht het eerst op en sprak daarna'],
+      [zonderRout === 0, 'De Koning koos elke spreker'],
+      [eind.berichten <= CONFIG.budget, 'Hoogstens ' + CONFIG.budget + ' beurten (' + eind.berichten + ' gebruikt)'],
+      [mens === 0, 'Geen hulp van mensen'],
+      [verdictOk(), 'Het vonnis hoort bij dit debat'],
+      [!!laatste && laatste.aan == null && eind.berichten < CONFIG.budget, 'Extra: de Koning stopte zelf', true],
     ],
   }
 }
 function tekenCijfers(el, animeer) {
   const c = cijfers()
-  el.innerHTML = '<h2>Waarom een Council?</h2><p class="v-sam">Geen enkel Raadslid kon dit alleen: elk kent alleen zijn eigen Kennisbron. Dit haalde de Raad samen uit het debat.</p><div class="v-rij twee">'
+  el.innerHTML = '<h2>Waarom een Council?</h2><p class="v-sam">Elk Raadslid kent maar een stukje van het verhaal. Samen kwamen ze hiertoe.</p><div class="v-rij twee">'
     + `<div class="tegels">${c.tegels.map(([nr, t]) => `<div class="tegel"><b data-n="${nr}">${nr}</b><span>${esc(t)}</span></div>`).join('')}</div>`
-    + `<article class="v-kaart"><h3>Spelregels<small>nageteld in de trace</small></h3>${c.regels.map(([ok, t, extra]) => `<div class="regel ${ok ? 'ok' : extra ? 'nvt' : 'fout'}">${esc(t)}</div>`).join('')}</article></div>`
-    + `<p class="voet">${esc(trace.run_id || '')}</p>`
-  el.onclick = () => toonPaneel('Geteld uit trace.json', [{ cijfers: Object.fromEntries(c.tegels.map(([nr, t]) => [t, nr])), spelregels: Object.fromEntries(c.regels.map(([ok, t]) => [t, ok])) }])
+    + `<article class="v-kaart"><h3>Spelregels gecontroleerd</h3>${c.regels.map(([ok, t, extra]) => `<div class="regel ${ok ? 'ok' : extra ? 'nvt' : 'fout'}">${esc(t)}</div>`).join('')}</article></div>`
+  el.onclick = () => toonPaneel('Geteld uit trace.json', [{ run_id: trace.run_id, cijfers: Object.fromEntries(c.tegels.map(([nr, t]) => [t, nr])), spelregels: Object.fromEntries(c.regels.map(([ok, t]) => [t, ok])), verbruik: trace.verbruik }])
   if (animeer) {
     gsap.fromTo(el, { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7 / snel, ease: 'power2.out' })
     for (const b of el.querySelectorAll('.tegel b')) { const o = { v: 0 }; gsap.to(o, { v: +b.dataset.n, duration: 1.4 / snel, ease: 'power1.out', onUpdate: () => { b.textContent = Math.round(o.v) } }) }
@@ -332,7 +362,7 @@ function duur(stap) {
 }
 function tik() {
   clearTimeout(timer)
-  if (!spelend) return
+  if (!spelend || !gestart) return
   if (pos < totaal()) { zet(pos + 1, true); timer = setTimeout(tik, duur(pos - 1) * 1000 / snel) }
   else timer = setTimeout(tik, 400) // live: wachten op een nieuwe beurt
 }
@@ -356,12 +386,37 @@ $('k-live').onclick = () => { zet(totaal(), false); speel(true) }
 $('k-snel').onclick = () => { snel = snel === 1 ? 2 : snel === 2 ? 0.5 : 1; tekenHtml() }
 $('k-lite').onclick = () => { lite = !lite; $('k-lite').classList.toggle('aan', lite); zaal.setLite(lite) }
 $('k-pres').onclick = presenteer
+function wisselTaal(naar) {
+  technisch = typeof naar === 'boolean' ? naar : !technisch
+  document.body.classList.toggle('ids', technisch) // technisch: de record-ID's staan erbij
+  $('k-ids').textContent = technisch ? 'Taal: technisch' : 'Taal: eenvoudig'
+  $('s-eenvoudig').classList.toggle('aan', !technisch); $('s-technisch').classList.toggle('aan', technisch)
+  vorigeSpreker = null; tekenHtml()
+}
+$('k-ids').onclick = () => wisselTaal()
+$('s-eenvoudig').onclick = () => wisselTaal(false)
+$('s-technisch').onclick = () => wisselTaal(true)
+/** Het startscherm sluiten en de zitting beginnen. */
+function begin(pres) {
+  if (gestart || !trace) return
+  gestart = true; $('start').hidden = true; document.body.classList.remove('wacht'); zaal.draai = false
+  if (trace.status === 'bezig') { zet(n(), false); speel(true) } // een lopende run volg je live
+  else if (pres) presenteer()
+  else herstart()
+}
+$('s-start').onclick = () => begin(false)
+$('s-pres').onclick = () => begin(true)
 addEventListener('keydown', (e) => {
+  if (!gestart) { // op het startscherm
+    if (e.code === 'Space' || e.code === 'Enter') { e.preventDefault(); begin(false) } else if (e.code === 'KeyP') begin(true); else if (e.code === 'KeyT') wisselTaal()
+    return
+  }
   if (e.code === 'Space') { e.preventDefault(); speel(!spelend) }
   else if (e.code === 'ArrowRight') { speel(false); zet(pos + 1, true) }
   else if (e.code === 'ArrowLeft') { speel(false); zet(pos - 1, false) }
   else if (e.code === 'KeyP') presenteer()
   else if (e.code === 'KeyR') herstart()
+  else if (e.code === 'KeyT' || e.code === 'KeyI') wisselTaal()
   else if (e.code === 'KeyF') { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen?.().catch(() => {}) }
   else if (e.code === 'Escape') $('paneel').hidden = true
 })
@@ -396,12 +451,14 @@ function laad(nt, nv) {
     const veilig = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
     rolRe = Object.fromEntries(rollen.map((r) => [r, new RegExp('\\b(' + [...new Set([naamVan(r), r, r.replace(/_/g, ' ')])].map(veilig).join('|') + ')\\b', 'i')]))
   }
+  eigenaarVan = toestand(n()).goud
   const klaar = trace.status !== 'bezig'
   extras = klaar ? [...(trace.geschillen || []).map((_, i) => ({ soort: 'g', i })), ...(verdictOk() ? [{ soort: 'f', pagina: 1 }, { soort: 'f', pagina: 2 }, { soort: 'f', pagina: 3 }] : [])] : []
   if (nieuweRun) {
     zaal.camNaar('breed', null, 0)
     zet(klaar ? 0 : n(), false) // een lopende run volg je live; een afgeronde run speelt vanaf het begin
-    clearTimeout(timer); if (spelend) timer = setTimeout(tik, T.opening * 1000)
+    clearTimeout(timer)
+    if (gestart) { if (spelend) timer = setTimeout(tik, T.opening * 1000) } else zaal.draai = true // eerst het startscherm
   } else zet(Math.min(pos, totaal()), false)
 }
 tekenHtml()

@@ -321,9 +321,9 @@ export function maakZaal(container) {
         float was = 0.9 + 0.18 * n(cel / 26.0);  // vlekkerige kleurwassing
         k *= was;
         k = mix(k, k * vec3(1.06, 0.99, 0.88), 0.55);                   // warm papier
-        k += bayer(cel) * 0.38 / uNiveaus;                              // raster
+        k += bayer(cel) * 0.2 / uNiveaus;                              // raster
         k = floor(k * uNiveaus + 0.5) / uNiveaus;                       // weinig tinten
-        k *= 0.97 + 0.045 * h(cel);                                      // papierkorrel
+        k *= 0.98 + 0.03 * h(cel);                                      // papierkorrel
         gl_FragColor = vec4(k, 1.0);
       }`,
   }))
@@ -537,8 +537,11 @@ export function maakZaal(container) {
     if (document.hidden) return
     const t = ms / 1000
     // camera: zweeft zacht, zodat het beeld nooit stilstaat
-    camera.position.set(cam.x + Math.sin(t * 0.23) * 0.14, cam.y + Math.sin(t * 0.31) * 0.05, cam.z + Math.cos(t * 0.19) * 0.14)
-    camera.lookAt(cam.tx, cam.ty, cam.tz)
+    if (api.draai) { const a = t * 0.09; camera.position.set(Math.sin(a) * 9.8, 4.5, Math.cos(a) * 9.8); camera.lookAt(0, 1.3, 0) } // startscherm: een rondje om de tafel
+    else {
+      camera.position.set(cam.x + Math.sin(t * 0.23) * 0.14, cam.y + Math.sin(t * 0.31) * 0.05, cam.z + Math.cos(t * 0.19) * 0.14)
+      camera.lookAt(cam.tx, cam.ty, cam.tz)
+    }
     // kaarsen flakkeren; hoe minder er branden, hoe donkerder de zaal
     let brandt = 0
     for (const k of kaarsen) { const fl = 0.85 + 0.15 * Math.sin(t * 11 + k.fase) * Math.sin(t * 7.3 + k.fase * 2); k.vlam.scale.set(Math.max(0.001, k.aan), Math.max(0.001, k.aan * fl * 1.15), Math.max(0.001, k.aan)); k.gloed.material.opacity = k.aan * fl; brandt += k.aan }

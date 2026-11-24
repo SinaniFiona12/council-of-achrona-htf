@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=UnifrakturMaguntia&family=Alegreya+SC:wght@400;700&family=Alegreya:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/src/style.css" />
 </head>
-<body>
+<body class="wacht">
   <div id="scene"></div>
   <div class="vignet" aria-hidden="true"></div>
 
@@ -17,9 +17,9 @@
   <header class="balk">
     <h1 id="titel">De Raad van Achrona</h1>
     <ol id="stappen" class="stappen">
-      <li data-s="1"><b>1</b> De Koning kiest wie spreekt</li>
-      <li data-s="2"><b>2</b> Het Raadslid leest zijn eigen bron</li>
-      <li data-s="3"><b>3</b> Het Raadslid antwoordt met bewijs</li>
+      <li data-s="1"><b>1</b> De Koning stelt een vraag</li>
+      <li data-s="2"><b>2</b> Het Raadslid zoekt het op</li>
+      <li data-s="3"><b>3</b> Het Raadslid antwoordt</li>
     </ol>
     <div id="budget" class="budget" title="Beurtenbudget: elk Raadslid-bericht dooft één kaars"></div>
   </header>
@@ -29,7 +29,7 @@
 
   <!-- links: de open vragen van de Koning; rechts: de laatste beurten -->
   <aside id="vragen-blok" class="zij links" hidden>
-    <h2>Open vragen van de Koning</h2>
+    <h2>Nog uitzoeken</h2>
     <ul id="vragen"></ul>
   </aside>
   <aside id="historie" class="zij rechts" hidden>
@@ -64,9 +64,26 @@
     <button id="k-live" title="Live: spring naar het einde en volg de run">Live</button>
     <button id="k-snel" title="Snelheid">1×</button>
     <button id="k-lite" title="Lite: zonder schaduwen en gloed">Lite</button>
+    <button id="k-ids" title="Wissel tussen eenvoudige en technische taal (T)">Taal: eenvoudig</button>
     <button id="k-pres" title="Presentatiemodus (P): de hele run in ±110 seconden. R = herstart">P</button>
     <span id="k-stap" class="stap"></span>
   </div>
+  <!-- startscherm -->
+  <section id="start" class="start">
+    <div class="start-kaart">
+      <p class="start-boven">Hack The Future 2026 · challenge 113</p>
+      <h1>De Raad van Achrona</h1>
+      <p class="start-tekst">Er is iets misgegaan in Achrona: de <b>Desync</b>. De Raadsleden weten elk een stukje van het verhaal. De Koning stelt de vragen. Samen zoeken ze uit wat er gebeurde en hoe het weer goed komt.</p>
+      <ul class="start-uitleg">
+        <li><b>🕯</b>Tien kaarsen: bij elk antwoord dooft er één</li>
+        <li><b>📜</b>Elk blad op tafel is een bewijsstuk</li>
+        <li><b>⚡</b>Een flits: twee Raadsleden zijn het oneens</li>
+      </ul>
+      <div class="start-taal"><span>Taal</span><button id="s-eenvoudig" class="aan">Eenvoudig</button><button id="s-technisch">Technisch</button></div>
+      <div class="start-knoppen"><button id="s-start">▶ Start <small>spatie</small></button><button id="s-pres">Presentatie <small>P</small></button></div>
+      <p class="start-toetsen">← → per beurt · R opnieuw · T taal · F volledig scherm</p>
+    </div>
+  </section>
   <div id="leeg" class="leeg" hidden>Wachten op <code>trace.json</code>…<br /><small>Start <code>uv run council</code> in de root van de repo.</small></div>
 
   <script type="module" src="/src/main.js"></script>

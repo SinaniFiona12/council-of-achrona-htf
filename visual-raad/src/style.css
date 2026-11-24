@@ -180,3 +180,44 @@ html, body, .stappen li, .budget, .label, .zij h2, .zij li, .zij.rechts li b, .d
 .regel.nvt { opacity: 0.7; }
 body.presentatie { cursor: none; }
 @media (max-width: 1150px) { .tegels { grid-template-columns: repeat(2, 1fr); } .tegel b { font-size: 40px; } }
+
+/* ---- rustiger scherm: nummers verborgen (toets I), geen zijpaneel rechts, minder regels ---- */
+.chips { display: none; }
+body.ids .chips { display: flex; }
+.zij.rechts { display: none !important; }
+.budget span { display: none; }
+.belang { margin-left: 12px; font-size: 17px; opacity: 0.65; }
+.d-kop span { text-transform: none; letter-spacing: 0; font-weight: 400; }
+.d-sub { margin-top: 10px; font-size: 19px; opacity: 0.85; }
+.zij.links { width: min(270px, 17vw); }
+.zij li { font-size: 17px; }
+.tegels { grid-template-columns: repeat(2, 1fr); }
+.v-kaart h3 { font-size: 23px; text-transform: none; letter-spacing: 0.02em; }
+.v-kaart p { font-size: 22px; }
+.v-voet { gap: 10px; margin-top: 12px; font-size: 16px; }
+.v-voet .v-av img { margin-left: 0; margin-right: 2px; }
+.vonnis ol li { margin-bottom: 14px; }
+.stappen li { font-size: 15px; padding: 8px 12px; }
+
+/* ---- startscherm ---- */
+.start { position: fixed; inset: 0; z-index: 8; display: grid; place-items: center; padding: 24px; background: radial-gradient(ellipse at center, rgba(13, 9, 21, 0.35), rgba(13, 9, 21, 0.82)); }
+.start-kaart { width: min(900px, 94vw); padding: 30px 38px 26px; text-align: center; background: rgba(21, 14, 33, 0.94); border: 4px solid var(--ijs);
+  box-shadow: 10px 10px 0 #000, inset 0 0 0 4px #150e21, inset 0 0 0 7px var(--goud); }
+.start-boven { margin: 0 0 6px; font: 500 18px/1 var(--pix); letter-spacing: 0.12em; text-transform: uppercase; color: var(--herstel); }
+.start-kaart h1 { margin: 0; font: 700 clamp(44px, 7vw, 76px)/1 var(--pix); color: var(--goud); text-shadow: 5px 5px 0 #000; letter-spacing: 0.02em; }
+.start-tekst { margin: 18px auto 16px; max-width: 34em; font: 400 23px/1.4 var(--pix); }
+.start-tekst b { color: var(--paars); }
+.start-uitleg { margin: 0 auto 18px; padding: 0; list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.start-uitleg li { display: flex; align-items: center; gap: 8px; padding: 8px 12px; font: 400 17px/1.2 var(--pix); background: #1d1430; border: 2px solid rgba(230, 244, 255, 0.25); text-align: left; }
+.start-uitleg b { font-size: 22px; }
+.start-taal { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 16px; font: 500 18px/1 var(--pix); }
+.start-taal span { opacity: 0.7; margin-right: 4px; }
+.start button { font: 600 19px/1 var(--pix); padding: 10px 16px; color: var(--ijs); background: #1d1430; border: 2px solid rgba(230, 244, 255, 0.35); box-shadow: 3px 3px 0 #000; cursor: pointer; }
+.start button.aan { color: var(--nacht); background: var(--herstel); border-color: var(--herstel); }
+.start-knoppen { display: flex; justify-content: center; gap: 14px; }
+.start-knoppen button { font-size: 26px; padding: 14px 26px; }
+.start-knoppen #s-start { color: var(--nacht); background: var(--goud); border-color: var(--goud); animation: klop 1.4s steps(2) infinite; }
+.start-knoppen small { margin-left: 8px; font-size: 14px; opacity: 0.7; }
+@keyframes klop { 50% { box-shadow: 3px 3px 0 #000, 0 0 0 4px rgba(240, 168, 48, 0.4); } }
+.start-toetsen { margin: 16px 0 0; font: 400 15px/1 var(--pix); opacity: 0.55; }
+body.wacht .balk, body.wacht .dialoog, body.wacht .zij, body.wacht #labels, body.wacht .bediening, body.wacht .vonnis { display: none !important; }
