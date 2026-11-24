@@ -15,6 +15,7 @@ from contextlib import AsyncExitStack
 from datetime import datetime
 from pathlib import Path
 
+import httpx
 from agent_framework import Agent, MCPStreamableHTTPTool
 from agent_framework.openai import OpenAIChatCompletionClient
 from dotenv import load_dotenv
@@ -34,6 +35,36 @@ RARE_STREEP = re.compile("(ARC|ENG|GUA|HIS|ORA|BEA)[‐‑‒–—―−]([0-9]
 SLOTS = ("ingreep", "mechanisme", "verloop")
 
 VERBRUIK = {}  # tokens per model, komt in trace.json onder "verbruik"
+
+
+# --------------------------------------------------------------------------- budget van de teamkey
+
+def budget():
+    """(uitgegeven, maximum) in dollar voor de teamkey, of None als het endpoint dat niet geeft.
+    Gratis: dit is geen LLM-call en kost geen tokens."""
+    try:
+        root = os.environ["OPENAI_BASE_URL"].rstrip("/").removesuffix("/v1")
+        r = httpx.get(f"{root}/key/info", headers={"Authorization": f"Bearer {os.environ['OPENAI_API_KEY']}"}, timeout=10)
+        info = r.json()["info"]
+        return float(info.get("spend") or 0), float(info["max_budget"])
+    except Exception:
+        return None
+
+
+def meld_budget(moment):
+    """Toont het budget, met een duidelijke waarschuwing zodra er BUDGET_WAARSCHUWING dollar (standaard 3) of minder over is."""
+    b = budget()
+    if b is None:
+        print(f"Budget ({moment}): niet op te vragen bij dit endpoint.")
+        return
+    uitgegeven, maximum = b
+    over = maximum - uitgegeven
+    grens = float(os.getenv("BUDGET_WAARSCHUWING", "3"))
+    print(f"Budget ({moment}): ${uitgegeven:.4f} van ${maximum:.2f} gebruikt, nog ${over:.2f} over.")
+    if over <= grens:
+        balk = "!" * 70
+        print(f"\n{balk}\nLET OP: nog maar ${over:.2f} budget over (waarschuwing vanaf ${grens:.2f}).\n"
+              f"Draai alleen nog runs die echt nodig zijn, of schakel over op een gratis endpoint in .env.\n{balk}\n")
 
 
 # --------------------------------------------------------------------------- hulpjes
@@ -437,6 +468,7 @@ async def run():
     run_id = f"{datetime.now().astimezone().isoformat(timespec='seconds')}_{uuid.uuid4().hex[:8]}"
     leden = raadsleden.alle()
     controleer(leden)
+    meld_budget("voor de run")
     beurten = []
     VERBRUIK.clear()
     trace = {"run_id": run_id, "status": "bezig", "raadsleden": [l.ROL for l in leden], "beurten": beurten,
@@ -526,10 +558,14 @@ async def run():
     print(f"\nKlaar: verdict.json en trace.json geschreven (run_id {run_id}).")
     for model, v in VERBRUIK.items():
         print(f"Verbruik {model}: {v['beurten']} beurten, {v['invoer']} tokens in ({v['gecached']} gecached), {v['uitvoer']} tokens uit")
+    meld_budget("na de run")
 
 
 def main():
     sys.stdout.reconfigure(encoding="utf-8")
+    if "--budget" in sys.argv[1:]:  # `uv run council --budget`: alleen het budget tonen, gratis
+        load_dotenv(ROOT / ".env")
+        return meld_budget("nu")
     asyncio.run(run())
 
 
