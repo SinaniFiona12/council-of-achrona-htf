@@ -3,14 +3,17 @@
 import * as THREE from 'three'
 import gsap from 'gsap'
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
-import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
+import { RenderPixelatedPass } from 'three/examples/jsm/postprocessing/RenderPixelatedPass.js'
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js'
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js'
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js'
 import { CONFIG, kleurVan } from './config.js'
 
 const R_STOEL = 3.05, TAFEL_R = 2.45, TAFEL_Y = 0.97
 const V = (x, y, z) => new THREE.Vector3(x, y, z)
-const std = (kleur, o = {}) => new THREE.MeshStandardMaterial({ color: kleur, roughness: 0.82, ...o })
+const TREDEN = new THREE.DataTexture(new Uint8Array([95, 150, 205, 255]), 4, 1, THREE.RedFormat)
+TREDEN.minFilter = TREDEN.magFilter = THREE.NearestFilter; TREDEN.needsUpdate = true
+const std = (kleur, o = {}) => { const { roughness, metalness, ...rest } = o; return new THREE.MeshToonMaterial({ color: kleur, gradientMap: TREDEN, ...rest }) }
 const licht = (r, g, b) => new THREE.MeshBasicMaterial({ color: new THREE.Color(r, g, b) }) // helderder dan 1: gloeit via bloom
 const hash = (s, zout = 0) => { let x = 2166136261 ^ zout; for (let i = 0; i < s.length; i++) x = Math.imul(x ^ s.charCodeAt(i), 16777619); return ((x >>> 0) % 10000) / 10000 }
 
@@ -42,6 +45,7 @@ function canvasTextuur(b, h, teken) {
   const c = document.createElement('canvas'); c.width = b; c.height = h
   teken(c.getContext('2d'), b, h)
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace
+  t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false; t.wrapS = t.wrapT = THREE.RepeatWrapping
   return t
 }
 
@@ -57,7 +61,7 @@ function maakFiguur(rol, kleurHex) {
   }
   // stoel (de Koning zit op een troon)
   const hoog = P.troon ? 2.75 : 2.0
-  voeg(g, new THREE.BoxGeometry(P.troon ? 0.98 : 0.8, hoog, 0.1), std('#20150e', { roughness: 0.7 }), 0, hoog / 2, -0.46)
+  voeg(g, new THREE.BoxGeometry(P.troon ? 0.98 : 0.8, hoog, 0.1), std('#4a2f1c'), 0, hoog / 2, -0.46)
   if (P.troon) for (const s of [-1, 1]) voeg(g, new THREE.ConeGeometry(0.07, 0.32, 8), goud, s * 0.43, hoog + 0.16, -0.46)
   // romp, schouders, armen op tafel
   voeg(g, new THREE.CylinderGeometry(0.25, 0.42, 0.95, 20), stof, 0, 0.83, 0)
@@ -68,12 +72,12 @@ function maakFiguur(rol, kleurHex) {
   }
   voeg(g, new THREE.CylinderGeometry(0.07, 0.08, 0.16, 12), huid, 0, 1.4, 0)
   // hoofd
-  const hoofd = new THREE.Group(); hoofd.position.set(0, 1.58, 0); g.add(hoofd)
+  const hoofd = new THREE.Group(); hoofd.position.set(0, 1.6, 0); hoofd.scale.setScalar(1.28); g.add(hoofd)
   voeg(hoofd, new THREE.SphereGeometry(0.185, 28, 20), huid, 0, 0, 0).scale.set(0.95, 1.12, 1)
   for (const s of [-1, 1]) {
     voeg(hoofd, new THREE.SphereGeometry(0.04, 10, 8), huid, s * 0.175, -0.01, 0, false)
     if (P.ogenDicht) voeg(hoofd, new THREE.BoxGeometry(0.055, 0.009, 0.01), donker, s * 0.068, 0.02, 0.172, false)
-    else voeg(hoofd, new THREE.SphereGeometry(0.021, 10, 8), donker, s * 0.068, 0.02, 0.166, false)
+    else voeg(hoofd, new THREE.SphereGeometry(0.03, 10, 8), donker, s * 0.068, 0.02, 0.162, false)
     voeg(hoofd, new THREE.BoxGeometry(0.07, 0.014, 0.02), haar, s * 0.068, 0.075, 0.168, false).rotation.z = s * -0.12
   }
   voeg(hoofd, new THREE.SphereGeometry(0.028, 10, 8), huid, 0, -0.03, 0.182, false).scale.set(0.8, 1.2, 1)
@@ -147,35 +151,56 @@ export function maakZaal(container) {
   const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' })
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
   renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFShadowMap
-  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 0.95
+  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.08
   container.appendChild(renderer.domElement)
-  const NACHT = new THREE.Color('#0d0915')
-  const scene = new THREE.Scene(); scene.background = NACHT; scene.fog = new THREE.FogExp2('#0d0915', 0.04)
+  const NACHT = new THREE.Color('#1b1430')
+  const scene = new THREE.Scene(); scene.background = NACHT; scene.fog = new THREE.FogExp2('#1b1430', 0.022)
   const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 60)
 
+  // ---- getekende texturen (in code, op lage resolutie)
+  const ruis = (c, b, h, n, kleuren) => { for (let i = 0; i < n; i++) { c.fillStyle = kleuren[(Math.random() * kleuren.length) | 0]; c.fillRect((Math.random() * b) | 0, (Math.random() * h) | 0, 1 + ((Math.random() * 2) | 0), 1) } }
+  const tegelTex = canvasTextuur(32, 32, (c, b, h) => {
+    c.fillStyle = '#231a33'; c.fillRect(0, 0, b, h)
+    for (let y = 0; y < 2; y++) for (let x = 0; x < 2; x++) { c.fillStyle = (x + y) % 2 ? '#4a3d63' : '#3f3357'; c.fillRect(x * 16 + 1, y * 16 + 1, 14, 14) }
+    ruis(c, b, h, 60, ['#55476f', '#372c4c', '#2e2440'])
+  }); tegelTex.repeat.set(13, 13)
+  const steenTex = canvasTextuur(32, 16, (c, b, h) => {
+    c.fillStyle = '#241b34'; c.fillRect(0, 0, b, h)
+    for (let rij = 0; rij < 2; rij++) for (let k = -1; k < 2; k++) { c.fillStyle = ['#51446b', '#473b60', '#5a4c75'][(k + rij + 3) % 3]; c.fillRect(k * 16 + rij * 8 + 1, rij * 8 + 1, 14, 6) }
+    ruis(c, b, h, 26, ['#63557f', '#3d3154'])
+  }); steenTex.repeat.set(34, 9)
+  const houtTex = canvasTextuur(96, 96, (c, b, h) => {
+    c.fillStyle = '#6b4424'; c.fillRect(0, 0, b, h)
+    for (let r = 46; r > 2; r -= 4) { c.strokeStyle = (r / 4) % 2 ? '#7c5230' : '#5a381d'; c.lineWidth = 2; c.beginPath(); c.arc(b / 2, h / 2, r, 0, Math.PI * 2); c.stroke() }
+    c.strokeStyle = '#3d2412'; c.lineWidth = 1; for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4; c.beginPath(); c.moveTo(b / 2, h / 2); c.lineTo(b / 2 + Math.cos(a) * 48, h / 2 + Math.sin(a) * 48); c.stroke() }
+    ruis(c, b, h, 150, ['#86593a', '#4d2f17'])
+  })
+  const toon = (o) => new THREE.MeshToonMaterial({ gradientMap: TREDEN, ...o })
+
   // ---- de zaal
-  const vloer = new THREE.Mesh(new THREE.CircleGeometry(12, 48), std('#1a1422', { roughness: 0.9 })); vloer.rotation.x = -Math.PI / 2; vloer.receiveShadow = true; scene.add(vloer)
-  const kleed = new THREE.Mesh(new THREE.RingGeometry(0.9, 4.7, 64), std('#2b173a', { roughness: 1 })); kleed.rotation.x = -Math.PI / 2; kleed.position.y = 0.006; kleed.receiveShadow = true; scene.add(kleed)
-  const muur = new THREE.Mesh(new THREE.CylinderGeometry(9, 9, 8, 48, 1, true), std('#1d1629', { roughness: 1, side: THREE.BackSide })); muur.position.y = 4; muur.receiveShadow = true; scene.add(muur)
+  const vloer = new THREE.Mesh(new THREE.CircleGeometry(12, 48), toon({ map: tegelTex })); vloer.rotation.x = -Math.PI / 2; vloer.receiveShadow = true; scene.add(vloer)
+  const kleed = new THREE.Mesh(new THREE.RingGeometry(0.9, 4.7, 64), std('#7a2f5c')); kleed.rotation.x = -Math.PI / 2; kleed.position.y = 0.006; kleed.receiveShadow = true; scene.add(kleed)
+  const muur = new THREE.Mesh(new THREE.CylinderGeometry(9, 9, 8, 48, 1, true), toon({ map: steenTex, side: THREE.BackSide })); muur.position.y = 4; muur.receiveShadow = true; scene.add(muur)
   const vensterTex = canvasTextuur(128, 320, (c, b, h) => {
+    c.fillStyle = '#2a2040'; c.fillRect(0, 0, b, h) // de muur rond de boog (dekkend: zo krijgt het venster een strakke inktrand)
     c.beginPath(); c.moveTo(6, h); c.lineTo(6, 70); c.quadraticCurveTo(b / 2, -20, b - 6, 70); c.lineTo(b - 6, h); c.closePath(); c.clip()
-    const gr = c.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#22327a'); gr.addColorStop(1, '#3a1f6e'); c.fillStyle = gr; c.fillRect(0, 0, b, h)
+    const gr = c.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#3550c0'); gr.addColorStop(1, '#7a3fb0'); c.fillStyle = gr; c.fillRect(0, 0, b, h)
     c.fillStyle = '#dfe9ff'; for (let i = 0; i < 60; i++) { c.globalAlpha = 0.3 + Math.random() * 0.7; c.fillRect(Math.random() * b, Math.random() * h, 1.6, 1.6) }
     c.globalAlpha = 1; c.strokeStyle = '#0d0915'; c.lineWidth = 4; for (const x of [b / 3, 2 * b / 3]) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x, h); c.stroke() }
     for (const y of [110, 210]) { c.beginPath(); c.moveTo(0, y); c.lineTo(b, y); c.stroke() }
   })
   for (let i = 0; i < 9; i++) {
     const a = (i + 0.5) / 9 * Math.PI * 2
-    const v = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 3.7), new THREE.MeshBasicMaterial({ map: vensterTex, transparent: true, color: '#b9c2e6' }))
+    const v = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 3.7), new THREE.MeshBasicMaterial({ map: vensterTex }))
     v.position.set(Math.sin(a) * 8.9, 3.7, -Math.cos(a) * 8.9); v.lookAt(0, 3.7, 0); scene.add(v)
-    const zuil = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.3, 8, 12), std('#241b33')); const b = i / 9 * Math.PI * 2
+    const zuil = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.3, 8, 12), std('#6a5b88')); const b = i / 9 * Math.PI * 2
     zuil.position.set(Math.sin(b) * 8.5, 4, -Math.cos(b) * 8.5); zuil.receiveShadow = true; scene.add(zuil)
   }
 
   // ---- de tafel met het sigil van Achrona
-  const hout = std('#3b2616', { roughness: 0.5, metalness: 0.05 })
-  const blad = new THREE.Mesh(new THREE.CylinderGeometry(TAFEL_R, TAFEL_R, 0.1, 72), hout); blad.position.y = TAFEL_Y - 0.05; blad.castShadow = true; blad.receiveShadow = true; scene.add(blad)
-  const rand = new THREE.Mesh(new THREE.TorusGeometry(TAFEL_R, 0.035, 8, 72), std('#8a6a2f', { metalness: 0.7, roughness: 0.35 })); rand.rotation.x = Math.PI / 2; rand.position.y = TAFEL_Y; scene.add(rand)
+  const hout = std('#5a381d')
+  const blad = new THREE.Mesh(new THREE.CylinderGeometry(TAFEL_R, TAFEL_R, 0.1, 72), [hout, toon({ map: houtTex }), hout]); blad.position.y = TAFEL_Y - 0.05; blad.castShadow = true; blad.receiveShadow = true; scene.add(blad)
+  const rand = new THREE.Mesh(new THREE.TorusGeometry(TAFEL_R, 0.035, 8, 72), std('#c79a3c')); rand.rotation.x = Math.PI / 2; rand.position.y = TAFEL_Y; scene.add(rand)
   const poot = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.85, 0.9, 20), std('#24170d')); poot.position.y = 0.45; scene.add(poot)
   const sigilMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(1.5, 0.5, 2.6), transparent: true, opacity: 0.9, side: THREE.DoubleSide })
   const plat = (geo, mat, y = TAFEL_Y + 0.004) => { const o = new THREE.Mesh(geo, mat); o.rotation.x = -Math.PI / 2; o.position.y = y; scene.add(o); return o }
@@ -189,13 +214,13 @@ export function maakZaal(container) {
   for (let i = 0; i < CONFIG.budget; i++) {
     const a = i / CONFIG.budget * Math.PI * 2, h = 0.2 + hash('k' + i) * 0.16, x = Math.sin(a) * 0.62, z = Math.cos(a) * 0.62
     const was = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.046, h, 12), std('#e9dfc8', { emissive: '#3a2a10', roughness: 0.6 })); was.position.set(x, TAFEL_Y + h / 2, z); was.castShadow = true; scene.add(was)
-    const vlam = new THREE.Mesh(new THREE.SphereGeometry(0.03, 10, 8), licht(2.4, 1.5, 0.5)); vlam.scale.set(1, 2, 1); vlam.position.set(x, TAFEL_Y + h + 0.06, z); scene.add(vlam)
-    const gloed = new THREE.Sprite(new THREE.SpriteMaterial({ map: gloedTex, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true })); gloed.scale.setScalar(0.34); gloed.position.copy(vlam.position); scene.add(gloed)
+    const vlam = new THREE.Mesh(new THREE.ConeGeometry(0.045, 0.13, 6), licht(2.6, 1.7, 0.5)); vlam.scale.set(1, 1, 1); vlam.position.set(x, TAFEL_Y + h + 0.06, z); scene.add(vlam)
+    const gloed = { material: {} } // geen zachte gloed: de vlam zelf is het licht
     kaarsen.push({ vlam, gloed, aan: 1, fase: hash('f' + i) * 6 })
   }
 
   // ---- licht
-  const hemel = new THREE.HemisphereLight('#5a52a8', '#1a1224', 0.9); scene.add(hemel)
+  const hemel = new THREE.HemisphereLight('#9a90e0', '#4a3a58', 1.5); scene.add(hemel)
   const kaarslicht = new THREE.PointLight('#ffb463', 30, 20, 1.7); kaarslicht.position.set(0, 1.6, 0); kaarslicht.castShadow = true
   kaarslicht.shadow.mapSize.set(1024, 1024); kaarslicht.shadow.bias = -0.004; kaarslicht.shadow.radius = 4; scene.add(kaarslicht)
   const maan = new THREE.DirectionalLight('#6f7dff', 0.35); maan.position.set(-5, 8, 6); scene.add(maan)
@@ -211,11 +236,43 @@ export function maakZaal(container) {
 
   // ---- post
   const composer = new EffectComposer(renderer)
-  composer.addPass(new RenderPass(scene, camera))
-  const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.3, 0.5, 1.0); composer.addPass(bloom)
+  const pixelGrootte = Math.max(2, Math.round(CONFIG.pixel * renderer.getPixelRatio()))
+  const pixelPass = new RenderPixelatedPass(pixelGrootte, scene, camera, { normalEdgeStrength: 0.75, depthEdgeStrength: 0.92 })
+  { // de lijnen binnen een vorm worden ook donker (inkt), niet licht
+    const mat = pixelPass.pixelatedMaterial || pixelPass._pixelatedMaterial
+    if (mat) { mat.fragmentShader = mat.fragmentShader.replace('(1.0 + normalEdgeStrength * nei)', '(1.0 - normalEdgeStrength * nei)'); mat.needsUpdate = true }
+  }
+  composer.addPass(pixelPass)
+  const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.22, 0.4, 1.05); composer.addPass(bloom)
   composer.addPass(new OutputPass())
+  // papier en raster: weinig tinten per kleur, met een rasterpatroon ertussen en de korrel van papier eroverheen
+  composer.addPass(new ShaderPass({
+    uniforms: { tDiffuse: { value: null }, uPixel: { value: pixelGrootte }, uNiveaus: { value: CONFIG.kleurNiveaus } },
+    vertexShader: 'varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+    fragmentShader: `
+      uniform sampler2D tDiffuse; uniform float uPixel; uniform float uNiveaus; varying vec2 vUv;
+      float h(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+      float n(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
+        return mix(mix(h(i), h(i + vec2(1, 0)), f.x), mix(h(i + vec2(0, 1)), h(i + vec2(1, 1)), f.x), f.y); }
+      float bayer(vec2 p) { int x = int(mod(p.x, 4.0)), y = int(mod(p.y, 4.0));
+        float m[16] = float[16](0., 8., 2., 10., 12., 4., 14., 6., 3., 11., 1., 9., 15., 7., 13., 5.); return m[x + y * 4] / 16.0 - 0.47; }
+      void main() {
+        vec3 k = texture2D(tDiffuse, vUv).rgb;
+        vec2 cel = floor(gl_FragCoord.xy / uPixel);
+        float was = 0.9 + 0.18 * n(cel / 26.0);  // vlekkerige kleurwassing
+        k *= was;
+        k = mix(k, k * vec3(1.06, 0.99, 0.88), 0.55);                   // warm papier
+        k += bayer(cel) * 0.38 / uNiveaus;                              // raster
+        k = floor(k * uNiveaus + 0.5) / uNiveaus;                       // weinig tinten
+        k *= 0.97 + 0.045 * h(cel);                                      // papierkorrel
+        gl_FragColor = vec4(k, 1.0);
+      }`,
+  }))
 
   // ---- toestand
+  const banierVorm = new THREE.Shape([[-0.575, 1.6], [0.575, 1.6], [0.575, -1.09], [0, -1.6], [-0.575, -1.09]].map(([x, y]) => new THREE.Vector2(x, y)))
+  const banierGeo = new THREE.ShapeGeometry(banierVorm)
+  for (let i = 0, p = banierGeo.attributes.position, uv = banierGeo.attributes.uv; i < p.count; i++) uv.setXY(i, p.getX(i) / 1.15 + 0.5, p.getY(i) / 3.2 + 0.5)
   const figuren = new Map(), plekken = new Map(), banieren = []
   const papieren = new Map(), papierGeo = new THREE.PlaneGeometry(0.19, 0.13)
   const cam = { x: 0, y: 5.4, z: 9, tx: 0, ty: 0.6, tz: 0 }
@@ -226,7 +283,7 @@ export function maakZaal(container) {
   const hoofdPlek = (rol) => { const p = plekken.get(rol); return p ? V(p.pos.x, 1.58, p.pos.z) : V(0, 1.4, 0) }
   const opTafel = (rol, r) => { const p = plekken.get(rol); return p ? V(p.dir.x * r, TAFEL_Y + 0.03, p.dir.z * r) : V(0, TAFEL_Y + 0.03, 0) }
 
-  function ruimOp(o) { scene.remove(o); o.traverse?.((x) => { x.geometry?.dispose?.() }) }
+  function ruimOp(o) { scene.remove(o); o.traverse?.((x) => { if (x.geometry !== banierGeo) x.geometry?.dispose?.() }) }
 
   /** Bouwt de Koning en de Raadsleden rond de tafel en geeft een portret (data-URL) per Rol terug. */
   api.zetRaad = (rollen) => {
@@ -243,11 +300,11 @@ export function maakZaal(container) {
       // banier in de kleur van de Rol, met zijn symbool, aan de muur achter zijn stoel
       const tex = canvasTextuur(160, 440, (c, b, h) => {
         c.beginPath(); c.moveTo(0, 0); c.lineTo(b, 0); c.lineTo(b, h - 70); c.lineTo(b / 2, h); c.lineTo(0, h - 70); c.closePath(); c.clip()
-        c.fillStyle = kleur; c.fillRect(0, 0, b, h); c.fillStyle = 'rgba(10,6,16,.45)'; c.fillRect(0, 0, b, h)
+        c.fillStyle = kleur; c.fillRect(0, 0, b, h); c.fillStyle = 'rgba(10,6,16,.2)'; c.fillRect(0, 0, b, h)
         c.strokeStyle = '#e3b04b'; c.lineWidth = 6; c.strokeRect(9, 9, b - 18, h); c.lineWidth = 7; c.lineCap = 'round'; c.lineJoin = 'round'
         for (const lijn of GLYPH[rol] || GLYPH._) { c.beginPath(); lijn.forEach(([x, y], j) => c[j ? 'lineTo' : 'moveTo'](b / 2 + x * 48, 170 - y * 48)); c.stroke() }
       })
-      const banier = new THREE.Mesh(new THREE.PlaneGeometry(1.15, 3.2), new THREE.MeshStandardMaterial({ map: tex, transparent: true, roughness: 0.95, side: THREE.DoubleSide }))
+      const banier = new THREE.Mesh(banierGeo, toon({ map: tex, side: THREE.DoubleSide }))
       banier.position.set(dir.x * 8.55, 4.3, dir.z * 8.55); banier.lookAt(0, 4.3, 0); scene.add(banier); banieren.push(banier)
     })
     const k = plekken.get('koning'); koningslicht.position.set(k.pos.x * 1.25, 3.2, k.pos.z * 1.25)
@@ -256,20 +313,20 @@ export function maakZaal(container) {
 
   /** Portret per Rol: een momentopname van het eigen 3D-personage (dus geen losse afbeeldingen). */
   function portretten() {
-    const uit = {}, c = document.createElement('canvas'); c.width = c.height = 192
+    const uit = {}, c = document.createElement('canvas'); c.width = c.height = 72
     const ctx = c.getContext('2d'), pc = new THREE.PerspectiveCamera(30, 1, 0.1, 20)
     const mist = scene.fog, pr = renderer.getPixelRatio()
-    scene.fog = null; renderer.setPixelRatio(1); renderer.setSize(192, 192, false); portretlicht.intensity = 2.4; hemel.intensity = 1.5
+    scene.fog = null; renderer.setPixelRatio(1); renderer.setSize(72, 72, false); portretlicht.intensity = 2.2; hemel.intensity = 1.9
     for (const [rol, f] of figuren) {
       const p = plekken.get(rol), hoofd = V(p.pos.x, 1.62, p.pos.z)
       pc.position.copy(hoofd).addScaledVector(p.dir, -1.75).add(V(0, 0.08, 0)); pc.lookAt(hoofd)
       portretlicht.position.copy(pc.position).add(V(0.6, 0.9, 0)); portretlicht.target.position.copy(hoofd)
-      scene.background = new THREE.Color(kleurVan(rol, 0)).multiplyScalar(0.16)
+      scene.background = new THREE.Color(kleurVan(rol, 0)).multiplyScalar(0.3)
       f.hoofd.rotation.set(0, 0, 0); scene.updateMatrixWorld(true)
-      renderer.render(scene, pc); ctx.clearRect(0, 0, 192, 192); ctx.drawImage(renderer.domElement, 0, 0, 192, 192)
+      renderer.render(scene, pc); ctx.clearRect(0, 0, 72, 72); ctx.drawImage(renderer.domElement, 0, 0, 72, 72)
       uit[rol] = c.toDataURL('image/png')
     }
-    scene.fog = mist; scene.background = NACHT; portretlicht.intensity = 0; hemel.intensity = 0.9; renderer.setPixelRatio(pr); resize()
+    scene.fog = mist; scene.background = NACHT; portretlicht.intensity = 0; hemel.intensity = 1.5; renderer.setPixelRatio(pr); resize()
     return uit
   }
 
@@ -316,7 +373,7 @@ export function maakZaal(container) {
       let m = papieren.get(id)
       const doel = papierPlek(id, rol, gedeeld)
       if (!m) {
-        m = new THREE.Mesh(papierGeo, new THREE.MeshStandardMaterial({ color: '#efe3c4', emissive: '#f0a830', emissiveIntensity: 0.1, roughness: 0.9, transparent: true, side: THREE.DoubleSide }))
+        m = new THREE.Mesh(papierGeo, toon({ color: '#f3e8cc', emissive: '#f0a830', emissiveIntensity: 0.1, transparent: true, side: THREE.DoubleSide }))
         m.rotation.set(-Math.PI / 2, 0, hash(id, 3) * Math.PI * 2); m.userData = { id, rol, gedeeld, thuis: doel }; m.receiveShadow = true
         scene.add(m); papieren.set(id, m)
         if (animeer) {
@@ -419,7 +476,7 @@ export function maakZaal(container) {
     camera.lookAt(cam.tx, cam.ty, cam.tz)
     // kaarsen flakkeren; hoe minder er branden, hoe donkerder de zaal
     let brandt = 0
-    for (const k of kaarsen) { const fl = 0.85 + 0.15 * Math.sin(t * 11 + k.fase) * Math.sin(t * 7.3 + k.fase * 2); k.vlam.scale.set(k.aan, 2 * k.aan * fl, k.aan); k.gloed.material.opacity = k.aan * fl; brandt += k.aan }
+    for (const k of kaarsen) { const fl = 0.85 + 0.15 * Math.sin(t * 11 + k.fase) * Math.sin(t * 7.3 + k.fase * 2); k.vlam.scale.set(Math.max(0.001, k.aan), Math.max(0.001, k.aan * fl * 1.15), Math.max(0.001, k.aan)); k.gloed.material.opacity = k.aan * fl; brandt += k.aan }
     kaarslicht.intensity = (5.5 + 8 * brandt / kaarsen.length) * (0.94 + 0.06 * Math.sin(t * 9.1) * Math.sin(t * 5.7))
     // het sigil: paars en onrustig zolang de Desync onverklaard is, turquoise naarmate er bewijs komt, goud bij het vonnis
     if (herstel >= 0.99) sigilKleur.copy(GOUD); else sigilKleur.copy(PAARS).lerp(TEAL, herstel)

@@ -27,6 +27,8 @@ export const CONFIG = {
   // tekstbudget (alles wat langer is, staat volledig in het paneel)
   tekst: { redenWoorden: 20, vraagWoorden: 28, openVragen: 3, openWoorden: 11, kernTekens: 220, idChips: 7, histWoorden: 10, vonnisWoorden: 28, actieWoorden: 20 },
   presentatieSeconden: 110, // toets P: de hele run in ongeveer zoveel seconden
+  pixel: 4, // grootte van één beeldpixel (in schermpixels): hoger = grover
+  kleurNiveaus: 9, // aantal tinten per kleurkanaal: lager = vlakker, meer raster
   budget: 10, // het Beurtenbudget = de tien kaarsen op tafel
   pollMs: 1000,
 }

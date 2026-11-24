@@ -117,3 +117,43 @@ body.presentatie .bediening button:not(#k-pres):not(#k-speel) { display: none; }
 body.presentatie .bediening { opacity: 0.35; }
 .leeg { position: fixed; inset: 0; z-index: 5; display: grid; place-content: center; text-align: center; font-size: 26px; pointer-events: none; }
 @media (max-width: 1150px) { .zij { display: none; } .stappen li { font-size: 13px; padding: 7px 9px; } .balk h1 { font-size: 24px; } .dialoog { width: 94vw; } .v-rij, .v-rij.twee { grid-template-columns: 1fr; } }
+
+/* ---- pixelstijl: harde randen, harde schaduwen, pixelletter ---- */
+:root { --pix: "Pixelify Sans", "Alegreya SC", system-ui, sans-serif; --vlak: #150e21; }
+html, body, .stappen li, .budget, .label, .zij h2, .zij li, .zij.rechts li b, .d-kop, .d-tekst, .d-lijst div, .d-lijst b, .d-sub, .chip, .v-kaart h3, .v-kaart h3 small, .v-kaart p,
+.vonnis ol li, .vonnis ol li::before, .risico, .vonnis .v-sam, .bediening button, .paneel h2, .stappen.titel::after, .label .doet { font-family: var(--pix); font-style: normal; }
+.balk { background: none; }
+.balk h1 { font: 700 30px/1 var(--pix); letter-spacing: 0.03em; color: var(--goud); text-shadow: 3px 3px 0 #000; }
+.stappen li { border-radius: 0; border: 2px solid rgba(230, 244, 255, 0.28); background: var(--vlak); box-shadow: 3px 3px 0 #000; font-size: 16px; letter-spacing: 0.02em; }
+.stappen li b { border-radius: 0; }
+.stappen li.aan { box-shadow: 3px 3px 0 #000; }
+.stappen.titel::after { font-size: 24px; letter-spacing: 0.06em; text-shadow: 3px 3px 0 #000; }
+.budget { font-size: 16px; text-shadow: 2px 2px 0 #000; }
+.budget i { border-radius: 0; width: 8px; box-shadow: 2px 2px 0 #000; }
+.budget i.uit { box-shadow: none; }
+.label, .label.actief { border-radius: 0; background: var(--vlak); border: 2px solid var(--k, var(--ijs)); box-shadow: 3px 3px 0 #000; letter-spacing: 0.03em; }
+.label:not(.actief) { border-color: transparent; }
+.zij h2 { font-size: 17px; text-shadow: 2px 2px 0 #000; }
+.zij li { border-radius: 0; background: var(--vlak); box-shadow: 3px 3px 0 #000; border-left-width: 4px; font-size: 18px; }
+.zij.rechts li { border-right-width: 4px; }
+.zij.rechts li img, .d-lijst img, .v-av img { border-radius: 0; image-rendering: pixelated; border-width: 2px; }
+.dialoog { border-radius: 0; background: var(--vlak); border: 4px solid var(--ijs); box-shadow: 8px 8px 0 #000, inset 0 0 0 4px var(--vlak), inset 0 0 0 7px var(--k, var(--goud)); backdrop-filter: none;
+  padding: 24px 30px 22px 24px; }
+.portret { border-radius: 0; border: 4px solid var(--ijs); box-shadow: 6px 6px 0 #000; background: var(--vlak); }
+.portret img { image-rendering: pixelated; }
+.d-kop { font-size: 24px; letter-spacing: 0.04em; }
+.d-tekst { font-size: clamp(24px, 3.1vh, 32px); line-height: 1.25; }
+.d-sub { opacity: 0.8; }
+.chip { border-radius: 0; border-width: 2px; font-size: 16px; font-weight: 500; }
+.vonnis { border-radius: 0; background: var(--vlak); border: 4px solid var(--goud); box-shadow: 8px 8px 0 #000; backdrop-filter: none; }
+.vonnis h2, .dag { font-family: var(--pix); font-weight: 700; text-shadow: 3px 3px 0 #000; }
+.v-kaart { border-radius: 0; border: 2px solid rgba(230, 244, 255, 0.25); background: #1d1430; }
+.balk-z, .balk-z i { border-radius: 0; height: 8px; box-shadow: none; }
+.vonnis ol li::before { border-radius: 0; }
+.bediening button { border-radius: 0; border-width: 2px; box-shadow: 3px 3px 0 #000; }
+.paneel pre, .sluit { border-radius: 0; }
+.vignet { background: radial-gradient(ellipse at 50% 42%, transparent 58%, rgba(5, 3, 9, 0.6) 100%); }
+.d-tekst::after { content: "▼"; display: inline-block; margin-left: 8px; font-size: 0.6em; color: var(--k, var(--goud)); animation: knipper 0.9s steps(2) infinite; }
+@keyframes knipper { 50% { opacity: 0; } }
+.dialoog { bottom: 58px; }
+.bediening { bottom: 12px; }

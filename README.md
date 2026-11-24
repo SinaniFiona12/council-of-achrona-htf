@@ -162,7 +162,7 @@ Open http://localhost:5173. Start daarna in een tweede terminal `uv run council`
 
 ### De Raadzaal starten (3D-visualisatie voor de pitch)
 
-De zitting als een raadzaal bij kaarslicht (Three.js + GSAP) in `visual-raad/`. Alles is in code gebouwd: de zaal, de tafel en de personages bestaan uit eenvoudige vormen, zonder modellen of afbeeldingen, en de portretten zijn momentopnamen van die personages. Net als de andere viewers leest de Raadzaal alleen `trace.json` en `verdict.json`: ze schrijft niets en roept geen LLM aan.
+De zitting als een raadzaal bij kaarslicht (Three.js + GSAP) in `visual-raad/`. De stijl is getekende pixelart: het 3D-beeld wordt op lage resolutie gerenderd, met vlakke schaduwen, donkere inktlijnen rond elke vorm, weinig tinten per kleur en een lichte papierkorrel. Alles is in code gebouwd: de zaal, de tafel en de personages bestaan uit eenvoudige vormen, zonder modellen of afbeeldingen, en de portretten zijn momentopnamen van die personages. Net als de andere viewers leest de Raadzaal alleen `trace.json` en `verdict.json`: ze schrijft niets en roept geen LLM aan.
 
 ```
 cd visual-raad
@@ -175,7 +175,7 @@ Open http://localhost:5176. Start `uv run council` in een tweede terminal om liv
 - **Wat je ziet**: de Koning zit op zijn troon, de Raadsleden rond de tafel, elk onder de banier van zijn Rol. Bovenaan staat welke van de drie stappen bezig is. De camera gaat naar wie spreekt en iedereen kijkt naar de spreker. Een routering is een lichtstraal over de tafel van de Koning naar het gekozen Raadslid. Leest een Raadslid zijn bron, dan gaat er een oplichtend boek voor hem open. Elk record-ID wordt een blad bewijs op tafel; noemt een tweede Rol hetzelfde ID, dan schuift het blad naar het midden. De tien kaarsen zijn het Beurtenbudget: elk Raadslid-bericht dooft er één. Het sigil in de tafel is paars en onrustig zolang de Desync onverklaard is en wordt goud bij het vonnis.
 - **Na het debat**: de geschillen komen één voor één (goud = beslecht, oranje en trillend = open). Dan volgt het vonnis in twee schermen: *Wat is er gebeurd?* (ingreep, mechanisme en verloop, met bewijs, zekerheid en de Rollen die het bewijs leverden) en *Hoe lossen we het op?* (herstelplan, risico's en de voorspelling).
 - **Bediening**: **P** = presentatiemodus (de hele run in ongeveer 110 seconden), **R** = herstart, **spatie** = pauze, **← →** = vorige of volgende beurt. Rechtsonder staan ook Live, de snelheid en Lite (zonder schaduwen en gloed). Klik op het dialoogvenster, een personage, een blad bewijs of een deel van het vonnis voor de ruwe trace.
-- **Instellen**: tempo, kleuren en tekstlengtes staan in `visual-raad/src/config.js`.
+- **Instellen**: tempo, kleuren en tekstlengtes staan in `visual-raad/src/config.js`. Daar staan ook `pixel` (hoe grof de pixels zijn) en `kleurNiveaus` (hoeveel tinten per kleur). De knop Lite toont het gladde 3D-beeld zonder pixelstijl.
 
 ### Het Sterrenbeeld starten (eerdere visualisatie, reserve)
 
