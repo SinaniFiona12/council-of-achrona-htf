@@ -63,6 +63,23 @@ Geen uv? Maak een venv (`python -m venv .venv`, activeer met `.venv\Scripts\acti
 
 Viewer op een andere poort: zet `VIEWER_PORT=8101` als omgevingsvariabele. Een andere map bekijken, bv. het voorbeeld: `uv run viewer voorbeeld`.
 
+### Hoe start ik de visualisatie ("The Mending of Achrona")?
+
+Een eigen, live visualisatie van het debat in `visual/` (Vite + GSAP). Ze leest alleen `trace.json` en `verdict.json` uit de root, pollt ze elke seconde en verandert er niets aan. Je hebt [Node.js](https://nodejs.org) nodig.
+
+```
+cd visual
+npm install
+npm run dev
+```
+
+Open http://localhost:5173. Start daarna in een tweede terminal `uv run council`: de visualisatie loopt live mee. Een afgeronde run wordt vanaf het begin afgespeeld. Testdata uit het voorbeeld: http://localhost:5173/?map=voorbeeld.
+
+- **Wat je ziet**: de blauwe spotlight van de Koning en zijn bevel (vraag en reden), open vragen als mist, circuitlijnen als een Raadslid zijn bron leest, tekstballonnen woord voor woord, elk record-ID als gouden scherf in het herstelmozaïek, geschillen als oranje bliksem, en op het einde het Verdict als perkamentrol (delen zonder bewijs blijven gebroken).
+- **Bediening**: afspelen/pauzeren (ook met de spatiebalk), snelheid 1×/2×/4×, de tijdlijn om terug te spoelen, *Live* om naar het einde te springen, *Verdict* om het perkament te openen.
+- **Eigen avatars**: vervang `visual/assets/avatars/<rol>.svg` door je eigen SVG met dezelfde bestandsnaam.
+- **Netwerk**: de lettertypes (UnifrakturMaguntia, Alegreya SC, Alegreya) komen van Google Fonts; zonder internet valt de pagina terug op een gewone serif.
+
 ## Hoe de kit werkt
 
 ```

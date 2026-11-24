@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The Mending of Achrona</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Alegreya+SC:wght@400;700&family=Alegreya:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <!-- De Desync: scheuren aan de randen (verdwijnen naarmate Achrona geneest) -->
+  <svg class="scheuren" viewBox="0 0 1600 900" preserveAspectRatio="none" aria-hidden="true">
+    <defs>
+      <linearGradient id="kristal" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#7E22CE" /><stop offset="1" stop-color="#A855F7" />
+      </linearGradient>
+      <filter id="gloed" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="4" result="b" /><feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+      </filter>
+    </defs>
+    <g id="scheurlijnen" stroke="url(#kristal)" fill="none" stroke-width="3" filter="url(#gloed)" stroke-linejoin="bevel"></g>
+  </svg>
+  <div class="korrel" aria-hidden="true"></div>
+
+  <header class="kop">
+    <div>
+      <h1 class="titel" data-tekst="The Mending of Achrona">The Mending of Achrona</h1>
+      <p class="ondertitel">De Council of Achrona herstelt wat de Desync brak</p>
+    </div>
+    <div class="status">
+      <span id="status-chip" class="chip">wachten</span>
+      <span id="status-info"></span>
+    </div>
+  </header>
+
+  <main class="zaal">
+    <aside class="links">
+      <section class="bevel" id="bevel" hidden>
+        <h2>Koninklijk bevel</h2>
+        <p class="bevel-aan" id="bevel-aan"></p>
+        <p class="bevel-vraag" id="bevel-vraag"></p>
+        <p class="bevel-reden" id="bevel-reden"></p>
+      </section>
+      <section class="mist">
+        <h2>Open vragen</h2>
+        <ul id="mist"></ul>
+      </section>
+    </aside>
+
+    <section class="tafel-wrap">
+      <div class="tafel" id="tafel">
+        <div class="tafelblad"></div>
+        <svg class="mozaiek" id="mozaiek" viewBox="-100 -100 200 200" aria-label="Herstelmozaïek"></svg>
+        <svg class="bliksem" id="bliksem" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg>
+        <svg class="straal" id="straal" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <linearGradient id="straalkleur" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#1D4ED8" stop-opacity="0.9" /><stop offset="1" stop-color="#1D4ED8" stop-opacity="0.15" />
+            </linearGradient>
+          </defs>
+          <polygon id="straal-kegel" points="50,6 50,6 50,6" fill="url(#straalkleur)" />
+        </svg>
+        <div class="spotlight" id="spotlight"></div>
+        <div class="koning" id="koning" title="De Koning">
+          <svg viewBox="0 0 64 48" aria-hidden="true"><path d="M4 40 L10 12 L22 26 L32 6 L42 26 L54 12 L60 40 Z" /><rect x="4" y="40" width="56" height="6" /></svg>
+          <span>Koning</span>
+        </div>
+        <div id="leden"></div>
+        <div class="leeg" id="leeg">Wachten op <code>trace.json</code>…<br /><small>Start <code>uv run council</code> in de root van de repo.</small></div>
+      </div>
+    </section>
+
+    <aside class="rechts">
+      <div class="ballon" id="ballon" hidden>
+        <div class="ballon-kop"><span class="ballon-dot" id="ballon-dot"></span><span id="ballon-naam"></span></div>
+        <p class="ballon-tekst" id="ballon-tekst"></p>
+      </div>
+      <ul class="bronnen" id="bronnen" aria-label="Gelezen bronnen"></ul>
+    </aside>
+  </main>
+
+  <footer class="tijdlijn">
+    <button id="knop-speel" class="knop" title="Afspelen / pauzeren">❚❚</button>
+    <button id="knop-snelheid" class="knop" title="Snelheid">1×</button>
+    <input id="schuif" type="range" min="0" max="0" value="0" aria-label="Tijdlijn van het debat" />
+    <span id="schuif-label" class="schuif-label">0 / 0</span>
+    <button id="knop-live" class="knop" title="Naar het einde en live volgen">Live</button>
+    <button id="knop-verdict" class="knop goud" title="Toon het Verdict" disabled>Verdict</button>
+  </footer>
+
+  <!-- Het Verdict als perkamentrol -->
+  <div class="perkament-wrap" id="perkament-wrap" hidden>
+    <div class="perkament" id="perkament">
+      <div class="rol boven"></div>
+      <div class="perkament-inhoud" id="perkament-inhoud"></div>
+      <div class="rol onder"></div>
+      <button class="sluit" id="sluit-perkament" aria-label="Sluiten">×</button>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

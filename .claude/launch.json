@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "visual",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "visual", "run", "dev"],
+      "port": 5173
+    }
+  ]
+}
