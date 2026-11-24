@@ -186,8 +186,8 @@ Kies wie nu spreekt en met welke vraag. Goede keuzes:
 - een bewering zonder record-ID: vraag om bewijs;
 - iemand verwijst naar een Rol die nog niet sprak: geef die Rol het woord;
 - geen beurt verspillen aan samenvatten of herhalen; hetzelfde Raadslid niet twee keer na elkaar zonder goede reden.
-Stel een gerichte vraag (nooit 'geef je inbreng'), bv. "Bevestig of weerleg met je bron wat de <rol> zei over <onderwerp>",
-en vraag altijd om record-ID's.
+Stel één gerichte vraag (nooit 'geef je inbreng') over iets concreets uit het debat, in gewone taal en in hoogstens
+20 woorden. Begin met de naam van de Rol: "<Rol>, <concrete vraag>?". De Raadsleden noemen hun record-ID's vanzelf.
 
 Stop zelf (rol null) zodra alle drie de delen een bewering met bewijs hebben en de belangrijkste tegenspraak beslecht is,
 of als de laatste twee beurten niets nieuws opleverden. Liever vroeg stoppen met een sterke reden dan het budget opmaken.
@@ -196,8 +196,11 @@ Antwoord met alleen JSON, zonder tekst eromheen:
 {{"rol": "<rol uit de lijst, of null om te stoppen>", "vraag": "<je vraag, of null>",
  "reden": "<één concrete zin die naar het debat verwijst: welke bewering, tegenspraak of welk ontbrekend deel>",
  "open_vragen": ["<korte open vraag>", "..."]}}
-De reden is één zin: de jury leest hem. open_vragen: hoogstens {MAX_OPEN_VRAGEN} korte vragen die na deze keuze nog
-open staan; werk ze elke beurt bij (beantwoorde vragen verdwijnen)."""
+Schrijf kort: de jury leest alles.
+- reden: één zin van hoogstens 15 woorden: waarom precies deze Rol nu ("Om <bewering, tegenspraak of ontbrekend deel>
+  te toetsen."). Stop je, dan is de reden één zin die zegt waarom het debat klaar is.
+- open_vragen: hoogstens {MAX_OPEN_VRAGEN} vragen van elk hoogstens 8 woorden die na deze keuze nog open staan; werk ze
+  elke beurt bij (beantwoorde vragen verdwijnen)."""
 
 
 def stand_van_het_debat(beurten, rollen):
@@ -293,8 +296,10 @@ def instructies(lid, bestanden, mcp):
         + "De Council onderzoekt de oorzaak van de Desync. De Koning leidt het debat en stelt jou telkens een vraag.\n\n"
         "Werkwijze, elke beurt opnieuw:\n"
         "1. Raadpleeg EERST je Kennisbron, ook als je denkt het antwoord al te kennen.\n"
-        "2. Begin je antwoord met precies één regel: KERN: <één zin die de vraag beantwoordt, met record-ID's>\n"
-        "   Daarna hoogstens 120 woorden uitleg.\n"
+        "2. Begin je antwoord met precies één regel: KERN: <één zin van hoogstens 20 woorden die de vraag van de Koning "
+        "direct beantwoordt, met record-ID's>\n"
+        "   Daarna hoogstens 3 korte bullets van elk hoogstens 20 woorden: het bewijs, wat het betekent, en wie het moet "
+        "toetsen. Gewone taal, geen jargon, geen inleiding en geen slot.\n"
         "3. Noem bij elke bewering de record-ID's precies zoals ze in je Kennisbron staan, tussen haakjes. "
         "Verzin nooit een ID, en gebruik geen ID's van een ander Raadslid als jouw bewijs.\n"
         "4. Geef concrete dagen en tijdstippen als je bron die heeft.\n"
@@ -360,12 +365,14 @@ Stel het Council Verdict en de lijst geschillen op. Regels:
   (niet alleen verder onderzoeken) en volgt voorschriften over herstel die in het debat genoemd werden. Denk na over
   wat een maatregel kan kapotmaken voor je hem voorstelt;
 - risicos: minstens één, met mitigatie;
+- schrijf kort en in gewone taal: de samenvatting hoogstens 3 zinnen, elke bewering hoogstens 25 woorden, elke actie,
+  reden, risico, mitigatie, standpunt en uitkomst hoogstens 20 woorden;
 - voorspelling: alleen als het patroon het toelaat: op welke dag slaat de Desync opnieuw toe als niemand ingrijpt? Anders null;
 - geschillen: waarover waren Raadsleden het oneens? Per geschil het onderwerp, het standpunt per Rol (sleutel = rol),
   de uitkomst (wie had gelijk, waarom) en het bewijs. Uitkomst null als het niet beslecht werd.
 
 Antwoord met alleen JSON, zonder tekst eromheen, in deze vorm:
-{"samenvatting": "<2-3 zinnen>",
+{"samenvatting": "<hoogstens 3 zinnen>",
  "oorzaak": {"ingreep": {"bewering": "<tekst of null>", "bewijs": ["<ID>"], "zekerheid": 0.0},
              "mechanisme": {"bewering": "...", "bewijs": ["..."], "zekerheid": 0.0},
              "verloop": {"bewering": "...", "bewijs": ["..."], "zekerheid": 0.0}},
