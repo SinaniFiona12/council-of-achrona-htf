@@ -1,0 +1,141 @@
+{
+  "run_id": "2026-11-24T11:03:20+01:00_5526c69c",
+  "samenvatting": "De hulpslag draaide op dag 10 om 02:40 op een 'eigen pols', los van de Kroonklok (ENG-011), en er volgden een schildopening om 04:47 en klachten om 04:50. De uitvoerder, het mechanisme en het verband tussen die gebeurtenissen zijn niet vastgesteld. Het sterkste vastgestelde verband is een vierdaags ritme van zware nachten en dierenonrust, dat in de logs van de Beast Master en de visioenen van de Oracle staat, niet in de netlogs; de archieftijdstempels zijn bovendien onbetrouwbaar.",
+  "oorzaak": {
+    "ingreep": {
+      "bewering": "Op dag 10 om 02:40 is de hulpslag geactiveerd op een eigen pols voor het datanet, los van de Kroonklok. Wie of wat dat deed, is niet vastgesteld.",
+      "bewijs": [
+        "ENG-011",
+        "ENG-106"
+      ],
+      "zekerheid": 0.4
+    },
+    "mechanisme": {
+      "bewering": null,
+      "bewijs": []
+    },
+    "verloop": {
+      "bewering": "Vanaf dag 10 keert elke vierde nacht een zware nacht terug (dag 14, 18, 22, 26 enzovoort), met dierenonrust rond 04:15 tot 04:50 die van onrust 4 naar onrust 5 gaat. De netlogs van de Engineer tonen in deze nachten geen hulpslag-acties.",
+      "bewijs": [
+        "ORA-110",
+        "ORA-130",
+        "BEA-028",
+        "BEA-037",
+        "BEA-046",
+        "BEA-055",
+        "BEA-064",
+        "BEA-073",
+        "BEA-082",
+        "BEA-091",
+        "BEA-113"
+      ],
+      "zekerheid": 0.5
+    }
+  },
+  "acties": [
+    {
+      "actie": "Bewaar alle logs, tijdbronnen en archiefrecords ongewijzigd en controleer de klokbronnen (Kroonklok, datatoren, archief) tegen een onafhankelijke referentie voordat er tijdstempels worden gecorrigeerd.",
+      "reden": "Het archief legt gebeurtenissen vast vóór het moment waarop ze plaatsvonden (HIS-036 om 23:55 voor 04:50; HIS-053 om 01:50 voor 04:15), en HIS-103 die 'altijd gelijk' zegt, wordt door die records zelf tegengesproken. Een klokcorrectie of het overschrijven van logs zonder referentie maakt het bewijs onbruikbaar.",
+      "bewijs": [
+        "HIS-036",
+        "HIS-053",
+        "HIS-103",
+        "HIS-112",
+        "GUA-115"
+      ]
+    },
+    {
+      "actie": "Laat de activatie van de hulpslag op dag 10 om 02:40 herleiden tot een account, werkstation of proces via de audittrail, door een onderzoeker zonder Belang in de activatie.",
+      "reden": "ENG-011 en ENG-106 noemen de activatie zonder uitvoerder, en geen enkele bron wijst een persoon aan. Zonder dat is het mechanisme niet te toetsen.",
+      "bewijs": [
+        "ENG-011",
+        "ENG-106",
+        "ENG-110"
+      ]
+    },
+    {
+      "actie": "Haal de brief van dag 8 ('op eigen maat', ARC-106) uit de bron en vergelijk de daarin genoemde pols met de 'eigen pols' van de hulpslag.",
+      "reden": "De Archmage heeft de brief zelf genoemd en ontkent de activatie; de brief is niet in het register opgenomen, dus de inhoud is alleen via de Archmage bekend. Dat is onvoldoende om hem uit te sluiten of te bevestigen.",
+      "bewijs": [
+        "ARC-106",
+        "HIS-102",
+        "HIS-110"
+      ]
+    },
+    {
+      "actie": "Bepaal welke pols de hulpslag gebruikt door de polinstelling (ENG-114) en de waarde op dag 10 te meten en te vergelijken met de pols van de Kroonklok en de schilden.",
+      "reden": "De Historian beweert een gedeelde pol (HIS-102, HIS-110), de Engineer een aparte pol (ENG-011). Het is een meetbare vraag die niet met meningen beslecht kan worden.",
+      "bewijs": [
+        "ENG-011",
+        "ENG-114",
+        "HIS-102",
+        "HIS-110"
+      ]
+    },
+    {
+      "actie": "Wijzig de pol, de fijnregeling of de versterking van de hulpslag niet, en laat de firewallregels van dag 22 (ENG-027) staan, totdat de activator en de pol zijn vastgesteld.",
+      "reden": "De wijzigingen van dag 24 (ENG-029, ENG-062) zijn gedaan zonder dat de oorzaak bekend was, en een nieuwe instelling kan het bewijs van de activatie wissen. Het verruimen van de firewall kan infiltranten toelaten, terwijl het vermoeden van inbraak (GUA-116, ENG-110) niet is bevestigd.",
+      "bewijs": [
+        "ENG-029",
+        "ENG-062",
+        "ENG-027",
+        "GUA-116",
+        "ENG-110"
+      ]
+    },
+    {
+      "actie": "Controleer de GUA-104-tikregel (verkeer midden tussen twee tikken gaat zonder toets door) op de bron van de regel en test of de schildopening van 04:47 en de poort oost op dag 22 erdoor verklaard worden.",
+      "reden": "De Guardian Keeper noemt de regel, maar de Engineer kan hem niet in zijn bron vinden en de Guardian Keeper koppelt hem niet aan de tijden. Pas de regel aan als hij bevestigd is, want een verkeerde aanpassing aan het schild kan verkeer blokkeren of ongecontroleerd doorlaten.",
+      "bewijs": [
+        "GUA-104",
+        "GUA-019",
+        "GUA-043"
+      ]
+    },
+    {
+      "actie": "Bewaak de nacht van dag 46 (verwacht rond 04:00 tot 05:00) met gesynchroniseerde klokken en gelijktijdige logs van netwerk, schild en dieren, inclusief de periode 02:00 tot 03:00.",
+      "reden": "Het vierdaagse ritme kan alleen getoetst worden met tijdgelijke metingen. Het ontbreken van waarnemingen tussen 00:00 en 04:40 op dag 10 (BEA-106) laat de begintijd van de onrust open.",
+      "bewijs": [
+        "ORA-130",
+        "BEA-113",
+        "BEA-091"
+      ]
+    },
+    {
+      "actie": "Pas het herstel pas toe nadat de activator, de pol en de tijdsynchronisatie zijn vastgesteld. Daarna herstel de hulpslag op de bevestigde pol en leg de vaste regels vast.",
+      "reden": "Een herstel vóór de vaststelling van de oorzaak kan de oorzaak maskeren, en tot nu toe ontbreekt een bevestigd mechanisme.",
+      "bewijs": [
+        "ENG-011",
+        "GUA-111",
+        "HIS-112"
+      ]
+    }
+  ],
+  "risicos": [
+    {
+      "risico": "De tijdstempels in het archief kloppen niet (vastgelegd vóór gebeurd), zodat alle tijdsvergelijkingen tussen Engineer, Guardian, Beast Master en Historian verkeerd kunnen zijn.",
+      "mitigatie": "Controleer de klokbronnen tegen een onafhankelijke referentie en vergelijk logs van meerdere systemen voordat er conclusies worden getrokken."
+    },
+    {
+      "risico": "De Archmage heeft een Belang: de brief van dag 8 ('op eigen maat', ARC-106) is niet geregistreerd en de Archmage ontkent de activatie zonder bewijs. Het onderzoek kan daardoor vooringenomen zijn.",
+      "mitigatie": "Laat de activatie onderzoeken door een onderzoeker zonder Belang en leg de brief en de ontvangerslijst vast."
+    },
+    {
+      "risico": "Een ingreep in de hulpslag, het schild of de firewall op basis van een niet-bevestigde regel (GUA-104) of verkeerde pol kan het bewijs wissen of het net verder verstoren.",
+      "mitigatie": "Wijzig geen instellingen voordat de activator, de pol en het tikmechanisme zijn vastgesteld, en leg elke wijziging vast met tijdstempel."
+    },
+    {
+      "risico": "ENG-011 wordt door de Archmage als dag 7 meting gelezen, terwijl de Engineer hem op dag 10 om 02:40 plaatst. De datering van het enige record van de activatie is dus onzeker.",
+      "mitigatie": "Controleer de metadata en de opslagdatum van ENG-011 en ENG-106 in de bron."
+    }
+  ],
+  "voorspelling": {
+    "dag": 46,
+    "bewering": "Als het vierdaagse ritme blijft gelden en niemand ingrijpt, valt de volgende zware nacht met dierenonrust op dag 46, rond 04:00 tot 05:00.",
+    "bewijs": [
+      "ORA-130",
+      "BEA-091",
+      "BEA-113"
+    ]
+  }
+}
