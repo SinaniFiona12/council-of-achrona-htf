@@ -45,7 +45,7 @@ const fx = { intro: 0, beamT: 1, beamA: 0, gsh: 0, fin: 0, puls: {}, glitch: 1 }
 const KONING = { x: 0, y: 0.08 }
 const rolKleur = {}
 
-function leeg() { return { goud: new Map(), berichten: 0, rout: null, msg: null, tool: null, besluit: null, vragen: [], weg: [], focus: null, fase: 'debat' } }
+function leeg() { return { goud: new Map(), berichten: 0, rout: null, msg: null, tool: null, besluit: null, vragen: [], weg: [], focus: null, fase: 'debat', paren: [], gi: -1 } }
 const n = () => beurten.length
 const totaal = () => n() + extras.length
 const isRol = (r) => rollen.includes(r)
@@ -55,7 +55,7 @@ function plek(rol) {
   const i = rollen.indexOf(rol), aantal = Math.max(rollen.length, 1)
   if (i < 0) return KONING
   const a = -Math.PI / 2 + (i + 0.5) / aantal * Math.PI * 2
-  const rx = Math.max(0.5, Math.min(h.aspect - 0.42, 1.2)), ry = 0.42
+  const rx = Math.max(0.5, Math.min(h.aspect - 0.42, 1.2)), ry = 0.31 // plat genoeg om tussen de twee kaarten te passen
   return { x: KONING.x + rx * Math.cos(a), y: KONING.y - ry * Math.sin(a) }
 }
 const hash = (s, zout = 0) => { let x = 2166136261 ^ zout; for (let i = 0; i < s.length; i++) x = Math.imul(x ^ s.charCodeAt(i), 16777619); return ((x >>> 0) % 10000) / 10000 }
@@ -81,6 +81,7 @@ function toestand(p) {
     } else if (b.soort === 'bericht') {
       if (b.spreker === 'koning') { t.besluit = { b, i }; t.msg = null; t.focus = null; continue }
       t.msg = { b, i }; t.tool = null; t.focus = isRol(b.spreker) ? b.spreker : null
+      t.paren.push({ rout: t.rout && t.rout.b.aan === b.spreker ? t.rout.b : null, msg: b })
       if (!isRol(b.spreker)) continue
       t.berichten++
       for (const id of idsIn(b.tekst)) {
@@ -92,7 +93,8 @@ function toestand(p) {
   }
   if (t.tool && t.tool.i !== Math.min(p, n()) - 1) t.tool = null
   const extra = p > n() ? extras[p - n() - 1] : null
-  t.fase = extra === 'f' ? 'finale' : extra === 'g' ? 'geschil' : 'debat'
+  t.fase = extra?.soort === 'f' ? 'finale' : extra?.soort === 'g' ? 'geschil' : 'debat'
+  t.gi = extra?.soort === 'g' ? extra.i : t.fase === 'finale' ? 1e9 : -1
   return t
 }
 
@@ -152,7 +154,7 @@ function tekenHtml() {
     if (tool) {
       const aan = st.tool && st.tool.b.spreker === rol
       tool.classList.toggle('aan', !!aan)
-      if (aan) tool.textContent = st.tool.b.soort === 'bestand' ? '▤ bron in prompt' : `${{ zoek: '⌕', zoek_betekenis: '✧', toon: '◉', lees_kennisbron: '▤' }[st.tool.b.tool] || '⌕'} ${st.tool.b.tool}`
+      if (aan) tool.textContent = st.tool.b.soort === 'bestand' ? '📖 bron in de prompt' : '📖 leest bron…'
     }
   }
   // de keuze van de Koning
@@ -161,46 +163,55 @@ function tekenHtml() {
   if (fin || gsh) bevel.hidden = true
   else if (st.besluit) {
     bevel.hidden = false
-    $('bevel-kop').innerHTML = 'De Koning besluit'
-    $('bevel-reden').textContent = kortZin(st.besluit.b.tekst, 34)
+    $('bevel-kop').innerHTML = '👑 De Koning besluit'
+    $('bevel-reden').textContent = kortZin(st.besluit.b.tekst, 30)
+    $('bevel-waarom').textContent = ''
     bevel.onclick = () => toonPaneel('De Koning besluit', [st.besluit.b])
   } else if (r && r.b.aan == null) {
     bevel.hidden = false; bevel.classList.add('stop')
-    $('bevel-kop').innerHTML = 'Het debat is voorbij'
-    $('bevel-reden').textContent = kortZin(r.b.reden)
+    $('bevel-kop').innerHTML = '👑 De Koning sluit het debat'
+    $('bevel-reden').textContent = kortZin(r.b.reden, 30)
+    $('bevel-waarom').textContent = st.berichten < CONFIG.budget ? `${CONFIG.budget - st.berichten} van de ${CONFIG.budget} beurten bleven ongebruikt` : ''
     bevel.onclick = () => toonPaneel('Routering: de Koning stopt', [r.b])
   } else if (r) {
     bevel.hidden = false
     const wie = r.b.spreker === 'koning' ? 'De Koning' : naamVan(r.b.spreker)
     bevel.style.setProperty('--k2', kleurVan(r.b.aan, rollen.indexOf(r.b.aan)))
-    $('bevel-kop').innerHTML = `${esc(wie)} kiest <b>${esc(naamVan(r.b.aan))}</b>`
-    $('bevel-reden').textContent = kortZin(r.b.reden)
+    $('bevel-kop').innerHTML = `${r.b.spreker === 'koning' ? '👑 Koning' : esc(wie)} → <b>${esc(naamVan(r.b.aan))}</b>`
+    $('bevel-reden').textContent = `“${kortZin(r.b.vraag, CONFIG.tekst.vraagWoorden)}”`
+    $('bevel-waarom').textContent = `waarom: ${kortZin(r.b.reden)}`
     bevel.onclick = () => toonPaneel(`Routering #${r.b.nr ?? r.i + 1}`, [r.b])
   } else bevel.hidden = true
   // de inbreng van de spreker
   const kern = $('kern')
   if (gsh) {
-    const gs = trace.geschillen || [], opgelost = gs.filter((g) => g.uitkomst).length
-    kern.hidden = false; kern.style.setProperty('--k', CONFIG.kleuren.geschil)
-    $('kern-kop').textContent = `${gs.length} geschil${gs.length === 1 ? '' : 'len'} · ${opgelost} beslecht (goud) · ${gs.length - opgelost} open (flikkert)`
-    $('kern-tekst').innerHTML = gs.slice(0, 4).map((g) => `${g.uitkomst ? '✦' : '⚡'} ${esc(kortZin(g.onderwerp, 12))}`).join('<br>') + (gs.length > 4 ? `<br>+ ${gs.length - 4} meer` : '')
-    $('kern-ids').innerHTML = ''
-    kern.onclick = () => toonPaneel('Geschillen', gs)
+    const gs = trace.geschillen || [], g = gs[st.gi] || {}, wie = Object.keys(g.standpunten || {})
+    kern.hidden = false; kern.style.setProperty('--k', g.uitkomst ? CONFIG.kleuren.goud : CONFIG.kleuren.geschil)
+    $('kern-kop').textContent = `⚡ Geschil ${st.gi + 1} van ${gs.length} · ${wie.map(naamVan).join(' vs ')}`
+    $('kern-tekst').innerHTML = `${esc(kortZin(g.onderwerp, 18))}<br><small>${g.uitkomst ? '✦ Beslecht: ' + esc(kortZin(g.uitkomst, 24)) : '⚡ Niet beslecht: de lijn blijft flikkeren'}</small>`
+    $('kern-ids').innerHTML = (g.bewijs || []).slice(0, CONFIG.tekst.idChips).map((i) => `<span class="chip">${esc(i)}</span>`).join('')
+    kern.onclick = () => toonPaneel(`Geschil ${st.gi + 1}`, [g])
   } else if (!fin && st.msg) {
     const b = st.msg.b, ids = idsIn(b.tekst), max = CONFIG.tekst.idChips
     kern.hidden = false; kern.style.setProperty('--k', b.spreker === 'mens' ? CONFIG.kleuren.geschil : kleurVan(b.spreker, rollen.indexOf(b.spreker)))
-    $('kern-kop').textContent = naamVan(b.spreker)
-    $('kern-tekst').textContent = kernVan(b.tekst)
+    $('kern-kop').textContent = `${CONFIG.rolSymbool[b.spreker] || '✦'} ${naamVan(b.spreker)}`
+    $('kern-tekst').textContent = `“${kernVan(b.tekst)}”`
     $('kern-ids').innerHTML = ids.slice(0, max).map((i) => `<span class="chip">${esc(i)}</span>`).join('') + (ids.length > max ? `<span class="chip meer">+${ids.length - max}</span>` : '')
     kern.onclick = () => toonPaneel(`Bericht #${b.nr ?? st.msg.i + 1} · ${naamVan(b.spreker)}`, [b])
   } else kern.hidden = true
   // open vragen
   const blok = $('vragen-blok'), max = CONFIG.tekst.openVragen
   blok.hidden = fin || !(st.vragen.length || st.weg.length)
-  $('vragen').innerHTML = st.weg.slice(0, 2).map((v) => `<li class="weg">${esc(kortZin(v, 14))}</li>`).join('')
-    + st.vragen.slice(0, max).map((v) => `<li>${esc(kortZin(v, 14))}</li>`).join('')
+  const ow = CONFIG.tekst.openWoorden
+  $('vragen').innerHTML = st.weg.slice(0, 2).map((v) => `<li class="weg">${esc(kortZin(v, ow))}</li>`).join('')
+    + st.vragen.slice(0, max).map((v) => `<li>${esc(kortZin(v, ow))}</li>`).join('')
     + (st.vragen.length > max ? `<li class="meer">+ ${st.vragen.length - max} meer</li>` : '')
   blok.onclick = () => toonPaneel('Open vragen van de Koning', [st.rout?.b])
+  // de laatste drie beurten, compact
+  const eerder = gsh ? st.paren.slice(-3) : st.paren.filter((p) => p.msg !== st.msg?.b).slice(-3)
+  $('historie').hidden = fin || !eerder.length
+  $('hist').innerHTML = eerder.map((p, i) => `<li data-i="${i}" style="--k:${kleurVan(p.msg.spreker, rollen.indexOf(p.msg.spreker))}"><b>${esc(naamVan(p.msg.spreker))}</b> ${esc(kortZin(kernVan(p.msg.tekst), CONFIG.tekst.histWoorden))}</li>`).join('')
+  $('hist').onclick = (e) => { const p = eerder[e.target.closest('li')?.dataset.i]; if (p) toonPaneel(`Eerder: ${naamVan(p.msg.spreker)}`, [p.rout, p.msg]) }
   // budget
   $('budget').innerHTML = Array.from({ length: CONFIG.budget }, (_, i) => `<i class="${i >= CONFIG.budget - st.berichten ? 'uit' : ''}"></i>`).join('')
   $('budget').onclick = () => toonPaneel(`Beurtenbudget: ${st.berichten} van ${CONFIG.budget} gebruikt`, [{ raadslid_beurten: st.berichten, budget: CONFIG.budget, verbruik: trace?.verbruik }])
@@ -210,6 +221,7 @@ function tekenHtml() {
   $('vonnis').hidden = !fin
   $('status').textContent = trace?.status === 'bezig' ? '● live' : BRON ? `voorbeeld: ${BRON}` : ''
   $('k-stap').textContent = `${pos}/${totaal()}`
+  $('k-snel').textContent = (Number.isInteger(snel) ? snel : snel.toFixed(1)) + '×'
   $('k-speel').textContent = spelend ? '❚❚' : '▶'
 }
 
@@ -218,7 +230,8 @@ function bouwVonnis() {
   if (!verdictOk()) { el.innerHTML = ''; return }
   const o = verdict.oorzaak, W = CONFIG.tekst
   const deel = ([k, naam]) => o[k]?.bewering
-    ? `<h3>${naam}</h3><p data-k="${k}">${esc(kortZin(o[k].bewering, W.vonnisWoorden))}</p>`
+    ? `<h3>${naam}${typeof o[k].zekerheid === 'number' ? ` <span class="balk"><i style="width:${Math.round(o[k].zekerheid * 100)}%"></i></span> <em>${Math.round(o[k].zekerheid * 100)}%</em>` : ''}</h3><p data-k="${k}">${esc(kortZin(o[k].bewering, W.vonnisWoorden))}</p>`
+      + `<div class="chips klein">${(o[k].bewijs || []).slice(0, 6).map((i) => `<span class="chip">${esc(i)}</span>`).join('')}${(o[k].bewijs || []).length > 6 ? `<span class="chip meer">+${o[k].bewijs.length - 6}</span>` : ''}</div>`
     : `<h3>${naam}</h3><p data-k="${k}" class="leeg-deel">Onbekend: geen bewijs in het debat.</p>`
   const v = verdict.voorspelling, vb = trace.verbruik || {}
   const tokens = Object.entries(vb).map(([m, x]) => `${m}: ${(x.invoer || 0).toLocaleString('nl-BE')} in · ${(x.uitvoer || 0).toLocaleString('nl-BE')} uit`).join(' — ')
@@ -284,7 +297,7 @@ function zet(nieuw, animeer) {
     o.links = g.links
   }
   zetDoelen()
-  const stap = pos === oud + 1 && animeer ? (pos <= n() ? beurten[pos - 1] : { soort: extras[pos - n() - 1] }) : null
+  const stap = pos === oud + 1 && animeer ? (pos <= n() ? beurten[pos - 1] : extras[pos - n() - 1]) : null
   gsap.killTweensOf(fx, 'beamT,beamA,gsh,fin')
   const routActief = st.fase === 'debat' && st.rout && st.rout.b.aan != null
   if (stap?.soort === 'routering' && routActief) { fx.beamT = 0; fx.beamA = 1; gsap.to(fx, { beamT: 1, duration: 0.9 / snel, ease: 'power2.out' }); gsap.to(fx, { beamA: 0.5, duration: 1.5 / snel, delay: 1 / snel }); piep(330) }
@@ -308,7 +321,7 @@ function zet(nieuw, animeer) {
 }
 
 function duur(stap) { // stap = index van de zojuist getoonde stap
-  if (stap >= n()) return extras[stap - n()] === 'g' ? T.geschillen : T.finale
+  if (stap >= n()) return extras[stap - n()].soort === 'g' ? T.geschil : T.finale
   const b = beurten[stap]
   if (b.soort === 'routering') return b.aan == null ? T.stop : T.routering
   if (b.soort === 'toolcall' || b.soort === 'bestand') return T.toolcall
@@ -339,13 +352,38 @@ function piep(freq, vol = 0.05) {
 // ---------------------------------------------------------------- bediening
 $('k-speel').onclick = () => speel(!spelend)
 $('k-live').onclick = () => { zet(totaal(), false); speel(true) }
-$('k-snel').onclick = () => { snel = snel === 1 ? 2 : snel === 2 ? 0.5 : 1; $('k-snel').textContent = snel + '×' }
+$('k-snel').onclick = () => { snel = snel === 1 ? 2 : snel === 2 ? 0.5 : 1; tekenHtml() }
+function herstart() {
+  if (!trace) return
+  clearTimeout(timer); gsap.killTweensOf(fx); goud.clear(); deeltjes.length = 0
+  fx.intro = 0; fx.fin = 0; fx.gsh = 0; fx.glitch = 1; fx.beamA = 0
+  zet(0, false); spelend = true; tekenHtml()
+  const s = Math.max(1, snel)
+  $('titel').classList.add('groot')
+  gsap.to(fx, { intro: 1, duration: T.opening / s, ease: 'power1.out' })
+  setTimeout(() => $('titel').classList.remove('groot'), T.opening * 600 / s)
+  timer = setTimeout(tik, T.opening * 1000 / s)
+}
+let presentatie = false
+function presenteer() { // de hele run in ongeveer CONFIG.presentatieSeconden
+  presentatie = !presentatie
+  document.body.classList.toggle('presentatie', presentatie); $('k-pres').classList.toggle('aan', presentatie)
+  if (presentatie) {
+    let som = T.opening
+    for (let i = 0; i < totaal(); i++) som += duur(i)
+    snel = Math.min(6, Math.max(0.6, som / CONFIG.presentatieSeconden))
+  } else snel = 1
+  herstart()
+}
+$('k-pres').onclick = presenteer
 $('k-geluid').onclick = () => { geluid = !geluid; $('k-geluid').textContent = geluid ? '🔊' : '🔇'; $('k-geluid').classList.toggle('aan', geluid) }
 $('k-lite').onclick = () => { lite = !lite; document.body.classList.toggle('lite', lite); $('k-lite').classList.toggle('aan', lite); h.setLite(lite) }
 addEventListener('keydown', (e) => {
   if (e.code === 'Space') { e.preventDefault(); speel(!spelend) }
   else if (e.code === 'ArrowRight') { speel(false); zet(pos + 1, true) }
   else if (e.code === 'ArrowLeft') { speel(false); zet(pos - 1, false) }
+  else if (e.code === 'KeyP') presenteer()
+  else if (e.code === 'KeyR') herstart()
   else if (e.code === 'Escape') $('paneel').hidden = true
 })
 h.canvas.addEventListener('click', (e) => { // klik op een gouden ster: alle beurten die dat ID noemen
@@ -423,7 +461,8 @@ function frame(ms) {
       gs.forEach((g, gi) => {
         const wie = Object.keys(g.standpunten || {}).filter(isRol)
         const paren = wie.length > 1 ? wie.slice(1).map((r, i) => [plek(wie[i]), plek(r)]) : wie.length ? [[plek(wie[0]), KONING]] : []
-        const bocht = (gi - (gs.length - 1) / 2) * 0.045, a = fx.gsh * (1 - fin)
+        if (gi > st.gi) return
+        const bocht = (gi - (gs.length - 1) / 2) * 0.045, a = fx.gsh * (1 - fin) * (gi === st.gi ? 1 : 0.3)
         for (const [p, q] of paren) {
           if (g.uitkomst) schok(p, q, GOUD, a * 0.75, 0, bocht)
           else if (Math.random() > 0.12) schok(p, q, ORANJE, a * (0.45 + Math.random() * 0.55), 0.03, bocht)
@@ -484,7 +523,7 @@ function laad(nt, nv) {
   if (!trace) { beurten = []; rollen = []; extras = []; goud.clear(); st = leeg(); pos = 0; $('labels').innerHTML = ''; tekenHtml(); return }
   beurten = trace.beurten; rollen = Array.isArray(trace.raadsleden) ? trace.raadsleden : []
   const klaar = trace.status !== 'bezig'
-  extras = klaar ? [...((trace.geschillen || []).length ? ['g'] : []), ...(verdictOk() ? ['f'] : [])] : []
+  extras = klaar ? [...(trace.geschillen || []).map((_, i) => ({ soort: 'g', i })), ...(verdictOk() ? [{ soort: 'f' }] : [])] : []
   if (!zelfdeRollen || nieuweRun) bouwLabels()
   bouwVonnis()
   if (nieuweRun) {

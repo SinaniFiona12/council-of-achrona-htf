@@ -26,10 +26,17 @@
     <ul id="vragen"></ul>
   </aside>
 
+  <!-- rechts: de laatste drie beurten, compact -->
+  <aside id="historie" class="historie" hidden>
+    <h2>Eerder</h2>
+    <ul id="hist"></ul>
+  </aside>
+
   <!-- boven: de keuze van de Koning -->
   <div id="bevel" class="kaart bevel" hidden>
     <div class="kaart-kop" id="bevel-kop"></div>
     <p id="bevel-reden"></p>
+    <div class="waarom" id="bevel-waarom"></div>
   </div>
 
   <!-- onder: wat de spreker inbrengt -->
@@ -58,6 +65,7 @@
     <button id="k-snel" title="Snelheid">1×</button>
     <button id="k-geluid" title="Geluid aan/uit">🔇</button>
     <button id="k-lite" title="Lite: minder effecten">Lite</button>
+    <button id="k-pres" title="Presentatiemodus (P): de hele run in ±100 seconden. R = herstart">P</button>
     <span id="k-stap" class="stap"></span>
   </div>
   <div id="leeg" class="leeg" hidden>Wachten op <code>trace.json</code>…<br /><small>Start <code>uv run council</code> in de root van de repo.</small></div>

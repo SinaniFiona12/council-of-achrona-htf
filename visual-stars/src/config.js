@@ -34,12 +34,14 @@ export const CONFIG = {
     berichtMin: 3.2,
     berichtPerWoord: 0.085, // leestijd van de KERN-regel
     berichtMax: 7,
-    geschillen: 6,
+    geschil: 3.6, // per geschil
     finale: 4,
   },
 
   // tekstbudget (alles wat langer is, staat volledig in het paneel)
-  tekst: { redenWoorden: 22, openVragen: 3, kernTekens: 230, idChips: 8, vonnisWoorden: 26, actieWoorden: 16 },
+  tekst: { redenWoorden: 20, vraagWoorden: 26, openVragen: 3, openWoorden: 11, kernTekens: 210, idChips: 7, histWoorden: 11, vonnisWoorden: 25, actieWoorden: 18 },
+  presentatieSeconden: 105, // toets P: de hele run in ongeveer zoveel seconden
+  rolSymbool: { archmage: '▲', engineer: '⚙', guardian_keeper: '◈', historian: '☰', oracle: '◉', beast_master: 'ψ' },
 
   hemel: { sterren: [900, 500, 160], parallax: [0.006, 0.014, 0.03] },
   licht: { bloom: 0.85, bloomStraal: 0.6, bloomDrempel: 0.32, pixelRatioMax: 2 },
