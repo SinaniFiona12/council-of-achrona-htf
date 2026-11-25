@@ -1,0 +1,10 @@
+/*
+!/vercel.json
+!/trace.json
+!/verdict.json
+!/voorbeeld
+!/visual-raad
+.env
+.env.*
+node_modules
+dist

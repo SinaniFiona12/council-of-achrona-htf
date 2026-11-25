@@ -454,6 +454,7 @@ async function poll() {
       if (sleutel !== vorigeSleutel) { vorigeSleutel = sleutel; laad(nt, nv) }
     }
   } catch (fout) { console.warn('trace nog niet leesbaar', fout) }
+  if (import.meta.env.PROD && trace && trace.status !== 'bezig') return // gebouwde site met een afgeronde run: die verandert niet meer
   setTimeout(poll, CONFIG.pollMs)
 }
 function laad(nt, nv) {
