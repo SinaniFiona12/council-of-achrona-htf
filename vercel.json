@@ -1,0 +1,7 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "npm --prefix visual-raad ci",
+  "buildCommand": "npm --prefix visual-raad run build",
+  "outputDirectory": "visual-raad/dist"
+}

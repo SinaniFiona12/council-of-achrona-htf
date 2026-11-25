@@ -4,7 +4,7 @@ import { CONFIG } from './config.js'
 const PARAM = new URLSearchParams(location.search)
 export const BRON = PARAM.get('trace') || PARAM.get('map') || '' // ?trace=voorbeeld
 export const DEBUG = PARAM.has('debug')
-const url = (naam) => `/data/${naam}${BRON ? `?map=${encodeURIComponent(BRON)}` : ''}`
+const url = (naam) => `/data/${BRON ? encodeURIComponent(BRON) + '/' : ''}${naam}`
 
 /** { ok: true, data } bij succes (data null = bestand bestaat niet), { ok: false } = vorige toestand houden. */
 export async function haal(naam) {
